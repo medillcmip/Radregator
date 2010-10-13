@@ -10,6 +10,8 @@ urlpatterns = patterns('',
     # (r'^newsqa/', include('newsqa.foo.urls')),
     (r'^$', 'radregator.core.views.index'),
 
+    (r'^login', 'radregator.core.views.login'),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
