@@ -12,7 +12,7 @@
     <div id="fb-root"></div>
     <script>
       window.fbAsyncInit = function() {
-        FB.init({appId: '164537916905332', status: true, cookie: true,
+        FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,
                  xfbml: true});
       };
       (function() {
@@ -23,6 +23,12 @@
         document.getElementById('fb-root').appendChild(e);
       }());
     </script>
+    <div id='fbfriends'>
+      {% for friend in fb_friends %}
+
+        {{friend.name}} 
+      {% endfor %}
+    </div>
   </body>
 </html>
 
