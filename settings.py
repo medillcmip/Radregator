@@ -62,8 +62,13 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(os.path.basename(__file__), 'templates'),
+    os.path.join(os.path.dirname(__file__), 'templates'),
 )
+
+# Set the static document root.  This method is inefficient and insecure
+# but we're using it for expediency during development.
+# See http://docs.djangoproject.com/en/dev/howto/static-files/  
+STATIC_DOC_ROOT = os.path.join(os.path.basename(__file__), 'media'),
 
 INSTALLED_APPS = (
     'django.contrib.auth',
