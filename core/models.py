@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.sites.models import Site
-from radregator.clipper.models import Article
-from radregator.tagger.models import Tag
-from radregator.users.models import UserProfile
+from Radregator.clipper.models import Article
+from Radregator.tagger.models import Tag
+from Radregator.users.models import UserProfile
 
 
 class Summary(models.Model):
