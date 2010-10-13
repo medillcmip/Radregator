@@ -8,7 +8,9 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Example:
     # (r'^newsqa/', include('newsqa.foo.urls')),
-    (r'^$', 'core.views.index'),
+    (r'^$', 'radregator.core.views.index'),
+
+    (r'^login', 'radregator.core.views.login'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

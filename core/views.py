@@ -6,3 +6,7 @@ def index(request):
     template_dict = {}
 
     return render_to_response('index.html', template_dict)
+
+def login(request):
+    template_dict = {}
+    return render_to_response('login.html',template_dict)
