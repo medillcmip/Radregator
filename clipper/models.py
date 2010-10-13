@@ -1,6 +1,6 @@
 from django.db import models
-from Radregator.tagger.models import Tag
-from Radregator.users.models import UserProfile
+from radregator.tagger.models import Tag
+from radregator.users.models import UserProfile
 
 class Article(models.Model):
     """ A news article.  These will be the sources for answers. """
