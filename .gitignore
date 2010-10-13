@@ -3,3 +3,6 @@
 
 # Ignore vim swap files
 *.swp
+
+# Ignore the local settings
+settings_local.py
