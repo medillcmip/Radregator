@@ -1,5 +1,7 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
+from django.conf import settings
+from fbapi.facebook import *
 
 def index(request):
     """Default view."""
@@ -9,4 +11,11 @@ def index(request):
 
 def login(request):
     template_dict = {}
+    template_dict['fb_app_id']=settings.FB_API_ID
+    user = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
+    if user:
+        graph = GraphAPI(user["access_token"])
+        profile = graph.get_object("me")
+        friends = graph.get_connections("me", "friends")
+        template_dict['fb_friends'] = friends['data']
     return render_to_response('login.html',template_dict)

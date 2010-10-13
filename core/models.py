@@ -28,11 +28,13 @@ class Topic(models.Model):
                    view.
        curators: Users who have priveleges to update this topic.
        summary: Short (1-2) paragraph description of the topic, maintained
-                by one of the curators."""
+                by one of the curators.
+       articles: Articles (probably recent ones) to display on the front page, selected by curators. Probably ancestors of timeline."""
     title = models.CharField(max_length=80, unique = True) 
     summary = models.ForeignKey(Summary)
     topic_tags = models.ManyToManyField(Tag, null=True, blank=True) 
     curators = models.ManyToManyField(UserProfile)
+    articles = models.ManyToManyField(Article, blank=True)
 
     def __unicode__(self):
         return self.title
