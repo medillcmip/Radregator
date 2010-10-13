@@ -1,8 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from clipper.models import Article
-from tagger.models import Tag
+from radregator.clipper.models import Article
+from radregator.tagger.models import Tag
+from radregator.users.models import UserProfile
+
 
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
@@ -24,8 +25,8 @@ class Topic(models.Model):
                 by one of the curators."""
     title = models.CharField(max_length=80) 
     summary = models.ForeignKey(Summary)
-    topic_tags = models.ManyToManyField("Tag", null=True) 
-    curators = models.ManyToManyField("UserProfile")
+    topic_tags = models.ManyToManyField(Tag, null=True) 
+    curators = models.ManyToManyField(UserProfile)
     
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
@@ -43,21 +44,12 @@ class Comment(models.Model):
        topics: Topics to which this comment relates."""
     text = models.TextField()
     user = models.ForeignKey(UserProfile)
-    tags = models.ManyToManyField("Tag", null=True) 
+    tags = models.ManyToManyField(Tag, null=True) 
     related = models.ManyToManyField("self", through="CommentRelation", symmetrical=False, null=True)
-    sites = models.ManyToManyField("Site")
+    sites = models.ManyToManyField(Site)
     comment_type = models.ForeignKey("CommentType")
     topics = models.ManyToManyField("Topic")
 
-class UserProfile(models.Model):
-    """Extra user data.
-    
-    Fields:
-
-    facebook_user_id: User ID from the Facebook API.  This is populated if 
-                      the user chooses to register/login with Facebook."""
-    user = models.ForeignKey(User)
-    facebook_user_id = models.TextField()
 
 class CommentType(models.Model):
     """Type of comment, e.g. question, concern, answer ...  This is a separate
@@ -67,6 +59,8 @@ class CommentType(models.Model):
 class CommentRelation(models.Model):
     """Extra information about the relationship between two comments.
     see http://docs.djangoproject.com/en/1.2./topics/db/models/#extra-fields-on-many-to-many-relationships"""
-    left_comment = models.ForeignKey(Comment)
-    right_comment = models.ForeignKey(Comment)
+    left_comment = models.ForeignKey(Comment, related_name='+') 
+    # Don't need to create an inverse relation
+    right_comment = models.ForeignKey(Comment, related_name='+')
+    # Don't need to create an inverse relation
     relation_type = models.CharField(max_length=15)
