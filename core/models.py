@@ -8,7 +8,13 @@ from radregator.users.models import UserProfile
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
        if we want to do versioning."""
-    text = models.TextField()
+    text = models.TextField(blank=True, unique = True)
+    
+    def __unicode__(self):
+        return self.text[:80]
+
+    class Meta:
+        verbose_name_plural = 'Summaries'
 
 class Topic(models.Model):
     """A subject of discussion.  An information silo.  These will generally
@@ -23,10 +29,14 @@ class Topic(models.Model):
        curators: Users who have priveleges to update this topic.
        summary: Short (1-2) paragraph description of the topic, maintained
                 by one of the curators."""
-    title = models.CharField(max_length=80) 
+    title = models.CharField(max_length=80, unique = True) 
     summary = models.ForeignKey(Summary)
-    topic_tags = models.ManyToManyField(Tag, null=True) 
+    topic_tags = models.ManyToManyField(Tag, null=True, blank=True) 
     curators = models.ManyToManyField(UserProfile)
+
+    def __unicode__(self):
+        return self.title
+    
     
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
@@ -44,17 +54,22 @@ class Comment(models.Model):
        topics: Topics to which this comment relates."""
     text = models.TextField()
     user = models.ForeignKey(UserProfile)
-    tags = models.ManyToManyField(Tag, null=True) 
+    tags = models.ManyToManyField(Tag, null=True, blank=True) 
     related = models.ManyToManyField("self", through="CommentRelation", symmetrical=False, null=True)
-    sites = models.ManyToManyField(Site)
+    sites = models.ManyToManyField(Site, blank=True)
     comment_type = models.ForeignKey("CommentType")
-    topics = models.ManyToManyField("Topic")
+    topics = models.ManyToManyField("Topic", blank=True)
 
+    def __unicode__(self):
+        return self.text[:80]
 
 class CommentType(models.Model):
     """Type of comment, e.g. question, concern, answer ...  This is a separate
        class so we can easily add new types of comments."""
     name = models.CharField(max_length=15)
+
+    def __unicode__(self):
+        return self.name
 
 class CommentRelation(models.Model):
     """Extra information about the relationship between two comments.
