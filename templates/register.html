@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>radregator</title>
+  </head>
+  <body>
+    <h1>radregator</h1>
+<!-- BEGIN FORM -->
+<form method="POST" action="register">
+<!-- BEGIN USERNAME -->
+<p>
+<label class="text">Username</label>
+<input type="text" id="headline" name="fUsername" class="text"/>
+</p>
+<!-- END USERNAME -->
+
+<!-- BEGIN PASSWORD -->
+<p>
+<label class="text">Password</label>
+<input type="password" id="password" name="fPassword" class="text"/>
+</p>
+<!-- END PASSWORD -->
+
+<input type="hidden" name="process" value="1"/>
+ {% csrf_token %}
+<input type="submit" class="btn" value="Go!" />
+
+</form>
+  </body>
+</html>
