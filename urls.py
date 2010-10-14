@@ -11,11 +11,13 @@ urlpatterns = patterns('',
     (r'^$', 'radregator.core.views.frontpage'),
 
     (r'^login', 'radregator.core.views.weblogin'),
-    (r'^frontpage', 'radregator.core.views.frontpage'),
 
     (r'^register', 'radregator.core.views.register'),
 
     (r'^authenticate', 'radregator.core.views.auth'),
+
+    (r'^api/(?P<output_format>)/topics/(?P<topic>)/comments/(?P<page>\d+)/$', 'radregator.core.views.api_topic_comments'),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

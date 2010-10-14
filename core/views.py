@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.core.paginator import Paginator
 from fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -62,7 +63,7 @@ def doLogin(username,password,request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            return HttpResponseRedirect('index')
+            return HttpResponseRedirect('frontpage')
             # Redirect to a success page.
         else:
             # Return a 'disabled account' error message
@@ -72,20 +73,27 @@ def doLogin(username,password,request):
         pass
 
 def auth(request):
-    """Facebook auth uses the Javascript SDK to authenticate in the browswer and it stocks a cookie
+    """
+    Facebook auth uses the Javascript SDK to authenticate in the browswer and it stocks a cookie
     The cookie is read on the server side in the **auth(request)** method
     * if that cookie exists and a django user doesn't, we create a django user and move them to the site
     **I set the username to be the first+last name to avoid spaces
     The password becomes the facebook id, b/c no one should ever have to enter it and the authenication on for our django site is a formality since facebook verified the user
     if that cookie exists and a django user does, we move them to the site
-    if no cookie exists, we move them onto the login page"""
-
+    if no cookie exists, we move them onto the login page
+    
+    NOTE: if a user has a django account there is no method for them to add a facebook account
+    if they decide to log in VIA facebook their prior account won't be merged, thus we 
+    have two unique accounts with no bridge.  
+    """
+    if request.user.is_authenticated():    
+        return HttpResponseRedirect('frontpage')
     user = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
     if user:
         #user has a FB account and we need to see if they have been registered in our db
         ouruser =  models.UserProfile.objects.filter(facebook_user_id=user['uid'])
         if ouruser:
-            return HttpResponseRedirect('index')
+            return HttpResponseRedirect('frontpage')
         else:#they're not, so we need to create them and move em along
             graph = GraphAPI(user['access_token'])
             profile = graph.get_object("me")
@@ -108,6 +116,7 @@ def weblogin(request):
 
     template_dict = {}
     template_dict['fb_app_id']=settings.FB_API_ID
+    template_dict['auth_page']='authenticate'
     fbuser = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
     if fbuser:
         #the user hit this page again after using the FB signin link, move em to auth
@@ -148,3 +157,7 @@ def register(request):
             newuser = models.UserProfile(user=baseuser)
             newuser.save()
             return doLogin(fUsername,fPass,request)
+
+def api_topic_comments(request, output_format="json", topic, page=1):
+    # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
+    pass
