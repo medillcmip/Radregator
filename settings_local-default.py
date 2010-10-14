@@ -17,3 +17,8 @@ MEDIA_ROOT = ''
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = ''
+
+# Facebook Application settings for Facebook Connect
+FB_API_ID = ''
+FB_API_KEY = ''
+FB_SECRET_KEY = ''
