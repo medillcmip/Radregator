@@ -1,7 +1,8 @@
-		<form action="" method="post" class="questionform" id="<!--UniqueID-->">
+        <form action="" method="post" class="questionform" id="<!--UniqueID-->">
 		<label for="questorcon">
-            {{comment_form.comment_type.label}}
-        {{comment_form.comment_type}}:	
+            {{comment_form.comment_type_str.label}}
+        {{comment_form.comment_type_str.errors}}
+        {{comment_form.comment_type_str}}:	
         </label>
         <br>
         
@@ -9,9 +10,9 @@
 			
 			<br><label for="about" class="questbump"></label>This <span class="flipquestorcon">question</span> is about:
 		
-            {{comment_form.tags}}
-            <input type = "checkbox"> {{comment_form.newtag}} </input>
-            <input type="hidden" id="topicname" name="topic" value="topic" value="Libraries"> </input>
+            {{comment_form.tags}} {{comment_form.tags.errors}}
+            <label for="newtag">New Tag:</label>{{comment_form.newtag}} 
+            {{comment_form.topic}} {{comment_form.topic.errors}}
 			<input type="submit" name="submit" class="submit" value="Submit" />
             {% csrf_token %}
 			

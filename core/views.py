@@ -4,10 +4,11 @@ from django.conf import settings
 from fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from radregator.users import models
+from radregator.users.models import UserProfile
 from django.contrib.auth import authenticate, login, logout
 
-from models import Topic
+from models import Topic,CommentType, Comment
+from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm
 from django.core.context_processors import csrf
 
@@ -17,19 +18,32 @@ def frontpage(request):
     if request.method == 'POST':
         
         form = CommentSubmitForm(request.POST)
+        
         if form.is_valid():
-            comment = model.save(commit = False)
-            comment.user = UserProfile.get(user=request.user)
-            comment.topics += request.POST['topic']
+            comment_type = CommentType.objects.get(name=form.cleaned_data['comment_type_str'])
+            userprofile = UserProfile.objects.get(user = request.user)
+            comment = Comment(text = form.cleaned_data['text'], user = userprofile)
+            comment.comment_type = comment_type
             comment.save()
-            comment.save_m2m()
 
+            topic = form.cleaned_data['topic']
+            comment.tags = form.cleaned_data['tags']
+            if form.cleaned_data['newtag']:
+                newtag = Tag.objects.get_or_create(name=form.cleaned_data['newtag'])[0]
+                newtag.save()
+                comment.tags.add(newtag)
+
+            comment.topics = [Topic.objects.get(title=topic)]
+            comment.save()
+            form = CommentSubmitForm() # successfully submitted, give them a new form
+    
+    else: form = CommentSubmitForm()
     template_dict = {}
 
     topics = Topic.objects.all()[:5] # Will want to filter, order in later versions
 
     template_dict['topics'] = topics
-    template_dict['comment_form'] = CommentSubmitForm()
+    template_dict['comment_form'] = form
     template_dict.update(csrf(request))
 
     return render_to_response('frontpage.html', template_dict)
