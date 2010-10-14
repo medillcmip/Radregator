@@ -48,7 +48,7 @@ def doLogin(username,password,request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            return HttpResponseRedirect('index')
+            return HttpResponseRedirect('frontpage')
             # Redirect to a success page.
         else:
             # Return a 'disabled account' error message
@@ -65,13 +65,14 @@ def auth(request):
     The password becomes the facebook id, b/c no one should ever have to enter it and the authenication on for our django site is a formality since facebook verified the user
     if that cookie exists and a django user does, we move them to the site
     if no cookie exists, we move them onto the login page"""
-
+    if request.user.is_authenticated():    
+        return HttpResponseRedirect('frontpage')
     user = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
     if user:
         #user has a FB account and we need to see if they have been registered in our db
         ouruser =  models.UserProfile.objects.filter(facebook_user_id=user['uid'])
         if ouruser:
-            return HttpResponseRedirect('index')
+            return HttpResponseRedirect('frontpage')
         else:#they're not, so we need to create them and move em along
             graph = GraphAPI(user['access_token'])
             profile = graph.get_object("me")
@@ -94,6 +95,7 @@ def weblogin(request):
 
     template_dict = {}
     template_dict['fb_app_id']=settings.FB_API_ID
+    template_dict['auth_page']='authenticate'
     fbuser = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
     if fbuser:
         #the user hit this page again after using the FB signin link, move em to auth
