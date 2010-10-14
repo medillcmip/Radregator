@@ -8,7 +8,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Example:
     # (r'^newsqa/', include('newsqa.foo.urls')),
-    (r'^$', 'radregator.core.views.index'),
+    (r'^$', 'radregator.core.views.frontpage'),
 
     (r'^login', 'radregator.core.views.login'),
     (r'^frontpage', 'radregator.core.views.frontpage'),

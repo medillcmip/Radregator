@@ -19,14 +19,9 @@ def frontpage(request):
     template_dict['comment_form'] = CommentSubmitForm()
 
     return render_to_response('frontpage.html', template_dict)
-
-
-
-
     
-    return render_to_response('frontpage.html', template_dict)
 def index(request):
-    """Default view."""
+    """Really basic default view."""
     template_dict = {}
 
     return render_to_response('index.html', template_dict)
