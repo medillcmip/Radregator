@@ -32,6 +32,12 @@
 				var parent = $(this).closest("form").attr("id");
 				$("#"+parent+" .flipquestorcon").html(dropval);
 			});
+
+            // Switch tab, toggle topic setting
+            $('.switchtab').click(function() {
+                var txt = $(this).html();
+                $("#topicname").attr("value", txt);
+            });
 			
 			// Registration/Login Overlay
 			// $("a.colorbox").colorbox();

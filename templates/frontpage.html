@@ -12,24 +12,24 @@
 	</div>	
 	
 	<ul class="tabs">
-		{% for topic in topics %}
-			<li><a href="#">{{ topic.title }}</a></li>
+		{% for topic in topics.all %}
+			<li><a href="#" class="switchtab">{{ topic.title }}</a></li>
 		{% endfor %}
 	</ul>
 	
 	<div class="panes">
 	
-	{% for topic in topics %}
+	{% for thetopic in topics.all %}
 	<div>
-		<h2>{{ topic.title }}</h2>
+		<h2>{{ thetopic.title }}</h2>
 		
-		<p>{{ topic.summary }}</p>
+		<p>{{ thetopic.summary.text }}</p>
 			
 		<h4>Local Coverage</h4>
 		
 		
 		<ul class="coverage">
-		{% for article in Articles %}
+		{% for article in thetopic.articles.all %}
 			<li>
 				<a href="{{ article.url }}">{{ article.title }}</a>
 			</li>
@@ -42,7 +42,7 @@
 			
 	<h2>Recent Questions & Concerns</h2>
 		<ul class="recentquestcons">
-			{% for comment in topic.comments %}
+			{% for comment in thetopic.comments.all %}
 				<li>
 					<p class="bbq">{{ comment.text }}</p>
 					<p class="chef">by <span>{{ comment.user }}</span>

@@ -4,12 +4,20 @@ from django.conf import settings
 from fbapi.facebook import *
 from models import Topic
 from radregator.core.forms import CommentSubmitForm
+from django.core.context_processors import csrf
 
 def frontpage(request):
     """ Front page demo"""
 
     if request.method == 'POST':
-        pass
+        
+        form = CommentSubmitForm(request.POST)
+        if form.is_valid():
+            comment = model.save(commit = False)
+            comment.user = UserProfile.get(user=request.user)
+            comment.topics += request.POST['topic']
+            comment.save()
+            comment.save_m2m()
 
     template_dict = {}
 
@@ -17,6 +25,7 @@ def frontpage(request):
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = CommentSubmitForm()
+    template_dict.update(csrf(request))
 
     return render_to_response('frontpage.html', template_dict)
     

@@ -1,22 +1,18 @@
 		<form action="" method="post" class="questionform" id="<!--UniqueID-->">
-			<label for="questorcon">I have a
-				<select class="questorcon" name="questorcon" id="questorcon">
-					<option value="question">Question</option>
-					<option value="concern">Concern</option>
-				</select> :
-			</label>
+		<label for="questorcon">
+            {{comment_form.comment_type.label}}
+        {{comment_form.comment_type}}:	
+        </label>
+        <br>
+        
+        {{comment_form.text}}
 			
-			<input type="text" class="conquest" name="conquest" />
-			
-			<br><label for="about" class="questbump">This <span class="flipquestorcon">question</span> is about:</label>
+			<br><label for="about" class="questbump"></label>This <span class="flipquestorcon">question</span> is about:
 		
-			<ul class="tags">
-				<li><input type="checkbox" name="tag" value="topic1" checked disabled><!--TOPIC TAG/TITLE--></li>
-				<li><input type="checkbox" name="tag2" value="topic1"><!--TAG--></li>
-				<li><input type="checkbox" name="tag3" value="topic1"><!--TAG--></li>
-				<li><input type="checkbox" name="<!--USERTAG-->" value="topic1"> <input type="text" name="usertag" class="<!--TAG-->" value="(choose your own)"/></li>
-				
-			</ul>
+            {{comment_form.tags}}
+            <input type = "checkbox"> {{comment_form.newtag}} </input>
+            <input type="hidden" id="topicname" name="topic" value="topic" value="Libraries"> </input>
 			<input type="submit" name="submit" class="submit" value="Submit" />
+            {% csrf_token %}
 			
 		</form>
