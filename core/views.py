@@ -13,7 +13,7 @@ def frontpage(request):
 
     template_dict = {}
 
-    topics = Topics.objects.all()[:5] # Will want to filter, order in later versions
+    topics = Topic.objects.all()[:5] # Will want to filter, order in later versions
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = CommentSubmitForm()
