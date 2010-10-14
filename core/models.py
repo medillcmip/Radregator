@@ -59,15 +59,16 @@ class Comment(models.Model):
        comment_type: Question, concern, respsonse ...
        topics: Topics to which this comment relates."""
     text = models.TextField()
-    user = models.ForeignKey(UserProfile)
+    user = models.ForeignKey(UserProfile, related_name="comments")
     tags = models.ManyToManyField(Tag, null=True, blank=True) 
     related = models.ManyToManyField("self", through="CommentRelation", 
                                      symmetrical=False, null=True)
     sites = models.ManyToManyField(Site, blank=True)
     comment_type = models.ForeignKey("CommentType")
     topics = models.ManyToManyField("Topic", blank=True, related_name = 'comments')
-    responses = models.ManyToManyField("UserProfile", through="CommentResponses", 
-                                       symmetrical=False, null=True)
+    responses = models.ManyToManyField(UserProfile, through="CommentResponse", 
+                                       symmetrical=False, null=True,
+                                       related_name="responses")
 
     def __unicode__(self):
         return self.text[:80]
