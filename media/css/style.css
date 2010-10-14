@@ -1,0 +1,281 @@
+/* CSS RESET
+------------------------------------------------------------*/
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td { 
+	margin:0;
+	padding:0;
+}
+table {
+	border-collapse:collapse;
+	border-spacing:0;
+}
+fieldset,img { 
+	border:0;
+}
+address,caption,cite,code,dfn,em,strong,th,var {
+	font-style:normal;
+	font-weight:normal;
+}
+ol,ul {
+	list-style:none;
+}
+caption,th {
+	text-align:left;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-size:100%;
+	font-weight:normal;
+}
+q:before,q:after {
+	content:'';
+}
+abbr,acronym { border:0;
+}
+
+/* SITE STRUCTURE/STYLE
+------------------------------------------------------------*/
+
+#pagewrap {
+	width: 960px;
+	margin: auto;
+}
+
+#header {
+	width: 960px;
+	height: 110x;
+	padding: 15px 0 ;
+}
+
+#header h1 {
+	width: 300px;
+	height: 110px;
+	background: #ccc;
+	line-height: 110px;
+	text-align: center;
+}
+
+#header h1 a {
+	color: #fff;
+	text-decoration: none;
+}
+
+div.reglog {
+	width: 200px;
+	margin-right: 30px;
+	height: 110px;
+	float: right;
+	line-height: 110px;
+	text-align: center;
+}
+
+div#introblurb {
+	width:700px;
+	margin: 40px auto 60px auto;
+	text-align: justify;
+}
+
+div#introblurb h3 {
+	font-size: 2em;
+}
+
+ul.tabs {
+	width: 960px;
+	height: 32px;
+}
+
+ul.tabs li {
+	width: 180px;
+	float: left;
+	height: 32px;
+	margin-right: 10px;
+	position: relative;
+	top: 1px;
+}
+
+ul.tabs li a {
+	width: 150px;
+	height: 16px;
+	padding: 7px 15px;
+	text-align: center;
+	border: 1px solid #aaa;
+	z-index: 1000;
+	line-height: 16px;
+	display: block;
+	font-size: 14px;
+	background: #fff;
+}
+
+ul.tabs li a.current {
+	border-bottom: 1px solid #fff;
+}
+
+div.panes {
+	border: 1px solid #aaa;
+	z-index: 1;
+	padding: 40px 40px 30px 40px;
+	margin-bottom: 40px;
+	
+}
+
+div.panes h2 {
+	font-size: 1.8em;
+	margin-left: 10px;
+}
+
+div.panes p {
+	margin: 15px 0 20px 0;
+	margin-left: 10px;
+}
+
+div.panes h4 {
+	font-size: 1.3em;
+	margin-left: 10px;
+}
+
+div.panes ul.coverage {
+	width: 888px;
+	margin: 8px 22px 65px 10px;
+	height: 60px;
+}
+
+div.panes ul.coverage li {
+	width: 266px;
+	margin-right: 20px;
+	float: left;
+}
+
+div.panes ul.coverage li span.storythumb {
+	display: block;
+	float: left;
+	text-align: center;
+	font-size: 0.8em;
+	width: 60px;
+	height: 60px;
+	line-height:60px;
+	background: #aaa;
+	color: #fff;
+	margin-right: 8px;
+}
+
+/* FORM */
+
+form.questionform {
+	display: block;
+	width: 600px;
+	height: auto;
+	overflow: auto;
+	padding-bottom: 10px;
+	overflow:visible;
+	margin: auto auto 50px auto;
+}
+
+form.questionform label {
+	font-size: 1.7em;
+	clear: both;
+	margin-bottom: 7px;
+	line-height: 1.7em;
+}
+
+form.questionform label select.questorcon {
+	font-size: .6em;
+	width: 150px;
+	margin-bottom: 7px;
+}
+
+form.questionform input.conquest {
+	font-size: 1.5em;
+	width: 580px;
+	height: 40px;
+	line-height: 40px;
+	padding: 5px;
+	margin-bottom: 17px;
+}
+
+form.questionform label.questbump {
+	margin-bottom: 15px;
+}
+
+form.questionform ul.tags {
+	width: 600px;
+	height: 25px;
+}
+
+form.questionform ul.tags li {
+	width: 150px;
+	height: 25px;
+	line-height: 25px;
+	float: left;
+}
+
+form.questionform .submit {
+	margin: 30px auto 10px auto;
+	font-size: 1.5em;
+	display: block;
+}
+
+form.questionform .tag4 {
+	width:120px;
+}
+
+
+
+/*QUESTION GRID*/
+ul.recentquestcons p {
+	margin: 0;
+}
+
+ul.recentquestcons {
+	height: auto;
+	overflow: auto;
+	padding-bottom: 20px;
+	margin-left: 10px;
+}
+
+ul.recentquestcons li {
+	height: 80px;
+	border: 1px solid #aaa;
+	margin-bottom: 10px;
+	padding:10px 10px 10px 20px;
+}
+
+ul.recentquestcons li p.bbq {
+	line-height: 80px;
+	font-size: 1.3em;
+	float: left;
+}
+
+ul.recentquestcons li p.chef {
+	line-height: 80px;
+	font-size: 1em;
+	margin-left: 10px;
+	float: left;
+}
+
+ul.recentquestcons li p.agrees {
+	font-size: 1.4em;
+	float: right;
+	text-align: center;
+	width: 80px;
+	height: 60px;
+	padding-top: 20px;
+}
+
+ul.recentquestcons li p.agrees span {
+	display: block;
+	text-align: center;
+	font-size: 0.7em;
+}
+
+ul.recentquestcons li a.youagree {
+	float: right;
+	display: block;
+	font-size: 1em;
+	line-height: 80px;
+	height: 80px;
+	width: 100px;
+	text-align: center;
+}
+
+div.moreline {
+	text-align: right;
+}

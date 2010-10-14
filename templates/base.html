@@ -1,15 +1,64 @@
-<html>
-   <head>
-   {% block styles %}
-   {% endblock %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+ 
+	<title>Radregator || {% block pagetitle %}Home{% endblock %}</title> 
+ 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" /> 
+	<meta http-equiv="content-style-type" content="text/css" /> 
+ 
+	<meta name="description" content="" /> 
+	<meta name="keywords" content="" /> 
+	<meta name="author" content="A.Paley" /> 
+	<meta name="copyright" content="" /> 
+	<meta name="robots" content="all,follow" />	
+	<meta name="viewport" content="width=960" /> 
+	
+	<link href="/static/css/style.css" rel="stylesheet" type="text/css" /> 
+	
+	
+	<script src="/static/js/jquery.tools.min.js"></script>
+	<!--<script src="/js/jquery.colorbox-min.js"></script>-->
+ 
+	<script type="text/javascript"> 
+	
+  		$(document).ready(function() {
+  			// Handle tabs
+  			$("ul.tabs").tabs("div.panes > div");
+  
+  			// Flip "Question/Concern"
+  			$('.questorcon').change(function() {
+				var dropval = $(this).val();
+				var parent = $(this).closest("form").attr("id");
+				$("#"+parent+" .flipquestorcon").html(dropval);
+			});
+			
+			// Registration/Login Overlay
+			// $("a.colorbox").colorbox();
 
-   <script type="text/javascript" src="/static/js/jquery-1.4.2.min.js"></script>
-
-   {% block scripts %}
-   {% endblock %}
-   </head>
+  		});
+  		
+	</script> 
+	
+	{% block addscripts %}
+   	{% endblock addscripts %}
+ 
+</head> 
 
    <body>
+   
+   <div id="header">
+		<div class="reglog">
+			<a class="cbox" href="user.php?register=true">Register</a> or <a href="user.php?login=true">Log in</a>
+		</div>
+		
+		<h1><a href="#" id="logo">Logo</a></h1>
+	</div>
+
+   
+   {% block body %}
+   {% endblock body %}
+   
    </body>
 
 </html>
