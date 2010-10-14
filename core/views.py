@@ -7,9 +7,26 @@ from django.core.urlresolvers import reverse
 from radregator.users import models
 from django.contrib.auth import authenticate, login, logout
 
+from models import Topic
+from radregator.core.forms import CommentSubmitForm
 
+def frontpage(request):
+    """ Front page demo"""
+
+    if request.method == 'POST':
+        pass
+
+    template_dict = {}
+
+    topics = Topic.objects.all()[:5] # Will want to filter, order in later versions
+
+    template_dict['topics'] = topics
+    template_dict['comment_form'] = CommentSubmitForm()
+
+    return render_to_response('frontpage.html', template_dict)
+    
 def index(request):
-    """Default view."""
+    """Really basic default view."""
     template_dict = {}
 
     return render_to_response('index.html', template_dict)

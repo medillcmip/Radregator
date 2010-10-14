@@ -24,6 +24,9 @@ class Topic(models.Model):
 
        Fields:
 
+       short_title: A shortened, space-replaced, weird character cleaned 
+                    version of the title.  This will get used in the URL
+                    paths to views related to a given topic.
        topic_tags: Content with any of these tags can get pulled into a topic 
                    view.
        curators: Users who have priveleges to update this topic.
@@ -31,6 +34,7 @@ class Topic(models.Model):
                 by one of the curators.
        articles: Articles (probably recent ones) to display on the front page, selected by curators. Probably ancestors of timeline."""
     title = models.CharField(max_length=80, unique = True) 
+    short_title = models.Charfield(max_length=80, unique=True)
     summary = models.ForeignKey(Summary)
     topic_tags = models.ManyToManyField(Tag, null=True, blank=True) 
     curators = models.ManyToManyField(UserProfile)
@@ -60,7 +64,7 @@ class Comment(models.Model):
     related = models.ManyToManyField("self", through="CommentRelation", symmetrical=False, null=True)
     sites = models.ManyToManyField(Site, blank=True)
     comment_type = models.ForeignKey("CommentType")
-    topics = models.ManyToManyField("Topic", blank=True)
+    topics = models.ManyToManyField("Topic", blank=True, related_name = 'comments')
 
     def __unicode__(self):
         return self.text[:80]
