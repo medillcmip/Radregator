@@ -24,7 +24,7 @@ class Topic(models.Model):
 
        Fields:
 
-       short_title: A shortened, space-replaced, weird character cleaned 
+       slug: A shortened, space-replaced, weird character cleaned 
                     version of the title.  This will get used in the URL
                     paths to views related to a given topic.
        topic_tags: Content with any of these tags can get pulled into a topic 
@@ -34,7 +34,7 @@ class Topic(models.Model):
                 by one of the curators.
        articles: Articles (probably recent ones) to display on the front page, selected by curators. Probably ancestors of timeline."""
     title = models.CharField(max_length=80, unique = True) 
-    short_title = models.SlugField(unique = True)
+    slug = models.SlugField(unique = True)
     summary = models.ForeignKey(Summary)
     topic_tags = models.ManyToManyField(Tag, null=True, blank=True) 
     curators = models.ManyToManyField(UserProfile)
