@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.core.paginator import Paginator
 from fbapi.facebook import *
 from models import Topic
 from radregator.core.forms import CommentSubmitForm
@@ -36,3 +37,7 @@ def login(request):
         friends = graph.get_connections("me", "friends")
         template_dict['fb_friends'] = friends['data']
     return render_to_response('login.html',template_dict)
+
+def api_topic_comments(request, output_format="json", topic, page=1):
+    # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
+    pass
