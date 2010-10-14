@@ -34,7 +34,7 @@ class Topic(models.Model):
                 by one of the curators.
        articles: Articles (probably recent ones) to display on the front page, selected by curators. Probably ancestors of timeline."""
     title = models.CharField(max_length=80, unique = True) 
-    short_title = models.Charfield(max_length=80, unique=True)
+    short_title = models.CharField(max_length=80, unique=True)
     summary = models.ForeignKey(Summary)
     topic_tags = models.ManyToManyField(Tag, null=True, blank=True) 
     curators = models.ManyToManyField(UserProfile)
