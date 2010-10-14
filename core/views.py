@@ -63,7 +63,7 @@ def doLogin(username,password,request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            return HttpResponseRedirect('frontpage')
+            return HttpResponseRedirect('/')
             # Redirect to a success page.
         else:
             # Return a 'disabled account' error message
@@ -87,13 +87,13 @@ def auth(request):
     have two unique accounts with no bridge.  
     """
     if request.user.is_authenticated():    
-        return HttpResponseRedirect('frontpage')
+        return HttpResponseRedirect('/')
     user = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
     if user:
         #user has a FB account and we need to see if they have been registered in our db
         ouruser =  models.UserProfile.objects.filter(facebook_user_id=user['uid'])
         if ouruser:
-            return HttpResponseRedirect('frontpage')
+            return HttpResponseRedirect('/')
         else:#they're not, so we need to create them and move em along
             graph = GraphAPI(user['access_token'])
             profile = graph.get_object("me")
