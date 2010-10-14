@@ -158,6 +158,6 @@ def register(request):
             newuser.save()
             return doLogin(fUsername,fPass,request)
 
-def api_topic_comments(request, output_format="json", topic, page=1):
+#def api_topic_comments(request, output_format="json",topic, page=1):
     # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
-    pass
+#    pass
