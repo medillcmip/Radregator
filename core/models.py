@@ -34,7 +34,7 @@ class Topic(models.Model):
                 by one of the curators.
        articles: Articles (probably recent ones) to display on the front page, selected by curators. Probably ancestors of timeline."""
     title = models.CharField(max_length=80, unique = True) 
-    short_title = models.Charfield(max_length=80, unique=True)
+    short_title = models.SlugField(unique = True)
     summary = models.ForeignKey(Summary)
     topic_tags = models.ManyToManyField(Tag, null=True, blank=True) 
     curators = models.ManyToManyField(UserProfile)
@@ -61,10 +61,13 @@ class Comment(models.Model):
     text = models.TextField()
     user = models.ForeignKey(UserProfile)
     tags = models.ManyToManyField(Tag, null=True, blank=True) 
-    related = models.ManyToManyField("self", through="CommentRelation", symmetrical=False, null=True)
+    related = models.ManyToManyField("self", through="CommentRelation", 
+                                     symmetrical=False, null=True)
     sites = models.ManyToManyField(Site, blank=True)
     comment_type = models.ForeignKey("CommentType")
     topics = models.ManyToManyField("Topic", blank=True, related_name = 'comments')
+    responses = models.ManyToManyField("UserProfile", through="CommentResponses", 
+                                       symmetrical=False, null=True)
 
     def __unicode__(self):
         return self.text[:80]
@@ -85,3 +88,21 @@ class CommentRelation(models.Model):
     right_comment = models.ForeignKey(Comment, related_name='+')
     # Don't need to create an inverse relation
     relation_type = models.CharField(max_length=15)
+
+class CommentResponse(models.Model):
+    """User response to a comment.
+
+       These are responses that are not other comments.  This will
+       implement the 'I also have this question' or 'I share this concern'
+       functionality.  You can think of it as implementing Facebook 'like'
+       style features."""
+
+    COMMENT_RESPONSE_CHOICES = (
+        ('share', 'I share this concern'),
+        ('have', 'I have this question'),
+        ('like', 'I like this'),
+    )
+
+    comment = models.ForeignKey(Comment)
+    user = models.ForeignKey(UserProfile)
+    type = models.CharField(max_length=20, choices=COMMENT_RESPONSE_CHOICES)
