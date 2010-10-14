@@ -6,29 +6,50 @@
   </head>
   <body>
     <h1>radregator</h1>
+    Login via site credentials<br> 
+    <!-- BEGIN FORM -->
+    <form method="POST" action="login">
+    <!-- BEGIN USERNAME -->
+    <p>
+    <label class="text">Username</label>
+    <input type="text" id="headline" name="fUsername" class="text"/>
+    </p>
+    <!-- END USERNAME -->
+
+    <!-- BEGIN PASSWORD -->
+    <p>
+    <label class="text">Password</label>
+    <input type="password" id="password" name="fPassword" class="text"/>
+    </p>
+    <!-- END PASSWORD -->
+
+    <input type="hidden" name="process" value="1"/>
+     {% csrf_token %}
+    <input type="submit" class="btn" value="Go!" />
+
+    </form>
+    <br>OR Login using Facebook<br>
     <p><fb:login-button autologoutlink="true"></fb:login-button></p>
-    <p><fb:like></fb:like></p>
 
     <div id="fb-root"></div>
-    <script>
-      window.fbAsyncInit = function() {
-        FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,
-                 xfbml: true});
-      };
-      (function() {
-        var e = document.createElement('script');
-        e.type = 'text/javascript';
-        e.src = 'http://connect.facebook.net/en_US/all.js';
-        e.async = true;
-        document.getElementById('fb-root').appendChild(e);
-      }());
-    </script>
-    <div id='fbfriends'>
-      {% for friend in fb_friends %}
+<!-- fb scripts need to appear after fb-root div so it exists before this block is executed FYI -->
+<!-- Probably want to move this into it's own page at some point so and include all logout logic on one page -->
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+<script>
 
-        {{friend.name}} 
-      {% endfor %}
-    </div>
+  FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,xfbml: true});
+  FB.Event.subscribe('auth.sessionChange', function(response) {
+    if (response.session) {
+      // A user has logged in, and a new cookie has been saved
+      location.href="/{{auth_page}}";
+    } else {
+      // The user has logged out, and the cookie has been cleared
+      alert('a user is out');
+    }
+  });
+</script>
+
+    <BR>Or, <a href="register">register to use the site</a>
   </body>
 </html>
 

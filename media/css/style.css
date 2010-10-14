@@ -191,6 +191,11 @@ form.questionform input.conquest {
 	margin-bottom: 17px;
 }
 
+form.questionform textarea {
+    rows: 10;
+    cols: 40;
+}
+
 form.questionform label.questbump {
 	margin-bottom: 15px;
 }
@@ -201,6 +206,12 @@ form.questionform ul.tags {
 }
 
 form.questionform ul.tags li {
+	width: 150px;
+	height: 25px;
+	line-height: 25px;
+	float: left;
+}
+form.questionform input.tags {
 	width: 150px;
 	height: 25px;
 	line-height: 25px;
