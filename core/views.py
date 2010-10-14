@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from radregator.users.models import UserProfile
+from radregator.users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
 from models import Topic,CommentType, Comment
@@ -91,7 +91,7 @@ def auth(request):
     user = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
     if user:
         #user has a FB account and we need to see if they have been registered in our db
-        ouruser =  models.UserProfile.objects.filter(facebook_user_id=user['uid'])
+        ouruser =  UserProfile.objects.filter(facebook_user_id=user['uid'])
         if ouruser:
             return HttpResponseRedirect('/')
         else:#they're not, so we need to create them and move em along
@@ -99,8 +99,8 @@ def auth(request):
             profile = graph.get_object("me")
             username=profile['first_name']+profile['last_name']
             password=profile['id']
-            baseuser = models.User.objects.create_user(username=username,password=password,email='na')
-            newuser = models.UserProfile(user=baseuser,facebook_user_id=profile['id'])
+            baseuser = User.objects.create_user(username=username,password=password,email='na')
+            newuser = UserProfile(user=baseuser,facebook_user_id=profile['id'])
             newuser.save()
             return doLogin(username,password,request)
     else:
@@ -146,15 +146,15 @@ def register(request):
         fUsername = request.POST.get('fUsername', '')
         fPass = request.POST.get('fPassword','')
         try:
-            baseuser = models.User.objects.get(username=fUsername)
+            baseuser = User.objects.get(username=fUsername)
             #TODO: adding some form of propagating exceptions for field checks
             #we have a user w this username already, throw them back to register page
             #TODO: some notification of the issue
             return render_to_response('register.html', template_dict,context_instance=RequestContext(request))
-        except models.User.DoesNotExist:
+        except User.DoesNotExist:
             #we're cool, proceed with creating a user
-            baseuser = models.User.objects.create_user(username=fUsername,password=fPass,email='na') 
-            newuser = models.UserProfile(user=baseuser)
+            baseuser = User.objects.create_user(username=fUsername,password=fPass,email='na') 
+            newuser = UserProfile(user=baseuser)
             newuser.save()
             return doLogin(fUsername,fPass,request)
 
