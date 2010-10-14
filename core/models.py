@@ -60,7 +60,7 @@ class Comment(models.Model):
     related = models.ManyToManyField("self", through="CommentRelation", symmetrical=False, null=True)
     sites = models.ManyToManyField(Site, blank=True)
     comment_type = models.ForeignKey("CommentType")
-    topics = models.ManyToManyField("Topic", blank=True)
+    topics = models.ManyToManyField("Topic", blank=True, related_name = 'comments')
 
     def __unicode__(self):
         return self.text[:80]
