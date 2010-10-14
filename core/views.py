@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.core.paginator import Paginator
 from fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -142,3 +143,7 @@ def register(request):
             newuser = models.UserProfile(user=baseuser)
             newuser.save()
             return doLogin(fUsername,fPass,request)
+
+def api_topic_comments(request, output_format="json", topic, page=1):
+    # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
+    pass
