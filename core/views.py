@@ -58,13 +58,19 @@ def doLogin(username,password,request):
         pass
 
 def auth(request):
-    """Facebook auth uses the Javascript SDK to authenticate in the browswer and it stocks a cookie
+    """
+    Facebook auth uses the Javascript SDK to authenticate in the browswer and it stocks a cookie
     The cookie is read on the server side in the **auth(request)** method
     * if that cookie exists and a django user doesn't, we create a django user and move them to the site
     **I set the username to be the first+last name to avoid spaces
     The password becomes the facebook id, b/c no one should ever have to enter it and the authenication on for our django site is a formality since facebook verified the user
     if that cookie exists and a django user does, we move them to the site
-    if no cookie exists, we move them onto the login page"""
+    if no cookie exists, we move them onto the login page
+    
+    NOTE: if a user has a django account there is no method for them to add a facebook account
+    if they decide to log in VIA facebook their prior account won't be merged, thus we 
+    have two unique accounts with no bridge.  
+    """
     if request.user.is_authenticated():    
         return HttpResponseRedirect('frontpage')
     user = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
