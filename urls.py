@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     (r'^$', 'radregator.core.views.index'),
 
     (r'^login', 'radregator.core.views.login'),
+    (r'^frontpage', 'radregator.core.views.frontpage'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
