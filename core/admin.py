@@ -10,6 +10,7 @@ class SummaryAdmin(admin.ModelAdmin):
     
 class TopicAdmin(admin.ModelAdmin):
     search_fields = ['curators__username', 'topic_tags__name', 'title']
+    prepopulated_fields = {"slug": ("title",)}
 
 class CommentAdmin(admin.ModelAdmin):
     search_fields = ['text', 'related__text', 'user__user__username', 'comment_type__name', 'tags__name']
