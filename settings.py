@@ -1,8 +1,6 @@
 # Django settings for radregator project.
 import os.path
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
