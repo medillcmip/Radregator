@@ -12,6 +12,7 @@ from models import Topic,CommentType, Comment
 from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm
 from django.core.context_processors import csrf
+from radregator.core.exceptions import UnknownOutputFormatException 
 
 def frontpage(request):
     """ Front page demo"""
@@ -161,6 +162,21 @@ def register(request):
             newuser.save()
             return doLogin(fUsername,fPass,request)
 
-#def api_topic_comments(request, output_format="json",topic, page=1):
+def api_topic_comments(request, output_format="json", topic_slug_or_id, page=1):
+    """Return a paginated list of comments for a particular topic. """
     # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
-#    pass
+   
+    # Right now we only support json as an output format
+    if output_format != 'json':
+        raise UnknownOutputFormatException("Unknown output format '%s'" % \
+                                          (output_format))
+
+    # topic_slug can either be a slug or an id
+    if topic_slug.isdigit():
+        # It's all numbers, so treat it as an id
+        pass
+    else:
+        # It's a slug
+    
+      
+
