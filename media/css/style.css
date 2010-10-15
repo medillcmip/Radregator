@@ -267,8 +267,8 @@ ul.recentquestcons li p.bbq {
 ul.recentquestcons li p.chef {
 	line-height: 80px;
 	font-size: 1em;
-	margin-left: 10px;
-	float: left;
+	margin-right: 15px;
+	float: right;
 }
 
 ul.recentquestcons li p.agrees {
