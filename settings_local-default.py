@@ -25,3 +25,20 @@ MEDIA_URL = ''
 FB_API_ID = ''
 FB_API_KEY = ''
 FB_SECRET_KEY = ''
+
+# If you need to add additional middleware (like using Firelogger)
+# Overwrite the MIDDLEWARE_CLASSES variable.  You should probably
+# copy over what's in settings.py`
+#MIDDLEWARE_CLASSES = (
+#    'django.middleware.common.CommonMiddleware',
+#    'django.contrib.sessions.middleware.SessionMiddleware',
+#    'django.middleware.csrf.CsrfViewMiddleware',
+#    'django.contrib.auth.middleware.AuthenticationMiddleware',
+#    'django.contrib.messages.middleware.MessageMiddleware',
+#)
+
+# Enable/disable console logging to Firebug using Firepython
+# http://firelogger.binaryage.com 
+ENABLE_FIREPYTHON=False
+if DEBUG and ENABLE_FIREPYTHON:
+    MIDDLEWARE_CLASSES += ('firepython.middleware.FirePythonDjango',)
