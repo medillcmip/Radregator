@@ -12,7 +12,9 @@ from models import Topic,CommentType, Comment
 from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm
 from django.core.context_processors import csrf
+from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormatException 
+from django.core import serializers
 
 def frontpage(request):
     """ Front page demo"""
@@ -162,21 +164,55 @@ def register(request):
             newuser.save()
             return doLogin(fUsername,fPass,request)
 
-def api_topic_comments(request, output_format="json", topic_slug_or_id, page=1):
+def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     """Return a paginated list of comments for a particular topic. """
     # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
-   
-    # Right now we only support json as an output format
-    if output_format != 'json':
-        raise UnknownOutputFormatException("Unknown output format '%s'" % \
-                                          (output_format))
 
-    # topic_slug can either be a slug or an id
-    if topic_slug.isdigit():
-        # It's all numbers, so treat it as an id
+    # TODO: Break this out into a setting somewhere?
+    ITEMS_PER_PAGE = 5 # Show 5 items per page
+
+    try:
+        # Right now we only support json as an output format
+        if output_format != 'json':
+            raise UnknownOutputFormatException("Unknown output format '%s'" % \
+                                              (output_format))
+
+        # topic_slug_or_id can either be a slug or an id
+        if topic_slug_or_id.isdigit():
+            # It's all numbers, so treat it as an id
+            topic = Topic.objects.get(pk=int(topic_slug_or_id))
+        else:
+            # It's a slug
+            topic = Topic.objects.get(slug=topic_slug_or_id) 
+
+        # Serialize the data
+        # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
+        # TODO: It might make sense to implement natural keys in order
+        # to pass through useful user data.
+        # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
+        comments = topic.comments.all()    
+        paginator = Paginator(comments, ITEMS_PER_PAGE)
+
+        # Make sure page request is an int.  If not deliver the first page.
+        try:
+            page_num = int(page)
+        except ValueError:
+            page_num = 1
+
+        # If page request (9999) is out of range, deliver last page of results.
+        try:
+            comments_page = paginator.page(page_num)
+        except (EmptyPage, InvalidPage):
+            comments_page = paginator.page(paginator.num_pages)
+
+        data = serializers.serialize('json', comments_page.object_list,
+                                     fields=('comment_type', 'text', 'user'))
+
+    except UnknownOutputFormatException:
         pass
-    else:
-        # It's a slug
-    
-      
+        # TODO: Handle this exception
+    except ObjectDoesNotExist:
+        pass
+        # TODO: Handle this exception
 
+    return HttpResponse(data, mimetype='application/json') 
