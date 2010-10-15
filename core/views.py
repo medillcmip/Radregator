@@ -18,34 +18,37 @@ def frontpage(request):
 
     if request.method == 'POST':
         
+        # If someone just submitted a comment, load the form
         form = CommentSubmitForm(request.POST)
         
         if form.is_valid():
-            comment_type = CommentType.objects.get(name=form.cleaned_data['comment_type_str'])
-            userprofile = UserProfile.objects.get(user = request.user)
+            # Validate the form
+            comment_type = CommentType.objects.get(name=form.cleaned_data['comment_type_str']) # look up comment by name
+            userprofile = UserProfile.objects.get(user = request.user) # Needs to handle failure, display error message
             comment = Comment(text = form.cleaned_data['text'], user = userprofile)
             comment.comment_type = comment_type
-            comment.save()
+            comment.save() # We have to save the comment object so it has a primary key, before we can link tags to it.
 
             topic = form.cleaned_data['topic']
             comment.tags = form.cleaned_data['tags']
             if form.cleaned_data['newtag']:
-                newtag = Tag.objects.get_or_create(name=form.cleaned_data['newtag'])[0]
+                newtag = Tag.objects.get_or_create(name=form.cleaned_data['newtag'])[0] 
+                # The [0] is because we get in indication if it's a new tag; we don't care, tho
                 newtag.save()
                 comment.tags.add(newtag)
 
-            comment.topics = [Topic.objects.get(title=topic)]
+            comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
             comment.save()
             form = CommentSubmitForm() # successfully submitted, give them a new form
     
-    else: form = CommentSubmitForm()
+    else: form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
     template_dict = {}
 
     topics = Topic.objects.all()[:5] # Will want to filter, order in later versions
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
-    template_dict.update(csrf(request))
+    template_dict.update(csrf(request)) # Required for csrf system
 
     return render_to_response('frontpage.html', template_dict)
     
