@@ -45,9 +45,10 @@
 			{% for comment in thetopic.comments.all %}
 				<li>
 					<p class="bbq">{{ comment.text }}</p>
+					
+					<a href="#" class="youagree">I concur</a>
+					<p class="agrees">0<span>concur</span></p>
 					<p class="chef">by <span>{{ comment.user }}</span>
-					<a href="#" class="youagree">I share this</a>
-					<p class="agrees">0<span>share this</span></p>
 				</li>
 			{% empty %}
     			<li><p class="bbq">This topic has no related questions, yet.</p></li>
