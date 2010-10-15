@@ -12,6 +12,8 @@ urlpatterns = patterns('',
 
     (r'^login', 'radregator.core.views.weblogin'),
 
+    (r'^logout', 'radregator.core.views.weblogout'),
+
     (r'^register', 'radregator.core.views.register'),
 
     (r'^authenticate', 'radregator.core.views.auth'),

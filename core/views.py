@@ -52,9 +52,8 @@ def frontpage(request):
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
     template_dict.update(csrf(request)) # Required for csrf system
-
-    return render_to_response('frontpage.html', template_dict)
-    
+    return render_to_response('frontpage.html', template_dict,context_instance=RequestContext(request))
+   
 def index(request):
     """Really basic default view."""
     template_dict = {}
@@ -62,9 +61,12 @@ def index(request):
     return render_to_response('index.html', template_dict)
 
 
-def doLogin(username,password,request):
+def do_login(username,password,request):
+    print username
+    print password
 
     user = authenticate(username=username, password=password)
+    print user
     
     if user is not None:
         if user.is_active:
@@ -81,10 +83,18 @@ def doLogin(username,password,request):
 def auth(request):
     """
     Facebook auth uses the Javascript SDK to authenticate in the browswer and it stocks a cookie
+
     The cookie is read on the server side in the **auth(request)** method
     * if that cookie exists and a django user doesn't, we create a django user and move them to the site
     **I set the username to be the first+last name to avoid spaces
-    The password becomes the facebook id, b/c no one should ever have to enter it and the authenication on for our django site is a formality since facebook verified the user
+
+    The password becomes the facebook id, b/c no one should ever have to enter it 
+    and the authenication on for our django site is a formality since facebook verified the user
+
+    NOTE: The login page, when the user clicks the sign in via FB button a JS callback
+    function is called and on successful logins it routes the browser to /authenticate
+    to run necessary checks
+
     if that cookie exists and a django user does, we move them to the site
     if no cookie exists, we move them onto the login page
     
@@ -97,10 +107,15 @@ def auth(request):
     user = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,settings.FB_SECRET_KEY )
     if user:
         #user has a FB account and we need to see if they have been registered in our db
-        ouruser =  UserProfile.objects.filter(facebook_user_id=user['uid'])
-        if ouruser:
+        try:
+            ouruser =  UserProfile.objects.get(facebook_user_id=user['uid'])
+            #we need to log the FB user in
+            #http://zcentric.com/2010/05/12/django-fix-for-user-object-has-no-attribute-backend/
+            ouruser.user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request,ouruser.user)
             return HttpResponseRedirect('/')
-        else:#they're not, so we need to create them and move em along
+        except UserProfile.DoesNotExist:
+            #they're not, so we need to create them and move em along
             graph = GraphAPI(user['access_token'])
             profile = graph.get_object("me")
             username=profile['first_name']+profile['last_name']
@@ -108,17 +123,27 @@ def auth(request):
             baseuser = User.objects.create_user(username=username,password=password,email='na')
             newuser = UserProfile(user=baseuser,facebook_user_id=profile['id'])
             newuser.save()
-            return doLogin(username,password,request)
+            return do_login(username,password,request)
     else:
        #no residual auth tokens found, move the user to login 
        return HttpResponseRedirect('login')
+def weblogout(request):
+    """
+    log a django user out
+    """
+    logout(request)
+    return HttpResponseRedirect('/')
+
 
 def weblogin(request):
-    """on the login page we can accept django username/password or they can use the facebook login button
+    """
+    on the login page we can accept django username/password or they can use the facebook login button
          if the user enters django credentials, we try to log them in in the** doLogin(username,password,request)**
          if the user hits the facebook login button, they move through facebooks authentication flow and end up back on the page
 
-     we have to check for the facebook cookie as we did in **auth(request)** and move them on (it should exist this time)"""
+     we have to check for the facebook cookie as we did in **auth(request)** and move them on (it should exist this time)
+
+    """
 
     template_dict = {}
     template_dict['fb_app_id']=settings.FB_API_ID
@@ -134,7 +159,8 @@ def weblogin(request):
         #the user choose our sign in and we need to validate
         fUsername = request.POST.get('fUsername','')
         fPass = request.POST.get('fPassword','')
-        return doLogin(fUsername, fPass, request)
+        print 'trying to sign in'
+        return do_login(fUsername, fPass, request)
 
 
 def register(request):
@@ -162,7 +188,7 @@ def register(request):
             baseuser = User.objects.create_user(username=fUsername,password=fPass,email='na') 
             newuser = UserProfile(user=baseuser)
             newuser.save()
-            return doLogin(fUsername,fPass,request)
+            return do_login(fUsername,fPass,request)
 
 def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     """Return a paginated list of comments for a particular topic. """
