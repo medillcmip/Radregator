@@ -10,11 +10,13 @@ urlpatterns = patterns('',
     # (r'^newsqa/', include('newsqa.foo.urls')),
     (r'^$', 'radregator.core.views.frontpage'),
 
-    (r'^login', 'radregator.core.views.weblogin'),
+    (r'^login', 'radregator.users.views.weblogin'),
 
-    (r'^register', 'radregator.core.views.register'),
+    (r'^logout', 'radregator.users.views.weblogout'),
 
-    (r'^authenticate', 'radregator.core.views.auth'),
+    (r'^register', 'radregator.users.views.register'),
+
+    (r'^authenticate', 'radregator.users.views.auth'),
 
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'radregator.core.views.api_topic_comments'),
 
