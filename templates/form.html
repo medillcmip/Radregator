@@ -8,10 +8,8 @@
         
         {{comment_form.text}}
 			
-			<br><label for="about" class="questbump">This <span class="flipquestorcon">question</span> is about:</label>
+			<br><label for="about" class="questbump"></label>
 		
-            {{comment_form.tags}} {{comment_form.tags.errors}}
-            <label for="newtag">New Tag:</label>{{comment_form.newtag}} 
             {{comment_form.topic}} {{comment_form.topic.errors}}
 			<input type="submit" name="submit" class="submit" value="Submit" />
             {% csrf_token %}
