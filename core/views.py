@@ -18,10 +18,27 @@ from django.core import serializers
 
 import logging
 
-log = logging.getLogger("radregator") 
+# Set up logging
+
+# create logger
+logger = logging.getLogger("radregator") 
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
 if settings.DEBUG:
-    # If we're in DEBUG mode, log DEBUG messages
-    log.setLevel(logging.DEBUG) 
+    # If we're in DEBUG mode, set log level to DEBUG
+    logger.setLevel(logging.DEBUG) 
 
 def frontpage(request):
     """ Front page demo"""
@@ -121,8 +138,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     return HttpResponse(data, mimetype='application/json') 
 
 def api_comment_concur(request, comment_id, output_format='json'):
-    #logging.debug("got here!")
-    log.debug("got here!")
+    logger.debug("got here!")
     data = ()
     return HttpResponse("")
     #return HttpResponse(data, mimetype='application/json')
