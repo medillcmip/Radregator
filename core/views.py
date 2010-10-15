@@ -206,11 +206,13 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
             comments_page = paginator.page(paginator.num_pages)
 
         data = serializers.serialize('json', comments_page.object_list,
-                                     fields=('comment_type', 'text', 'user'))
+                                     fields=('comment_type', 'text', 'user'),
+                                     use_natural_keys=True)
 
     except UnknownOutputFormatException:
         pass
         # TODO: Handle this exception
+        # QUESTION: What is the best way to return errors in JSON?
     except ObjectDoesNotExist:
         pass
         # TODO: Handle this exception

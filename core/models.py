@@ -73,12 +73,19 @@ class Comment(models.Model):
     def __unicode__(self):
         return self.text[:80]
 
+class CommentTypeManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 class CommentType(models.Model):
     """Type of comment, e.g. question, concern, answer ...  This is a separate
        class so we can easily add new types of comments."""
     name = models.CharField(max_length=15)
 
     def __unicode__(self):
+        return self.name
+
+    def natural_key(self):
         return self.name
 
 class CommentRelation(models.Model):
