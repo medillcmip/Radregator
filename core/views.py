@@ -16,6 +16,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormatException 
 from django.core import serializers
 
+import logging
+
+log = logging.getLogger("radregator") 
+if settings.DEBUG:
+    # If we're in DEBUG mode, log DEBUG messages
+    log.setLevel(logging.DEBUG) 
+
 def frontpage(request):
     """ Front page demo"""
 
@@ -218,3 +225,10 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
         # TODO: Handle this exception
 
     return HttpResponse(data, mimetype='application/json') 
+
+def api_comment_concur(request, comment_id, output_format='json'):
+    #logging.debug("got here!")
+    log.debug("got here!")
+    data = ()
+    return HttpResponse("")
+    #return HttpResponse(data, mimetype='application/json')
