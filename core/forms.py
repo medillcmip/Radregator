@@ -14,9 +14,9 @@ class CommentSubmitForm(forms.Form):
     Could switch comment_type_str to use a ModelChoiceField on CommentType.objects.all(). 
     It's difficult to make this a model form, though, because we have to add the user info back in after the form is submitted, 
     and handle the possibility of creating new tags, which means we can't just instantiate and go."""
-    comment_types = [ct.name for ct in CommentType.objects.all()]
+    comment_types = CommentType.objects.all()
 
-    comment_type_str = forms.ChoiceField(zip(comment_types,comment_types), label = 'I have a', widget = forms.Select(attrs = {'class' : 'questorcon'}))
+    comment_type_str = forms.ModelChoiceField(comment_types,label = 'I have a', widget = forms.Select(attrs = {'class' : 'questorcon'}), empty_label = None)
     text = forms.CharField(required=True, label = '', widget=forms.TextInput(attrs= {'class' : 'conquest', }))
     topic = forms.CharField(initial = Topic.objects.all()[0].title, widget=forms.widgets.HiddenInput(attrs = {'class' : 'topic'} ))
     

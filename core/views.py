@@ -20,14 +20,17 @@ def frontpage(request):
     """ Front page demo"""
 
     if request.method == 'POST':
+        if request.user.is_anonymous():
+            # This scenario should be handled more gracefully in JavaScript
+            return HttpResponseRedirect("/authenticate")
         
         # If someone just submitted a comment, load the form
         form = CommentSubmitForm(request.POST)
         
         if form.is_valid():
             # Validate the form
-            comment_type = CommentType.objects.get(name=form.cleaned_data['comment_type_str']) # look up comment by name
-            userprofile = UserProfile.objects.get(user = request.user) # Needs to handle failure, display error message
+            comment_type = form.cleaned_data['comment_type_str'] # look up comment by name
+            userprofile = UserProfile.objects.get(user = request.user) # Assumes consistency between users, UserProfiles
             comment = Comment(text = form.cleaned_data['text'], user = userprofile)
             comment.comment_type = comment_type
             comment.save() # We have to save the comment object so it has a primary key, before we can link tags to it.
