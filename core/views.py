@@ -33,12 +33,6 @@ def frontpage(request):
             comment.save() # We have to save the comment object so it has a primary key, before we can link tags to it.
 
             topic = form.cleaned_data['topic']
-            comment.tags = form.cleaned_data['tags']
-            if form.cleaned_data['newtag']:
-                newtag = Tag.objects.get_or_create(name=form.cleaned_data['newtag'])[0] 
-                # The [0] is because we get in indication if it's a new tag; we don't care, tho
-                newtag.save()
-                comment.tags.add(newtag)
 
             comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
             comment.save()
