@@ -52,19 +52,20 @@
 </head> 
 
    <body>
-   
-   <div id="header">
-		<div class="reglog">
-			<a class="cbox" href="user.php?register=true">Register</a> or <a href="user.php?login=true">Log in</a>
-		</div>
+	   <div id="pagewrap">
+		   <div id="header">
+				<div class="reglog">
+					<a class="cbox" href="user.php?register=true">Register</a> or <a href="user.php?login=true">Log in</a>
+				</div>
+				
+				<h1><a href="#" id="logo">Logo</a></h1>
+			</div>
 		
-		<h1><a href="#" id="logo">Logo</a></h1>
-	</div>
-
-   
-   {% block body %}
-   {% endblock body %}
-   
+		   
+		   {% block body %}
+		   {% endblock body %}
+		   
+	   </div>
    </body>
 
 </html>

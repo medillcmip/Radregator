@@ -169,7 +169,7 @@ form.questionform {
 	margin: auto auto 50px auto;
 }
 
-form.questionform label {
+form.questionform > label {
 	font-size: 1.7em;
 	clear: both;
 	margin-bottom: 7px;
@@ -200,23 +200,30 @@ form.questionform label.questbump {
 	margin-bottom: 15px;
 }
 
-form.questionform ul.tags {
+form.questionform ul {
 	width: 600px;
 	height: 25px;
 }
 
-form.questionform ul.tags li {
+form.questionform ul li {
 	width: 150px;
 	height: 25px;
 	line-height: 25px;
 	float: left;
 }
+
+form.questionform ul li label {
+
+}
+
 form.questionform input.tags {
-	width: 150px;
-	height: 25px;
+	/* width: 250px;
+	height: 25px; */
 	line-height: 25px;
+	margin-right:5px;
 	float: left;
 }
+
 
 form.questionform .submit {
 	margin: 30px auto 10px auto;
@@ -251,8 +258,10 @@ ul.recentquestcons li {
 
 ul.recentquestcons li p.bbq {
 	line-height: 80px;
-	font-size: 1.3em;
+	font-size: 1.15em;
+	width:500px;
 	float: left;
+	overflow:hidden;
 }
 
 ul.recentquestcons li p.chef {
