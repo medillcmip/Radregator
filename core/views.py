@@ -138,7 +138,20 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     return HttpResponse(data, mimetype='application/json') 
 
 def api_comment_concur(request, comment_id, output_format='json'):
-    logger.debug("got here!")
+    if request.method == 'POST':
+        user_id = request.session.get('_auth_user_id', False)
+
+        if user_id: 
+            # User is logged in
+        else:
+            pass
+            # TODO: Handle the case when a user who isn't logged in tries
+            # to comment.
+
+    else:
+        # TODO: Handle when someone accesses this by a post
+        pass
+
     data = ()
     return HttpResponse("")
     #return HttpResponse(data, mimetype='application/json')
