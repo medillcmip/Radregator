@@ -148,7 +148,8 @@ def api_comment_responses(request, comment_id, output_format='json',
        Method: POST
        URI: /api/json/comments/1/responses/
        Request data: {"type":"concur"}
-       Return data: {"uri": "/api/json/comments/1/responses/1/"} 
+       Response code: 201 Created
+       Response data: {"uri": "/api/json/comments/1/responses/1/"} 
        
     """
 
@@ -177,11 +178,13 @@ def api_comment_responses(request, comment_id, output_format='json',
 
                 # TODO: Check if user has already responded
 
-                comment_response = CommentResponse(user=user, comment=comment, type=request_data['type']) 
+                comment_response = CommentResponse(user=user, comment=comment, \
+                                                   type=request_data['type']) 
                 comment_response.save()
 
                 status = 201
-                data['uri'] = "/api/%s/comments/%s/responses/%s/" % (output_format, comment_id, comment_response.id)
+                data['uri'] = "/api/%s/comments/%s/responses/%s/" % \
+                              (output_format, comment_id, comment_response.id)
                     
             elif request.method == 'PUT':
                 pass
@@ -191,11 +194,15 @@ def api_comment_responses(request, comment_id, output_format='json',
                 # GET 
                 pass
         else:
-            pass
+            # Non-AJAX request.  Disallow for now.
+            raise NonAjaxRequest("Remote API calls aren't allowed right now.  This might change some day.")
 
     except ObjectDoesNotExist:
         # TODO: Handle this exception
         pass
+    except NonAjaxRequest, e:
+        status = 403 # Forbidden
+        data['error'] = e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
