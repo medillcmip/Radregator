@@ -147,7 +147,10 @@ def api_comment_responses(request, comment_id, output_format='json',
        Create a new concur response
        Method: POST
        URI: /api/json/comments/1/responses/
-       Data: {"type":"concur"}"""
+       Request data: {"type":"concur"}
+       Return data: {"uri": "/api/json/comments/1/responses/1/"} 
+       
+    """
 
     data = {}
     status=200 # Be optimistic
@@ -158,7 +161,7 @@ def api_comment_responses(request, comment_id, output_format='json',
 
             if user_id: 
                 # User is logged in, get the user object
-                user = User.objects.get(id = user_id)
+                user = UserProfile.objects.get(user__id = user_id)
             else:
                 pass
                 # TODO: Handle the case when a user who isn't logged in tries
