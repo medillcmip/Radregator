@@ -67,7 +67,7 @@ class Comment(models.Model):
     sites = models.ManyToManyField(Site, blank=True)
     comment_type = models.ForeignKey("CommentType")
     topics = models.ManyToManyField("Topic", blank=True, related_name = 'comments')
-    responses = models.ManyToManyField(User, through="CommentResponse", 
+    responses = models.ManyToManyField(UserProfile, through="CommentResponse", 
                                        symmetrical=False, null=True,
                                        related_name="responses")
 
@@ -114,7 +114,7 @@ class CommentResponse(models.Model):
     )
 
     comment = models.ForeignKey(Comment)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(UserProfile)
     type = models.CharField(max_length=20, choices=COMMENT_RESPONSE_CHOICES)
 
     def __unicode__(self):
