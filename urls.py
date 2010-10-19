@@ -18,6 +18,8 @@ urlpatterns = patterns('',
 
     (r'^authenticate', 'radregator.users.views.auth'),
 
+    (r'^disabled_act', 'radregator.users.views.disabled_act'),
+
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'radregator.core.views.api_topic_comments'),
 
     (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/concur/$',
