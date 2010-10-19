@@ -39,6 +39,7 @@ class Topic(models.Model):
     topic_tags = models.ManyToManyField(Tag, null=True, blank=True) 
     curators = models.ManyToManyField(UserProfile)
     articles = models.ManyToManyField(Article, blank=True)
+    is_deleted = models.BooleanField(default = False)
 
     def __unicode__(self):
         return self.title
@@ -57,9 +58,16 @@ class Comment(models.Model):
               sharing content between multiple sites, e.g. a Chicago
               election site and an Evanston local news site.
        comment_type: Question, concern, respsonse ...
-       topics: Topics to which this comment relates."""
+       topics: Topics to which this comment relates.
+       sources: different from a comment you own; these are comments you're associated with
+       where that user may not even be an active user in the database. We'll set to is_active=False, to 
+       reflect, e.g., MOS interviews. Will set up claiming process so these users can BECOME active by entering contact
+       info, etc.
+       is_parent: after several comments are merged, one becomes the parent. By default, this is the only one shown. Defaults
+       to true, since comment is assumed to be its own parent when it's independent/visible."""
     text = models.TextField()
     user = models.ForeignKey(UserProfile, related_name="comments")
+    sources = models.ManyToManyField(UserProfile, related_name = "sourced_comments", blank=True)
     tags = models.ManyToManyField(Tag, null=True, blank=True) 
     related = models.ManyToManyField("self", through="CommentRelation", 
                                      symmetrical=False, null=True)
@@ -69,6 +77,8 @@ class Comment(models.Model):
     responses = models.ManyToManyField(UserProfile, through="CommentResponse", 
                                        symmetrical=False, null=True,
                                        related_name="responses")
+    is_parent = models.BooleanField(default = True)
+    is_deleted = models.BooleanField(default = False)
 
     def __unicode__(self):
         return self.text[:80]

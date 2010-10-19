@@ -10,11 +10,12 @@ from django.contrib.auth import authenticate, login, logout
 
 from models import Topic,CommentType, Comment
 from radregator.tagger.models import Tag
-from radregator.core.forms import CommentSubmitForm
+from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDeleteForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormatException 
 from django.core import serializers
+from utils import slugify
 
 import logging
 
@@ -39,6 +40,111 @@ logger.addHandler(ch)
 if settings.DEBUG:
     # If we're in DEBUG mode, set log level to DEBUG
     logger.setLevel(logging.DEBUG) 
+
+def simpletest(request, whichtest):
+    if whichtest == 'deletecomments':
+        form = CommentDeleteForm()
+    elif whichtest == 'deletetopics':
+        form = TopicDeleteForm()
+
+
+    template_dict = {'form' : form, 'action' : whichtest }
+    template_dict.update(csrf(request))
+
+    return render_to_response('simpletest.html', template_dict)
+        
+    
+def deletetopics(request):
+    
+    if request.method != 'POST':
+        return HttpResponseRedirect("/reporterview")
+
+    if request.user.is_anonymous():
+        return HttpResponseRedirect("/authenticate")
+
+    userprofile = UserProfile.objects.get(user=request.user)
+
+    if userprofile.user_type=='S':
+        # Needs to handle this case better
+        return HttpResponseRedirect("/authenticate")
+
+    # So, it's a reporter
+
+    form = TopicDeleteForm(request.POST)
+
+    if not form.is_valid():
+        return HttpResponseRedirect("/reporterview")
+
+    for topic in form.cleaned_data['topics']:
+       # We don't want to actually delete the topic.
+       topic.is_deleted = True
+       topic.save()
+
+    return HttpResponseRedirect("/reporterview")
+
+def deletecomments(request):
+    if request.method != 'POST':
+        return HttpResponseRedirect("/reporterview")
+
+    if request.user.is_anonymous():
+        return HttpResponseRedirect("/authenticate")
+
+    userprofile = UserProfile.objects.get(user=request.user)
+
+    if userprofile.user_type=='S':
+        # Needs to handle this case better
+        return HttpResponseRedirect("/authenticate")
+
+    # So, it's a reporter
+
+    form = CommentDeleteForm(request.POST)
+
+    if not form.is_valid():
+        return HttpResponseRedirect("/reporterview")
+
+    for comment in form.cleaned_data['comments']:
+       # We don't want to actually delete the comment.
+       comment.is_deleted = True
+       comment.save()
+
+    return HttpResponseRedirect("/reporterview")
+
+def newtopic(request):
+    if request.method != 'POST':
+        return HttpResponseRedirect("/reporterview")
+
+    if request.user.is_anonymous():
+        return HttpResponseRedirect("/authenticate")
+
+    userprofile = UserProfile.objects.get(user=request.user)
+
+    if userprofile.user_type=='S':
+        # Needs to handle this case better
+        return HttpResponseRedirect("/authenticate")
+
+    # So, it's a reporter
+
+    form = NewTopicForm(request.POST)
+
+    if not form.is_valid():
+        return HttpResponseRedirect("/reporterview")
+
+    title = form.cleaned_data['title']
+    summary_text = form.cleaned_data['summary_text']
+
+    curators = [userprofile]
+    
+    summary = Summary(text=summary_text)
+    summary.save()
+
+    topic = Topic(title = title, slug = slugify(title), summary = summary, topic_tags = [], curators = curators, articles = [], is_deleted = False)
+    topic.save()
+
+    return HttpResponseRedirect("/reporterview")
+
+
+
+
 
 def frontpage(request):
     """ Front page demo"""
@@ -68,7 +174,7 @@ def frontpage(request):
     else: form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
     template_dict = {}
 
-    topics = Topic.objects.all()[:5] # Will want to filter, order in later versions
+    topics = Topic.objects.filter(is_deleted=False)[:5] # Will want to filter, order in later versions
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
@@ -108,7 +214,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
         # TODO: It might make sense to implement natural keys in order
         # to pass through useful user data.
         # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
-        comments = topic.comments.all()    
+        comments = topic.comments.filter(is_deleted=False).filter(is_parent=True)    
         paginator = Paginator(comments, ITEMS_PER_PAGE)
 
         # Make sure page request is an int.  If not deliver the first page.

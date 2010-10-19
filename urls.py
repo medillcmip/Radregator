@@ -18,6 +18,9 @@ urlpatterns = patterns('',
 
     (r'^authenticate', 'radregator.users.views.auth'),
 
+    (r'^deletecomments', 'radregator.core.views.deletecomments'),
+    (r'^deletetopics', 'radregator.core.views.deletetopics'),
+
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'radregator.core.views.api_topic_comments'),
 
     (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/concur/$',
@@ -28,6 +31,9 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+
+    # Some testing forms for new features
+    (r'^simpletest/(?P<whichtest>\w+)', 'radregator.core.views.simpletest'),
 )
 
 # Serve static content.  This is inneficient and insecure
