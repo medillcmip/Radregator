@@ -167,19 +167,16 @@ def api_comment_responses(request, comment_id, output_format='json',
                 # TODO validate request_data
 
                 # Try to get the comment object
-                try:
-                    comment = Comment.objects.get(id = comment_id)
+                comment = Comment.objects.get(id = comment_id)
 
-                    # TODO: Check if user has already responded
+                # TODO: Check if user has already responded
 
-                    comment_response = CommentResponse(user=user, comment=comment, type=request_data['type']) 
-                    comment_response.save()
+                comment_response = CommentResponse(user=user, comment=comment, type=request_data['type']) 
+                comment_response.save()
 
-                    status = 201
-                    data['uri'] = "/api/%s/comments/%s/responses/%s/" % (output_format, comment_id, comment_response.id)
+                status = 201
+                data['uri'] = "/api/%s/comments/%s/responses/%s/" % (output_format, comment_id, comment_response.id)
                     
-                except ObjectDoesNotExist:
-
             elif request.method == 'PUT':
                 pass
             elif request.method == 'DELETE':
