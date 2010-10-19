@@ -144,7 +144,10 @@ def api_comment_responses(request, comment_id, output_format='json',
     
        Example API calls:
        
-       POST {"type":"concur"}"""
+       Create a new concur response
+       Method: POST
+       URI: /api/json/comments/1/responses/
+       Data: {"type":"concur"}"""
 
     data = {}
     status=200 # Be optimistic
