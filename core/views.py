@@ -14,11 +14,12 @@ from radregator.core.forms import CommentSubmitForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
-                                       MissingParameter 
+                                       MissingParameter, RecentlyResponded
 from django.core import serializers
 
 import logging
 import json
+import datetime
 
 # Set up logging
 
@@ -154,6 +155,10 @@ def api_comment_responses(request, comment_id, output_format='json',
        
     """
 
+    # A user can only respond once during this time period
+    RESPONSE_WINDOW_HOURS = 0
+    RESPONSE_WINDOW_MINUTES = 5
+
     data = {}
     status=200 # Be optimistic
 
@@ -172,15 +177,46 @@ def api_comment_responses(request, comment_id, output_format='json',
             if request.method == 'POST':
                 request_data = json.loads(request.raw_post_data)
 
-                # TODO validate request_data
                 if "type" not in request_data.keys():
                     raise MissingParameter("You must specify a 'type' parameter to indicate which kind of comment response is being created")
 
                 # Try to get the comment object
                 comment = Comment.objects.get(id = comment_id)
 
-                # TODO: Check if user has already responded
+                try:
+                    # Check if the user has already responded
+                    response = CommentResponse.objects.get(comment=comment, \
+                        user__user__id=user_id,type=request_data['type'])
 
+                except ObjectDoesNotExist:
+                    pass
+                    # The user hasn't responded to this comment.  We're cool.
+                else:
+                    # Get the current time
+                    now = datetime.datetime.now()
+
+                    # Get the difference between now and when the user last 
+                    # responded
+                    time_diff = now - response.created
+
+                    # Calculate the allowable window
+                    time_window = datetime.timedelta( \
+                        hours=RESPONSE_WINDOW_HOURS, \
+                        minutes=RESPONSE_WINDOW_MINUTES);
+
+                    # Check when the user commented
+                    if time_diff < time_window:
+                      # User has already commented within the allowable window 
+
+                      # Calculate how long the user has to wait
+                      wait = time_window - time_diff
+                      wait_hours, remainder = divmod(wait.seconds, 3600)
+                      wait_minutes, wait_seconds = divmod(remainder, 60)
+
+                      raise RecentlyResponded( \
+                        "You must wait %d hours, %d minutes before responding" % \
+                        (wait_hours, wait_minutes))
+        
                 comment_response = CommentResponse(user=user, comment=comment, \
                                                    type=request_data['type']) 
                 comment_response.save()
@@ -208,6 +244,9 @@ def api_comment_responses(request, comment_id, output_format='json',
         data['error'] = "%s" % e
     except MissingParameter, e:
         status = 400 # Bad Request
+        data['error'] = "%s" % e
+    except RecentlyResponded, e:
+        status = 403 # Forbidden
         data['error'] = "%s" % e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',

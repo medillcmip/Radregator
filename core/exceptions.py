@@ -16,3 +16,8 @@ class NonAjaxRequest(Exception):
 class MissingParameter(Exception):
     """Exception thrown when a parameter to an API request is missing"""
     pass
+
+class RecentlyResponded(Exception):
+    """Exception thrown when a user has already responded once within the
+       allowable time limit"""
+    pass
