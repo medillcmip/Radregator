@@ -13,7 +13,8 @@ from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
-from radregator.core.exceptions import UnknownOutputFormat 
+from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
+                                       MissingParameter 
 from django.core import serializers
 
 import logging
@@ -172,6 +173,8 @@ def api_comment_responses(request, comment_id, output_format='json',
                 request_data = json.loads(request.raw_post_data)
 
                 # TODO validate request_data
+                if "type" not in request_data.keys():
+                    raise MissingParameter("You must specify a 'type' parameter to indicate which kind of comment response is being created")
 
                 # Try to get the comment object
                 comment = Comment.objects.get(id = comment_id)
@@ -202,7 +205,10 @@ def api_comment_responses(request, comment_id, output_format='json',
         pass
     except NonAjaxRequest, e:
         status = 403 # Forbidden
-        data['error'] = e
+        data['error'] = "%s" % e
+    except MissingParameter, e:
+        status = 400 # Bad Request
+        data['error'] = "%s" % e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)

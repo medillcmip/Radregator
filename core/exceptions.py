@@ -8,5 +8,11 @@ class UnknownOutputFormat(Exception):
 class NonAjaxRequest(Exception):
     """Exception thrown when an API call is made that is not an AJAX request
        and we don't want to allow this kind of (potentially) cross-site 
-       call"""
+       call
+    
+    """
+    pass
+
+class MissingParameter(Exception):
+    """Exception thrown when a parameter to an API request is missing"""
     pass
