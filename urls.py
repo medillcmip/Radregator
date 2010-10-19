@@ -20,8 +20,8 @@ urlpatterns = patterns('',
 
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'radregator.core.views.api_topic_comments'),
 
-    (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/concur/$',
-     'radregator.core.views.api_comment_concur'),
+    (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/responses/$',
+     'radregator.core.views.api_comment_responses'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

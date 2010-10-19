@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from radregator.users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
-from models import Topic,CommentType, Comment
+from models import Topic, CommentType, Comment, CommentResponse
 from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm
 from django.core.context_processors import csrf
@@ -137,21 +137,37 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
 
     return HttpResponse(data, mimetype='application/json') 
 
-def api_comment_concur(request, comment_id, output_format='json'):
+def api_comment_responses(request, comment_id, output_format='json'):
     if request.method == 'POST':
-        user_id = request.session.get('_auth_user_id', False)
+        if request.is_ajax():
+            user_id = request.session.get('_auth_user_id', False)
 
-        if user_id: 
-            # User is logged in
+            if user_id: 
+                # User is logged in, get the user object
+                user = User.objects.get(id = user_id)
+
+                # Try to get the comment object
+                try:
+                    comment = Comment.objects.get(id = comment_id)
+
+                    # I concur!
+                    comment_response = CommentResponse(user=user, comment=comment, type='concur') 
+                    comment_response.save()
+                    
+                except ObjectDoesNotExist:
+                    # TODO: Handle this exception
+                    pass
+            else:
+                pass
+                # TODO: Handle the case when a user who isn't logged in tries
+                # to comment.
         else:
             pass
-            # TODO: Handle the case when a user who isn't logged in tries
-            # to comment.
+            # Return error on non-ajax requests 
 
     else:
-        # TODO: Handle when someone accesses this by a post
+        # TODO: Handle when someone accesses this by a non-post method
         pass
 
-    data = ()
     return HttpResponse("")
     #return HttpResponse(data, mimetype='application/json')
