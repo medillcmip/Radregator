@@ -3,6 +3,7 @@ from django.contrib.sites.models import Site
 from radregator.clipper.models import Article
 from radregator.tagger.models import Tag
 from radregator.users.models import UserProfile
+from django.contrib.auth.models import User
 
 
 class Summary(models.Model):
@@ -66,7 +67,7 @@ class Comment(models.Model):
     sites = models.ManyToManyField(Site, blank=True)
     comment_type = models.ForeignKey("CommentType")
     topics = models.ManyToManyField("Topic", blank=True, related_name = 'comments')
-    responses = models.ManyToManyField(UserProfile, through="CommentResponse", 
+    responses = models.ManyToManyField(User, through="CommentResponse", 
                                        symmetrical=False, null=True,
                                        related_name="responses")
 
@@ -109,8 +110,9 @@ class CommentResponse(models.Model):
         ('share', 'I share this concern'),
         ('have', 'I have this question'),
         ('like', 'I like this'),
+        ('concur', 'I concur'),
     )
 
     comment = models.ForeignKey(Comment)
-    user = models.ForeignKey(UserProfile)
+    user = models.ForeignKey(User)
     type = models.CharField(max_length=20, choices=COMMENT_RESPONSE_CHOICES)
