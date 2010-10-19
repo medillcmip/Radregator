@@ -116,3 +116,6 @@ class CommentResponse(models.Model):
     comment = models.ForeignKey(Comment)
     user = models.ForeignKey(User)
     type = models.CharField(max_length=20, choices=COMMENT_RESPONSE_CHOICES)
+
+    def __unicode__(self):
+        return "%s %s %s" % (self.user, self.type, self.comment) 
