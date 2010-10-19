@@ -13,7 +13,7 @@ from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
-from radregator.core.exceptions import UnknownOutputFormatException 
+from radregator.core.exceptions import UnknownOutputFormat 
 from django.core import serializers
 
 import logging
@@ -93,7 +93,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     try:
         # Right now we only support json as an output format
         if output_format != 'json':
-            raise UnknownOutputFormatException("Unknown output format '%s'" % \
+            raise UnknownOutputFormat("Unknown output format '%s'" % \
                                               (output_format))
 
         # topic_slug_or_id can either be a slug or an id
@@ -128,7 +128,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
                                      fields=('comment_type', 'text', 'user'),
                                      use_natural_keys=True)
 
-    except UnknownOutputFormatException:
+    except UnknownOutputFormat:
         pass
         # TODO: Handle this exception
         # QUESTION: What is the best way to return errors in JSON?
