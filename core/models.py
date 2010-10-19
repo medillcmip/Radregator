@@ -3,8 +3,6 @@ from django.contrib.sites.models import Site
 from radregator.clipper.models import Article
 from radregator.tagger.models import Tag
 from radregator.users.models import UserProfile
-from django.contrib.auth.models import User
-
 
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
