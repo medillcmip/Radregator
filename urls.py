@@ -20,7 +20,7 @@ urlpatterns = patterns('',
 
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'radregator.core.views.api_topic_comments'),
 
-    (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/responses/$',
+    (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/responses/(?P<response_id>\d*)$',
      'radregator.core.views.api_comment_responses'),
 
     # Uncomment the admin/doc line below to enable admin documentation:

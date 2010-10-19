@@ -17,6 +17,7 @@ from radregator.core.exceptions import UnknownOutputFormatException
 from django.core import serializers
 
 import logging
+import json
 
 # Set up logging
 
@@ -137,37 +138,59 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
 
     return HttpResponse(data, mimetype='application/json') 
 
-def api_comment_responses(request, comment_id, output_format='json'):
-    if request.method == 'POST':
-        if request.is_ajax():
-            user_id = request.session.get('_auth_user_id', False)
+def api_comment_responses(request, comment_id, output_format='json',
+                          response_id=None):
+    """Provide RESTful responses to calls for comment responses.
+    
+       Example API calls:
+       
+       POST {"type":"concur"}"""
 
-            if user_id: 
-                # User is logged in, get the user object
-                user = User.objects.get(id = user_id)
+    data = {}
+    status=200 # Be optimistic
 
-                # Try to get the comment object
-                try:
-                    comment = Comment.objects.get(id = comment_id)
+    if request.is_ajax():
+        user_id = request.session.get('_auth_user_id', False)
 
-                    # I concur!
-                    comment_response = CommentResponse(user=user, comment=comment, type='concur') 
-                    comment_response.save()
-                    
-                except ObjectDoesNotExist:
-                    # TODO: Handle this exception
-                    pass
-            else:
-                pass
-                # TODO: Handle the case when a user who isn't logged in tries
-                # to comment.
+        if user_id: 
+            # User is logged in, get the user object
+            user = User.objects.get(id = user_id)
         else:
             pass
-            # Return error on non-ajax requests 
+            # TODO: Handle the case when a user who isn't logged in tries
+            # to comment.
 
+        if request.method == 'POST':
+            request_data = json.loads(request.raw_post_data)
+
+            # TODO validate request_data
+
+            # Try to get the comment object
+            try:
+                comment = Comment.objects.get(id = comment_id)
+
+                # TODO: Check if user has already responded
+
+                comment_response = CommentResponse(user=user, comment=comment, type=request_data['type']) 
+                comment_response.save()
+
+                status = 201
+                data['uri'] = "/api/%s/comments/%s/responses/%s/" % (output_format, comment_id, comment_response.id)
+                
+            except ObjectDoesNotExist:
+                # TODO: Handle this exception
+                pass
+
+        elif request.method == 'PUT':
+            pass
+        elif request.method == 'DELETE':
+            pass
+        else:
+            # GET 
+            pass
     else:
-        # TODO: Handle when someone accesses this by a non-post method
         pass
+        # Return error on non-ajax requests 
 
-    return HttpResponse("")
-    #return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
