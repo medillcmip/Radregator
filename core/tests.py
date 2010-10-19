@@ -1,9 +1,17 @@
-from django.utils import unittest
+import json
+import unittest
+
 from django.test import Client
 
 class ApiTestCase(unittest.TestCase):
-    def setUP(self):
+    def setUp(self):
         pass
 
-    def testGet(self):
-        pass
+    def test_get_responses(self):
+        c = Client()
+        response = c.get('/api/json/comments/1/responses/',
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(client.content)
+
+        fail("Test not yet implemented.")
+
