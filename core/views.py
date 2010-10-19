@@ -240,9 +240,9 @@ def api_comment_responses(request, comment_id, output_format='json',
                 "Remote API calls aren't allowed right now. " + \
                 "This might change some day.")
 
-    except ObjectDoesNotExist:
-        # TODO: Handle this exception
-        pass
+    except ObjectDoesNotExist, e:
+        status = 404 # Not found
+        data['error'] = "%s" % e
     except NonAjaxRequest, e:
         status = 403 # Forbidden
         data['error'] = "%s" % e
