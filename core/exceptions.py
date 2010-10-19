@@ -21,3 +21,8 @@ class RecentlyResponded(Exception):
     """Exception thrown when a user has already responded once within the
        allowable time limit"""
     pass
+
+class MethodUnsupported(Exception):
+    """Exception thrown when an HTTP request method isn't supported by the REST
+       API"""
+    pass

@@ -14,7 +14,8 @@ from radregator.core.forms import CommentSubmitForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
-                                       MissingParameter, RecentlyResponded
+                                       MissingParameter, RecentlyResponded, \
+                                       MethodUnsupported
 from django.core import serializers
 
 import logging
@@ -226,15 +227,18 @@ def api_comment_responses(request, comment_id, output_format='json',
                               (output_format, comment_id, comment_response.id)
                     
             elif request.method == 'PUT':
-                pass
+                raise MethodUnsupported("PUT is not supported at this time.")
             elif request.method == 'DELETE':
-                pass
+                raise MethodUnsupported("DELETE is not supported at this time.")
             else:
                 # GET 
-                pass
+                raise MethodUnsupported("GET is not supported at this time.")
+
         else:
             # Non-AJAX request.  Disallow for now.
-            raise NonAjaxRequest("Remote API calls aren't allowed right now.  This might change some day.")
+            raise NonAjaxRequest( \
+                "Remote API calls aren't allowed right now. " + \
+                "This might change some day.")
 
     except ObjectDoesNotExist:
         # TODO: Handle this exception
