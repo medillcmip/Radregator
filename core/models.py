@@ -43,10 +43,25 @@ class Topic(models.Model):
     def __unicode__(self):
         return self.title
 
-    def comments_to_show(self):
-        """ We don't show deleted or non-parent comments."""
+    def recursive_traverse(self, comment, level = 1):
+        retlist = [(comment, level)]
+        for child in comment.related.all():
+            retlist += self.recursive_traverse(child, level+1)
+        return retlist
 
-        return self.comments.filter(is_parent=True).filter(is_deleted=False)
+    def comments_to_show(self):
+        # Comment refers to the parent
+        rootset = self.comments.filter(is_deleted=False, is_parent=True, comment=None)
+
+        treemap = {}
+        allcomments = rootset
+
+        indentlist = []
+
+        for comment in rootset:
+            indentlist += self.recursive_traverse(comment)
+
+        return indentlist
     
     
 class Comment(models.Model):

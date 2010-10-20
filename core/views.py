@@ -180,6 +180,11 @@ def deletecomments(request):
 
     return HttpResponseRedirect("/reporterview")
 
+
+
+
+    
+
 def newtopic(request):
     if request.method != 'POST':
         return HttpResponseRedirect("/reporterview")
@@ -233,6 +238,13 @@ def replytocomment(request):
             
 
 
+
+
+
+
+
+    
+
 def frontpage(request):
     """ Front page demo"""
 
@@ -271,6 +283,9 @@ def frontpage(request):
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
+    template_dict['comments'] = {}
+
+        
     template_dict.update(csrf(request)) # Required for csrf system
     return render_to_response('frontpage.html', template_dict,context_instance=RequestContext(request))
    
