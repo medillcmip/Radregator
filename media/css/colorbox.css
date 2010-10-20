@@ -43,30 +43,43 @@
 
 /* THESE ARE RADREGATOR STYLES */
 
-#cboxContent h1 {
+.loginreg {
+	padding: 0;
+	margin: 0;
+}
+
+.loginreg h1 {
 	font-size: 1.5em;
 	text-align: center;
 	margin: 15px auto;
 }
 
-#cboxContent h3 {
+.loginreg h3 {
 	font-size: 1.2em;
 	text-align: left;
 	margin: 5px auto 15px auto;
 }
 
-#cboxContent div.reglog-overlay {
+.loginreg p.errormsg {
+	color: #ff0000;
+	width: 300px;
+	clear:both;
+	font-weight: normal;
+	font-size: 0.8em;
+}
+
+div.reglog-overlay {
 	width: 312px;
 	margin: 10px 15px;
 	height: 250px;
 	float: right;
 }
 
-#cboxContent div#regwrap {
+div#regwrap {
 	border-right: 2px solid #aaa;
 }
 
-#cboxContent div.reglog-overlay label {
+div.reglog-overlay label {
 	float: left;
 	clear: left;
 	display: block;
@@ -78,14 +91,14 @@
 	top: 3px;
 }
 
-#cboxContent div.reglog-overlay input {
+div.reglog-overlay input {
 	float: left;
 	display: block;
 	width: 150px;
 	margin-bottom: 10px;
 }
 
-#cboxContent div.reglog-overlay input.btn {
+div.reglog-overlay input.btn {
 	float: none;
 	clear: both;
 	display: block;
