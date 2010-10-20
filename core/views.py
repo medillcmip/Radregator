@@ -8,14 +8,15 @@ from django.core.urlresolvers import reverse
 from radregator.users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
-from models import Topic,CommentType, Comment
+from models import Topic,CommentType, Comment, Summary, CommentRelation
 from radregator.tagger.models import Tag
-from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDeleteForm
+from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDeleteForm, NewTopicForm, MergeCommentForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormatException 
 from django.core import serializers
 from utils import slugify
+from django.http import Http404
 
 import logging
 
@@ -46,6 +47,13 @@ def simpletest(request, whichtest):
         form = CommentDeleteForm()
     elif whichtest == 'deletetopics':
         form = TopicDeleteForm()
+    elif whichtest == 'newtopic':
+        form = NewTopicForm()
+    elif whichtest == 'mergecomments':
+        form = MergeCommentForm()
+    else:
+        raise Http404
+        
 
 
     template_dict = {'form' : form, 'action' : whichtest }
@@ -53,7 +61,51 @@ def simpletest(request, whichtest):
 
     return render_to_response('simpletest.html', template_dict)
         
-    
+def mergecomments(request):
+    if request.method != 'POST':
+        return HttpResponseRedirect("/reporterview")
+
+    if request.user.is_anonymous():
+        return HttpResponseRedirect("/authenticate")
+
+    userprofile = UserProfile.objects.get(user=request.user)
+
+    if userprofile.user_type=='S':
+        # Needs to handle this case better
+        return HttpResponseRedirect("/authenticate")
+
+    # So, it's a reporter
+
+    form = MergeCommentForm(request.POST)
+
+    if not form.is_valid():
+        return HttpResponseRedirect("/reporterview")
+
+    comments = form.cleaned_data['comments']
+    parent = form.cleaned_data['parent']
+
+    for comment in comments:
+        # Transfer all relations from comment to parent
+        # Preserve the old relations, in case we re-split the comments at some point
+        for left_relation in CommentRelation.objects.filter(left_comment=comment):
+            new_relation = CommentRelation(left_comment = parent, right_comment = left_relation.right_comment, relation_type = left_relation.relation_type)
+            new_relation.save()
+
+        for right_relation in CommentRelation.objects.filter(right_comment=comment):
+            new_relation = CommentRelation(left_comment = right_relation.left_comment, right_comment = parent, relation_type = right_relation.relation_type)
+            new_relation.save()
+
+        comment.is_parent = False
+        comment.save()
+
+
+        
+        
+    parent.is_parent = True
+    parent.save()
+    return HttpResponseRedirect("/reporterview")
+
+
 def deletetopics(request):
     
     if request.method != 'POST':
@@ -131,13 +183,18 @@ def newtopic(request):
 
     title = form.cleaned_data['title']
     summary_text = form.cleaned_data['summary_text']
+    source_comment = form.cleaned_data['source_comment']
 
     curators = [userprofile]
     
-    summary = Summary(text=summary_text)
+    summary = Summary.objects.get_or_create(text=summary_text)[0] # get_or_create returns (obj, is_new)
     summary.save()
 
-    topic = Topic(title = title, slug = slugify(title), summary = summary, topic_tags = [], curators = curators, articles = [], is_deleted = False)
+    topic = Topic(title = title, slug = slugify(title), summary = summary, is_deleted = False)
+    topic.save()
+    topic.curators = curators
+    if source_comment:
+        topic.comments = [source_comment]
     topic.save()
 
     return HttpResponseRedirect("/reporterview")

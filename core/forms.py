@@ -5,7 +5,7 @@ from radregator.tagger.models import Tag
 from django.forms.widgets import CheckboxSelectMultiple
 
 class CommentDeleteForm(forms.Form):
-    allcomments = Comment.objects.filter(is_deleted=False)
+    allcomments = Comment.objects.filter(is_deleted=False).filter(is_parent=True)
     comments = forms.ModelMultipleChoiceField(allcomments, )
     
 class TopicDeleteForm(forms.Form):
@@ -15,11 +15,21 @@ class TopicDeleteForm(forms.Form):
 class NewTopicForm(forms.ModelForm):
     # Comment to source from should default to null
     # Really just using the modelform to validate the title as new
-    summary_text = forms.TextField(required = True)
+    summary_text = forms.CharField(required = True, widget = forms.TextInput)
+    allcomments = Comment.objects.filter(is_deleted=False).filter(is_parent=True)
+    source_comment = forms.ModelChoiceField(allcomments, required = False)
+
 
     class Meta:
         model = Topic
-        fields = ('title', 'summary_text', )
+        fields = ('title', 'summary_text', 'source_comment')
+
+class MergeCommentForm(forms.Form):
+    """ Take a set of comments, designate one as parent."""
+
+    allcomments = Comment.objects.filter(is_deleted = False).filter(is_parent = True)
+    comments = forms.ModelMultipleChoiceField(allcomments)
+    parent = forms.ModelChoiceField(allcomments, empty_label = None)
 
 
 

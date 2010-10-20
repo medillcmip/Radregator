@@ -43,6 +43,11 @@ class Topic(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def comments_to_show(self):
+        """ We don't show deleted or non-parent comments."""
+
+        return self.comments.filter(is_parent=True).filter(is_deleted=False)
     
     
 class Comment(models.Model):
