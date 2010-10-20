@@ -215,6 +215,9 @@ def api_auth(request, uri_username, output_format='json'):
                     if user is not None:
                         if user.is_active:
                             login(request, user)
+
+                            # Success!
+                            data['username'] = username
                         else:
                             raise UserAccountDisabled
                     else:
