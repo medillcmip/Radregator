@@ -11,7 +11,7 @@ class ApiTestCase(unittest.TestCase):
         c = Client()
         response = c.get('/api/json/comments/1/responses/',
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        json_content = json.loads(client.content)
+        json_content = json.loads(response.content)
 
-        fail("Test not yet implemented.")
+        self.fail("Test not yet implemented.")
 
