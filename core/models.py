@@ -45,13 +45,13 @@ class Topic(models.Model):
 
     def recursive_traverse(self, comment, level = 1):
         retlist = [(comment, level)]
-        for child in comment.related.all():
+        for child in comment.comment_set.all():
             retlist += self.recursive_traverse(child, level+1)
         return retlist
 
     def comments_to_show(self):
         # Comment refers to the parent
-        rootset = self.comments.filter(is_deleted=False, is_parent=True, comment=None)
+        rootset = self.comments.filter(is_deleted=False, is_parent=True, related=None)
 
         treemap = {}
         allcomments = rootset
