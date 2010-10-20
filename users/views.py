@@ -191,10 +191,6 @@ def register(request):
         return render_to_response('register.html', template_dict,\
             context_instance=RequestContext(request))
 
-def api_register(request, output_format='json'):
-    """Like register() but through AJAX"""
-    pass
-
 def api_auth(request, uri_username, output_format='json'):
     """Like auth() but through AJAX"""
 
@@ -225,7 +221,19 @@ def api_auth(request, uri_username, output_format='json'):
                         raise BadUsernameOrPassword
 
                 else:
-                    # user done messed up, let em know
+                    # Form didn't validate
+
+                    # HACK ALERT: Incorrect usernames/passwords are 
+                    # are checked in the validation code of user.forms.LoginForm
+                    # We'll detect this and try to return a more reasonable 
+                    # error message.
+                    print form.errors.keys()
+                    if '__all__' in form.errors.keys():
+                        if form.errors['__all__'] == \
+                            [form.WRONG_USERNAME_OR_PASSWORD_MSG]:
+                            raise BadUsernameOrPassword( \
+                                form.WRONG_USERNAME_OR_PASSWORD_MSG) 
+        
                     status = 400 # Bad Request
                     data['error'] = "Some required fields are missing"
                     data['field_errors'] = form.errors
@@ -254,7 +262,7 @@ def api_auth(request, uri_username, output_format='json'):
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
 
-def api_users(request):
+def api_users(request, output_format='json'):
     """Catch-all view for user api calls."""
     
     data = {} # Response data 
@@ -264,6 +272,9 @@ def api_users(request):
         if request.is_ajax():
             if request.method == 'POST':
                 # Registering a new user
+
+                form = RegisterForm(request.POST)
+
                 if form.is_valid():
                     form = RegisterForm(request.POST)
                     f_username = form.cleaned_data['username']
@@ -302,14 +313,16 @@ def api_users(request):
                 else:
                     # Form didn't validate
 
-                    # Look through error fields to see if there was a username 
-                    # or e-mail conflict.
+                    # HACK ALERT: Conflicting usernames/emails 
+                    # are checked in the validation code of user.forms.RegisterForm
+                    # We'll detect this and try to return a more reasonable 
+                    # error message.
                     if 'username' in form.errors.keys():
-                        if form.errors['username'] == form.USERNAME_EXISTS_MSG:
+                        if form.errors['username'] == [form.USERNAME_EXISTS_MSG]:
                             raise UserUsernameExists(form.USERNAME_EXISTS_MSG) 
 
                     if 'email' in form.errors.keys():
-                        if form.errors['email'] == form.EMAIL_EXISTS_MSG:
+                        if form.errors['email'] == [form.EMAIL_EXISTS_MSG]:
                             raise UserEmailExists(form.EMAIL_EXISTS_MSG) 
 
                     status = 400 # Bad Request
