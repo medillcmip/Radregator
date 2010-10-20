@@ -194,7 +194,7 @@ def api_register(request):
     """Like register() but through AJAX"""
     pass
 
-def api_auth(request):
+def api_auth(request, uri_username):
     """Like auth() but through AJAX"""
 
     data = {} # Response data 
