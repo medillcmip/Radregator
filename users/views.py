@@ -190,11 +190,11 @@ def register(request):
         return render_to_response('register.html', template_dict,\
             context_instance=RequestContext(request))
 
-def api_register(request):
+def api_register(request, output_format='json'):
     """Like register() but through AJAX"""
     pass
 
-def api_auth(request, uri_username):
+def api_auth(request, uri_username, output_format='json'):
     """Like auth() but through AJAX"""
 
     data = {} # Response data 
