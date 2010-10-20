@@ -7,9 +7,8 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
-from core.exceptions import MethodUnsupported
-from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
-                             NonAjaxRequest
+from core.exceptions import MethodUnsupported, NonAjaxRequest
+from users.exceptions import BadUsernameOrPassword, UserAccountDisabled
 
 def disabled_act(request):
     template_dict = {}
