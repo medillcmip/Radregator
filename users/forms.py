@@ -5,13 +5,12 @@ from django.contrib.auth import authenticate
 from django.contrib.localflavor.us.forms import USZipCodeField,\
     USStateField,USPhoneNumberField
 
-# Error string constants 
-USERNAME_EXISTS_MSG = 'The username is taken, please try another'
-EMAIL_EXISTS_MSG = 'This email already exists, please try another'
-WRONG_USERNAME_OR_PASSWORD_MSG = 'The username / password combination you ' + \
-    'entered was wrong or you don\'t have an account with us'
 
 class LoginForm(forms.Form):
+    # Error message constants 
+    WRONG_USERNAME_OR_PASSWORD_MSG = 'The username / password combination ' + \
+        'you entered was wrong or you don\'t have an account with us'
+
     username = forms.CharField(max_length=30)
     password = forms.CharField(max_length=30, widget=forms.PasswordInput)
     
@@ -27,7 +26,7 @@ class LoginForm(forms.Form):
         f_password = self.cleaned_data.get('password')
         user = authenticate(username = f_username, password = f_password)
         if user is None and (f_username != None and f_password != None):
-            raise forms.ValidationError(WRONG_USERNAME_OR_PASSWORD_MSG)
+            raise forms.ValidationError(self.WRONG_USERNAME_OR_PASSWORD_MSG)
         else:
             return self.cleaned_data
 
@@ -38,7 +37,11 @@ class RegisterForm(forms.Form):
     fit here because the User class is a property
     of the UserProfile class... any suggestions?
     """
-   
+  
+    # Error message constants
+    USERNAME_EXISTS_MSG = 'The username is taken, please try another'
+    EMAIL_EXISTS_MSG = 'This email already exists, please try another'
+
     username = forms.CharField(max_length=30)
     password = forms.CharField(max_length=30)
     first_name = forms.CharField(max_length=30, required=False)
@@ -62,7 +65,7 @@ class RegisterForm(forms.Form):
         usrs = User.objects.filter(email=data, email__isnull=False)
         populated_emails = filter(get_non_empty_emails,usrs)
         if len(populated_emails) > 0:
-            raise forms.ValidationError(EMAIL_EXISTS_MSG)
+            raise forms.ValidationError(self.EMAIL_EXISTS_MSG)
         else:
             return data
 
@@ -73,6 +76,6 @@ class RegisterForm(forms.Form):
         data = self.cleaned_data['username']
         usrs = User.objects.filter(username=data)
         if len(usrs) > 0:
-            raise forms.ValidationError(USERNAME_EXISTS_MSG)
+            raise forms.ValidationError(self.USERNAME_EXISTS_MSG)
         else:
             return data
