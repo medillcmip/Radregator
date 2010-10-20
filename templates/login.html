@@ -9,21 +9,7 @@
     Login via site credentials<br> 
     <!-- BEGIN FORM -->
     <form method="POST" action="login">
-    <!-- BEGIN USERNAME -->
-    <p>
-    <label class="text">Username</label>
-    <input type="text" id="headline" name="fUsername" class="text"/>
-    </p>
-    <!-- END USERNAME -->
-
-    <!-- BEGIN PASSWORD -->
-    <p>
-    <label class="text">Password</label>
-    <input type="password" id="password" name="fPassword" class="text"/>
-    </p>
-    <!-- END PASSWORD -->
-
-    <input type="hidden" name="process" value="1"/>
+     {{ form.as_p }}
      {% csrf_token %}
     <input type="submit" class="btn" value="Go!" />
 

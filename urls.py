@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     (r'^deletetopics', 'radregator.core.views.deletetopics'),
     (r'^mergecomments', 'radregator.core.views.mergecomments'),
     (r'^newtopic', 'radregator.core.views.newtopic'),
+    (r'^disabled_act', 'radregator.users.views.disabled_act'),
 
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'radregator.core.views.api_topic_comments'),
 
