@@ -42,6 +42,21 @@ if settings.DEBUG:
     # If we're in DEBUG mode, set log level to DEBUG
     logger.setLevel(logging.DEBUG) 
 
+def reporterview(request):
+    """ VERY rudimentary reporter view"""
+
+    template_dict = {
+        'commentdeleteform' : CommentDeleteForm(),
+        'topicdeleteform' : TopicDeleteForm(),
+        'newtopicform' : NewTopicForm(),
+        'mergecommentform' : MergeCommentForm()
+        }
+
+    template_dict.update(csrf(request))
+
+    return render_to_response('reporterview.html', template_dict)
+
+
 def simpletest(request, whichtest):
     if whichtest == 'deletecomments':
         form = CommentDeleteForm()
@@ -70,7 +85,7 @@ def mergecomments(request):
 
     userprofile = UserProfile.objects.get(user=request.user)
 
-    if userprofile.user_type=='S':
+    if not userprofile.is_reporter():
         # Needs to handle this case better
         return HttpResponseRedirect("/authenticate")
 
@@ -116,7 +131,7 @@ def deletetopics(request):
 
     userprofile = UserProfile.objects.get(user=request.user)
 
-    if userprofile.user_type=='S':
+    if not userprofile.is_reporter():
         # Needs to handle this case better
         return HttpResponseRedirect("/authenticate")
 
@@ -143,7 +158,7 @@ def deletecomments(request):
 
     userprofile = UserProfile.objects.get(user=request.user)
 
-    if userprofile.user_type=='S':
+    if not userprofile.is_reporter():
         # Needs to handle this case better
         return HttpResponseRedirect("/authenticate")
 
@@ -170,7 +185,7 @@ def newtopic(request):
 
     userprofile = UserProfile.objects.get(user=request.user)
 
-    if userprofile.user_type=='S':
+    if not userprofile.is_reporter():
         # Needs to handle this case better
         return HttpResponseRedirect("/authenticate")
 

@@ -16,6 +16,9 @@ class UserProfile(models.Model):
     (u'S', u'source'))
     user = models.ForeignKey(User)
 
+    def is_reporter(self):
+        return self.user_type == u'R'
+
     facebook_user_id = models.TextField(blank=True)
     street_address = models.TextField(blank=True)
     city = models.TextField(blank=True)

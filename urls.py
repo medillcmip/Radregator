@@ -10,8 +10,7 @@ urlpatterns = patterns('',
     # (r'^newsqa/', include('newsqa.foo.urls')),
     (r'^$', 'radregator.core.views.frontpage'),
 
-    # TK - make me point somewhere else
-    (r'^reporterview', 'radregator.core.views.frontpage'),
+    (r'^reporterview', 'radregator.core.views.reporterview'),
 
     (r'^login', 'radregator.users.views.weblogin'),
 

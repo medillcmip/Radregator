@@ -1,0 +1,36 @@
+<a href="/">Return to main page</a>
+<br><br>
+<form action="/deletecomments"/" method="post">
+Select a comment to delete:
+{{ commentdeleteform.as_p }}
+
+{% csrf_token %}
+<input type = "submit" value = "Submit" />
+</form>
+
+<br><br>
+<form action="/deletetopics"/" method="post">
+Select a topic to delete:
+{{ topicdeleteform.as_p }}
+
+{% csrf_token %}
+<input type = "submit" value = "Submit" />
+</form>
+
+<br><br>
+<form action="/newtopic"/" method="post">
+Create a new topic, with optional starting comment:
+{{ newtopicform.as_p }}
+
+{% csrf_token %}
+<input type = "submit" value = "Submit" />
+</form>
+
+<br><br>
+<form action="/mergecomments"/" method="post">
+Merge comments into a parent comment.
+{{ mergecommentform.as_p }}
+
+{% csrf_token %}
+<input type = "submit" value = "Submit" />
+</form>
