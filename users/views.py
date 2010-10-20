@@ -7,6 +7,8 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
+from core.exceptions import MethodUnsupported
+from users.exceptions import BadUsernameOrPassword, UserAccountDisabled
 
 def disabled_act(request):
     template_dict = {}
@@ -187,3 +189,53 @@ def register(request):
         template_dict['form'] = form
         return render_to_response('register.html', template_dict,\
             context_instance=RequestContext(request))
+
+def api_register(request):
+    """Like register() but through AJAX"""
+    pass
+
+def api_auth(request):
+    """Like auth() but through AJAX"""
+
+    data = {} # Response data 
+    status = 200 # Ok
+
+    try:
+        if request.method == 'POST':
+            form = LoginForm(request.POST)
+
+            if form.is_valid():
+                username = form.cleaned_data['username']
+                password = form.cleaned_data['password']
+
+                # Try to authenticate the user
+                user = authenticate(username=username, password=password)
+
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                    else:
+                        raise UserAccountDisabled
+                else:
+                    raise BadUsernameOrPassword
+
+            else:
+                # user done messed up, let em know
+                status = 400 # Bad Request
+                data['error'] = "Some required fields are missing"
+                data['field_errors'] = form.errors
+
+        else:
+            # Method not POST
+            raise MethodUnsupported("This endpoint only accepts POSTs.")
+
+    except MethodUnsupported, error:
+        status = 405 # Method not allowed
+        data['error'] = "%s" % error
+
+    except BadUsernameOrPassword, error:
+        status = 401 # Unauthorized
+        data['error'] = "%s" % error
+
+    return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
