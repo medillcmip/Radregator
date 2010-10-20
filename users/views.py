@@ -165,11 +165,17 @@ def register(request):
             f_state = form.cleaned_data['state']
             f_zip_code = form.cleaned_data['zip_code']
             f_phone = form.cleaned_data['phone']
+            f_dob = form.cleaned_data['dob']
             #we validate the username / email is unique by overriding
             #clean_field methods in RegisterForm
             baseuser = User.objects.create_user(username=f_username,\
-                password=f_password,email=f_email)
-            newuser = UserProfile(user=baseuser)
+                password=f_password, email=f_email)
+            baseuser.first_name=f_first_name
+            baseuser.last_name=f_last_name
+            baseuser.save()
+            newuser = UserProfile(user=baseuser, city=f_city,\
+                street_address=f_street_address, state=f_state, zip=f_zip_code,\
+                phone_number=f_phone)
             newuser.save()
             return do_login(f_username,f_password,request)
         else:

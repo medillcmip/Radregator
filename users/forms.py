@@ -1,5 +1,6 @@
 from django import forms
 from models import User
+import datetime
 from django.contrib.auth import authenticate
 from django.contrib.localflavor.us.forms import USZipCodeField,\
     USStateField,USPhoneNumberField
@@ -42,7 +43,7 @@ class RegisterForm(forms.Form):
     state = USStateField(required=False)
     zip_code = USZipCodeField(required=False)
     phone = USPhoneNumberField(required=False)
-
+    dob = forms.DateField(initial=datetime.date.today, required=False)
     def clean_email(self):
         """
         ensure no other users have the same email

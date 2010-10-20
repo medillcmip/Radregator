@@ -80,7 +80,6 @@ INSTALLED_APPS = (
     'tagger',
     'clipper',
     'users',
-
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 )
