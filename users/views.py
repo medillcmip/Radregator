@@ -8,7 +8,7 @@ from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from core.exceptions import MethodUnsupported
-from users.exceptions import BadUsernameOrPassword, UserAccountDisabled,
+from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
                              NonAjaxRequest
 
 def disabled_act(request):
