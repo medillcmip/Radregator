@@ -13,7 +13,44 @@ from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDeleteForm, NewTopicForm, MergeCommentForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
-from radregator.core.commentdeleteform' : CommentDeleteForm(),
+from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
+                                       MissingParameter, RecentlyResponded, \
+                                       MethodUnsupported
+from django.core import serializers
+from utils import slugify
+from django.http import Http404
+
+import logging
+import json
+import datetime
+
+# Set up logging
+
+# create logger
+logger = logging.getLogger("radregator") 
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
+if settings.DEBUG:
+    # If we're in DEBUG mode, set log level to DEBUG
+    logger.setLevel(logging.DEBUG) 
+
+def reporterview(request):
+    """ VERY rudimentary reporter view"""
+
+    template_dict = {
+        'commentdeleteform' : CommentDeleteForm(),
         'topicdeleteform' : TopicDeleteForm(),
         'newtopicform' : NewTopicForm(),
         'mergecommentform' : MergeCommentForm()
@@ -186,16 +223,14 @@ def newtopic(request):
 def replytocomment(request):
     if request.method == 'POST':
         if request.user.is_anonymous():
-            return HttpResponseReirect("/authenticate")
+            return HttpResponseDirect("/authenticate")
 
         form = CommentReplyForm(request.POST)
 
         if not form.is_valid():
             # Raise exceptions
-            return HttpResponseRedirect("/frontpage")
+            return
             
-
-    return HttpResponseRedirect("/frontpage")
 
 
 def frontpage(request):
