@@ -253,10 +253,16 @@ def frontpage(request):
             comment.save() # We have to save the comment object so it has a primary key, before we can link tags to it.
 
             topic = form.cleaned_data['topic']
+            in_reply_to = form.cleaned_data['in_reply_to']
 
             comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
             comment.save()
             form = CommentSubmitForm() # successfully submitted, give them a new form
+
+            if in_reply_to: # Comment is in reply to another comment
+                reply_relation = CommentRelation(left_comment = comment, right_comment = in_reply_to, relation_type = 'reply')
+                reply_relation.save()
+
     
     else: form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
     template_dict = {}
