@@ -1,23 +1,17 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+import json
+import unittest
 
-Replace these with more appropriate tests for your application.
-"""
+from django.test import Client
 
-from django.test import TestCase
+class ApiTestCase(unittest.TestCase):
+    def setUp(self):
+        pass
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+    def test_get_responses(self):
+        c = Client()
+        response = c.get('/api/json/comments/1/responses/',
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
-
->>> 1 + 1 == 2
-True
-"""}
+        self.fail("Test not yet implemented.")
 

@@ -4,7 +4,6 @@ from radregator.clipper.models import Article
 from radregator.tagger.models import Tag
 from radregator.users.models import UserProfile
 
-
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
        if we want to do versioning."""
@@ -124,8 +123,13 @@ class CommentResponse(models.Model):
         ('share', 'I share this concern'),
         ('have', 'I have this question'),
         ('like', 'I like this'),
+        ('concur', 'I concur'),
     )
 
     comment = models.ForeignKey(Comment)
     user = models.ForeignKey(UserProfile)
     type = models.CharField(max_length=20, choices=COMMENT_RESPONSE_CHOICES)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "%s %s %s" % (self.user, self.type, self.comment) 

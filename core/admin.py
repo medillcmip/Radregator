@@ -1,6 +1,6 @@
 from django.contrib import admin
 from core.models import Summary,Topic,Comment,UserProfile,\
-    CommentType,CommentRelation
+    CommentType,CommentRelation,CommentResponse
 from tagger.models import Tag
 from clipper.models import Article, NewsOrganization
 from django.contrib.auth.models import User
@@ -24,6 +24,9 @@ class TagAdmin(admin.ModelAdmin):
 class CommentRelationAdmin(admin.ModelAdmin):
     pass
 
+class CommentResponseAdmin(admin.ModelAdmin):
+    pass
+
 class ArticleAdmin(admin.ModelAdmin):
     pass
 
@@ -38,6 +41,7 @@ admin.site.register(Topic, TopicAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(CommentType, CommentTypeAdmin)
 admin.site.register(CommentRelation, CommentRelationAdmin)
+admin.site.register(CommentResponse, CommentResponseAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Article, ArticleAdmin)

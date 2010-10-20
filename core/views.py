@@ -8,17 +8,21 @@ from django.core.urlresolvers import reverse
 from radregator.users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
-from models import Topic,CommentType, Comment, Summary, CommentRelation
+from models import Topic,CommentType, Comment, Summary, CommentRelation, CommentResponse
 from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDeleteForm, NewTopicForm, MergeCommentForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
-from radregator.core.exceptions import UnknownOutputFormatException 
+from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
+                                       MissingParameter, RecentlyResponded, \
+                                       MethodUnsupported
 from django.core import serializers
 from utils import slugify
 from django.http import Http404
 
 import logging
+import json
+import datetime
 
 # Set up logging
 
@@ -270,7 +274,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     try:
         # Right now we only support json as an output format
         if output_format != 'json':
-            raise UnknownOutputFormatException("Unknown output format '%s'" % \
+            raise UnknownOutputFormat("Unknown output format '%s'" % \
                                               (output_format))
 
         # topic_slug_or_id can either be a slug or an id
@@ -305,7 +309,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
                                      fields=('comment_type', 'text', 'user'),
                                      use_natural_keys=True)
 
-    except UnknownOutputFormatException:
+    except UnknownOutputFormat:
         pass
         # TODO: Handle this exception
         # QUESTION: What is the best way to return errors in JSON?
@@ -315,8 +319,120 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
 
     return HttpResponse(data, mimetype='application/json') 
 
-def api_comment_concur(request, comment_id, output_format='json'):
-    logger.debug("got here!")
-    data = ()
-    return HttpResponse("")
-    #return HttpResponse(data, mimetype='application/json')
+def api_comment_responses(request, comment_id, output_format='json',
+                          response_id=None):
+    """Provide RESTful responses to calls for comment responses.
+    
+       Example API calls:
+       
+       Create a new concur response
+       Method: POST
+       URI: /api/json/comments/1/responses/
+       Request data: {"type":"concur"}
+       Response code: 201 Created
+       Response data: {"uri": "/api/json/comments/1/responses/1/"} 
+       
+    """
+
+    # A user can only respond once during this time period
+    RESPONSE_WINDOW_HOURS = 0
+    RESPONSE_WINDOW_MINUTES = 5
+
+    data = {}
+    status=200 # Be optimistic
+
+    try:
+        if request.is_ajax():
+            user_id = request.session.get('_auth_user_id', False)
+
+            if user_id: 
+                # User is logged in, get the user object
+                user = UserProfile.objects.get(user__id = user_id)
+            else:
+                pass
+                # TODO: Handle the case when a user who isn't logged in tries
+                # to comment.
+
+            if request.method == 'POST':
+                request_data = json.loads(request.raw_post_data)
+
+                if "type" not in request_data.keys():
+                    raise MissingParameter("You must specify a 'type' parameter to indicate which kind of comment response is being created")
+
+                # Try to get the comment object
+                comment = Comment.objects.get(id = comment_id)
+
+                try:
+                    # Check if the user has already responded
+                    response = CommentResponse.objects.get(comment=comment, \
+                        user__user__id=user_id,type=request_data['type'])
+
+                except ObjectDoesNotExist:
+                    pass
+                    # The user hasn't responded to this comment.  We're cool.
+                else:
+                    # Get the current time
+                    now = datetime.datetime.now()
+
+                    # Get the difference between now and when the user last 
+                    # responded
+                    time_diff = now - response.created
+
+                    # Calculate the allowable window
+                    time_window = datetime.timedelta( \
+                        hours=RESPONSE_WINDOW_HOURS, \
+                        minutes=RESPONSE_WINDOW_MINUTES);
+
+                    # Check when the user commented
+                    if time_diff < time_window:
+                      # User has already commented within the allowable window 
+
+                      # Calculate how long the user has to wait
+                      wait = time_window - time_diff
+                      wait_hours, remainder = divmod(wait.seconds, 3600)
+                      wait_minutes, wait_seconds = divmod(remainder, 60)
+
+                      raise RecentlyResponded( \
+                        "You must wait %d hours, %d minutes before responding" % \
+                        (wait_hours, wait_minutes))
+        
+                comment_response = CommentResponse(user=user, comment=comment, \
+                                                   type=request_data['type']) 
+                comment_response.save()
+
+                status = 201
+                data['uri'] = "/api/%s/comments/%s/responses/%s/" % \
+                              (output_format, comment_id, comment_response.id)
+                    
+            elif request.method == 'PUT':
+                raise MethodUnsupported("PUT is not supported at this time.")
+            elif request.method == 'DELETE':
+                raise MethodUnsupported("DELETE is not supported at this time.")
+            else:
+                # GET 
+                raise MethodUnsupported("GET is not supported at this time.")
+
+        else:
+            # Non-AJAX request.  Disallow for now.
+            raise NonAjaxRequest( \
+                "Remote API calls aren't allowed right now. " + \
+                "This might change some day.")
+
+    except ObjectDoesNotExist, e:
+        status = 404 # Not found
+        data['error'] = "%s" % e
+    except NonAjaxRequest, e:
+        status = 403 # Forbidden
+        data['error'] = "%s" % e
+    except MissingParameter, e:
+        status = 400 # Bad Request
+        data['error'] = "%s" % e
+    except RecentlyResponded, e:
+        status = 403 # Forbidden
+        data['error'] = "%s" % e
+    except MethodUnsupported, e:
+        status = 405 # Method not allowed
+        data['error'] = "%s" % e
+
+    return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
