@@ -8,7 +8,8 @@ from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from core.exceptions import MethodUnsupported, NonAjaxRequest
-from users.exceptions import BadUsernameOrPassword, UserAccountDisabled
+from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
+                             UserUsernameExists, UserEmailExists
 
 def disabled_act(request):
     template_dict = {}
@@ -255,4 +256,83 @@ def api_auth(request, uri_username, output_format='json'):
 
 def api_users(request):
     """Catch-all view for user api calls."""
-    pass
+    
+    data = {} # Response data 
+    status = 200 # Ok
+
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                # Registering a new user
+                if form.is_valid():
+                    form = RegisterForm(request.POST)
+                    f_username = form.cleaned_data['username']
+                    f_password = form.cleaned_data['password']
+                    f_email = form.cleaned_data['email']
+                    f_first_name = form.cleaned_data['first_name']
+                    f_last_name = form.cleaned_data['last_name']
+                    f_street_address = form.cleaned_data['street_address']
+                    f_city = form.cleaned_data['city']
+                    f_state = form.cleaned_data['state']
+                    f_zip_code = form.cleaned_data['zip_code']
+                    f_phone = form.cleaned_data['phone']
+                    f_dob = form.cleaned_data['dob']
+                    #we validate the username / email is unique by overriding
+                    #clean_field methods in RegisterForm
+                    baseuser = User.objects.create_user(username=f_username,\
+                        password=f_password, email=f_email)
+                    baseuser.first_name=f_first_name
+                    baseuser.last_name=f_last_name
+                    baseuser.save()
+                    newuser = UserProfile(user=baseuser, city=f_city, \
+                        street_address=f_street_address, state=f_state, \
+                        zip=f_zip_code, phone_number=f_phone)
+                    newuser.save()
+
+                    # Create user
+                    user = authenticate(username=username, password=password)
+                    login(request, user)
+
+                    # Set our response codes and data
+                    status = 201 # Created
+                    data['username'] = username
+                    data['uri'] = '/api/%s/users/%s/' % (output_format, \
+                        username)
+
+                else:
+                    # Form didn't validate
+
+                    # Look through error fields to see if there was a username 
+                    # or e-mail conflict.
+                    if 'username' in form.errors.keys():
+                        if form.errors['username'] == form.USERNAME_EXISTS_MSG:
+                            raise UserUsernameExists(form.USERNAME_EXISTS_MSG) 
+
+                    if 'email' in form.errors.keys():
+                        if form.errors['email'] == form.EMAIL_EXISTS_MSG:
+                            raise UserEmailExists(form.EMAIL_EXISTS_MSG) 
+
+                    status = 400 # Bad Request
+                    data['error'] = "Some required fields are missing"
+                    data['field_errors'] = form.errors
+
+            else:
+                # Method not POST
+                raise MethodUnsupported("This endpoint only accepts POSTs.")
+        else:
+            # Non-AJAX request.  Disallow for now.
+            raise NonAjaxRequest( \
+                "Remote API calls aren't allowed right now. " + \
+                "This might change some day.")
+
+    except NonAjaxRequest as detail:
+        status = 403 # Forbidden
+        data['error'] = "%s" % detail 
+
+    except (UserUsernameExists, UserEmailExists) as detail:
+        status = 409 # Conflict
+        data['error'] = "%s" % detail 
+
+
+    return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
