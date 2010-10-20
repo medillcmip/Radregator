@@ -252,6 +252,9 @@ def api_comment_responses(request, comment_id, output_format='json',
     except RecentlyResponded, e:
         status = 403 # Forbidden
         data['error'] = "%s" % e
+    except MethodUnsupported, e:
+        status = 405 # Method not allowed
+        data['error'] = "%s" % e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
