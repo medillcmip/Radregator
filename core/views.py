@@ -220,6 +220,17 @@ def newtopic(request):
 
 
 
+def replytocomment(request):
+    if request.method == 'POST':
+        if request.user.is_anonymous():
+            return HttpResponseDirect("/authenticate")
+
+        form = CommentReplyForm(request.POST)
+
+        if not form.is_valid():
+            # Raise exceptions
+            return
+            
 
 
 def frontpage(request):
