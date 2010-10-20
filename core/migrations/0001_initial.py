@@ -6,6 +6,12 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("tagger", "0001_initial"),
+        ("users", "0001_initial"),
+        ("clipper", "0001_initial"),
+    )
+
     def forwards(self, orm):
         
         # Adding model 'Summary'
