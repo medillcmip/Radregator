@@ -5,19 +5,32 @@
     <title>radregator</title>
   </head>
   <body>
-    <h1>radregator</h1>
-    Login via site credentials<br> 
-    <!-- BEGIN FORM -->
-    <form method="POST" action="login">
-     {{ form.as_p }}
-     {% csrf_token %}
-    <input type="submit" class="btn" value="Go!" />
-
-    </form>
-    <br>OR Login using Facebook<br>
-    <p><fb:login-button autologoutlink="true"></fb:login-button></p>
-
-    <div id="fb-root"></div>
+	<h1>Register or Login</h1>
+  	<div id="loginwrap" class="reglog-overlay">
+	    <h3>Login</h3>
+	    <form method="POST" action="login">
+			{{ form.as_p }}
+			{% csrf_token %}
+			<input type="submit" class="btn" value="Go!" />
+	    </form>
+	    <h3>Login using Facebook</h3>
+	    <fb:login-button autologoutlink="true"></fb:login-button>
+	    <div id="fb-root"></div>
+	</div>
+    
+    
+    
+    <div id="regwrap" class="reglog-overlay">
+    
+        <h3>New here? Get registered</h3>
+		<form method="POST" action="register">
+			{{form.as_p}} 
+			{% csrf_token %}
+			<input type="submit" class="btn" value="Go!" />
+		</form>
+    </div>
+    
+    
 <!-- fb scripts need to appear after fb-root div so it exists before this block is executed FYI -->
 <!-- Probably want to move this into it's own page at some point so and include all logout logic on one page -->
 <script src="http://connect.facebook.net/en_US/all.js"></script>
@@ -34,7 +47,6 @@
   });
 </script>
 
-    <BR>Or, <a href="register">register to use the site</a>
-  </body>
+	</body>
 </html>
 
