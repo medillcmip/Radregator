@@ -7,7 +7,7 @@ from django.contrib.localflavor.us.forms import USZipCodeField,\
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30)
-    password = forms.CharField(max_length=30)
+    password = forms.CharField(max_length=30, widget=forms.PasswordInput)
     
     def clean(self):
         """ 
