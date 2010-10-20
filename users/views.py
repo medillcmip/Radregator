@@ -8,7 +8,8 @@ from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from core.exceptions import MethodUnsupported
-from users.exceptions import BadUsernameOrPassword, UserAccountDisabled
+from users.exceptions import BadUsernameOrPassword, UserAccountDisabled,
+                             NonAjaxRequest
 
 def disabled_act(request):
     template_dict = {}
@@ -201,33 +202,43 @@ def api_auth(request):
     status = 200 # Ok
 
     try:
-        if request.method == 'POST':
-            form = LoginForm(request.POST)
+        if request.is_ajax():
+            if request.method == 'POST':
+                form = LoginForm(request.POST)
 
-            if form.is_valid():
-                username = form.cleaned_data['username']
-                password = form.cleaned_data['password']
+                if form.is_valid():
+                    username = form.cleaned_data['username']
+                    password = form.cleaned_data['password']
 
-                # Try to authenticate the user
-                user = authenticate(username=username, password=password)
+                    # Try to authenticate the user
+                    user = authenticate(username=username, password=password)
 
-                if user is not None:
-                    if user.is_active:
-                        login(request, user)
+                    if user is not None:
+                        if user.is_active:
+                            login(request, user)
+                        else:
+                            raise UserAccountDisabled
                     else:
-                        raise UserAccountDisabled
+                        raise BadUsernameOrPassword
+
                 else:
-                    raise BadUsernameOrPassword
+                    # user done messed up, let em know
+                    status = 400 # Bad Request
+                    data['error'] = "Some required fields are missing"
+                    data['field_errors'] = form.errors
 
             else:
-                # user done messed up, let em know
-                status = 400 # Bad Request
-                data['error'] = "Some required fields are missing"
-                data['field_errors'] = form.errors
-
+                # Method not POST
+                raise MethodUnsupported("This endpoint only accepts POSTs.")
         else:
-            # Method not POST
-            raise MethodUnsupported("This endpoint only accepts POSTs.")
+            # Non-AJAX request.  Disallow for now.
+            raise NonAjaxRequest( \
+                "Remote API calls aren't allowed right now. " + \
+                "This might change some day.")
+
+    except NonAjaxRequest, e:
+        status = 403 # Forbidden
+        data['error'] = "%s" % e
 
     except MethodUnsupported, error:
         status = 405 # Method not allowed
@@ -239,3 +250,7 @@ def api_auth(request):
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
+
+def api_users(request):
+    """Catch-all view for user api calls."""
+    pass
