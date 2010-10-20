@@ -67,7 +67,6 @@ class Migration(SchemaMigration):
             ('userprofile', models.ForeignKey(orm['users.userprofile'], null=False))
         ))
         db.create_unique('core_comment_sources', ['comment_id', 'userprofile_id'])
-        db.send_create_signal('core', ['Comment'])
 
         # Adding M2M table for field tags on 'Comment'
         db.create_table('core_comment_tags', (
@@ -115,6 +114,7 @@ class Migration(SchemaMigration):
             ('comment', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Comment'])),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['users.UserProfile'])),
             ('type', self.gf('django.db.models.fields.CharField')(max_length=20)),
+            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
         ))
         db.send_create_signal('core', ['CommentResponse'])
 
@@ -241,6 +241,7 @@ class Migration(SchemaMigration):
         'core.commentresponse': {
             'Meta': {'object_name': 'CommentResponse'},
             'comment': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['core.Comment']"}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'type': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['users.UserProfile']"})
