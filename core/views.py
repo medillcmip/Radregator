@@ -544,23 +544,30 @@ def api_comment_responses(request, comment_id, output_format='json',
                           raise RecentlyResponded( \
                             "You must wait %d hours, %d minutes " +
                             "before responding" % (wait_hours, wait_minutes))
+
+                elif responses.count() == 0:
+                    pass
                             
                 else:
                     raise MaximumExceeded("User has already made maximum " + \
                                           "number of responses")
         
-                comment_response = CommentResponse(user=user, comment=comment, \
+                comment_response = CommentResponse(user=user, \
+                                                   comment=comment, \
                                                    type=response_type) 
                 comment_response.save()
 
                 status = 201
                 data['uri'] = "/api/%s/comments/%s/responses/%s/" % \
-                              (output_format, comment_id, comment_response.id)
+                              (output_format, comment_id, \
+                               comment_response.id)
                     
             elif request.method == 'PUT':
                 raise MethodUnsupported("PUT is not supported at this time.")
+
             elif request.method == 'DELETE':
                 raise MethodUnsupported("DELETE is not supported at this time.")
+                
             else:
                 # GET 
                 raise MethodUnsupported("GET is not supported at this time.")
