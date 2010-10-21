@@ -279,7 +279,7 @@ ul.recentquestcons li p.chef {
 	float: right;
 }
 
-ul.recentquestcons li p.agrees {
+ul.recentquestcons li p.response-counter {
 	font-size: 1.4em;
 	float: right;
 	text-align: center;
@@ -288,7 +288,7 @@ ul.recentquestcons li p.agrees {
 	padding-top: 20px;
 }
 
-ul.recentquestcons li p.agrees span {
+ul.recentquestcons li p.response-counter span {
 	display: block;
 	text-align: center;
 	font-size: 0.7em;
