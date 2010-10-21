@@ -8,9 +8,12 @@ from django.core.urlresolvers import reverse
 from radregator.users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
-from models import Topic,CommentType, Comment, Summary, CommentRelation, CommentResponse
+from models import Topic,CommentType, Comment, Summary, CommentRelation, \
+                   CommentResponse
 from radregator.tagger.models import Tag
-from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDeleteForm, NewTopicForm, MergeCommentForm
+from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, \
+                                  TopicDeleteForm, NewTopicForm, \
+                                  MergeCommentForm
 from radregator.core.forms import CommentTopicForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
