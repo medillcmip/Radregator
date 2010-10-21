@@ -20,6 +20,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
                                        MethodUnsupported
+from radregator.users.exceptions import UserNotAuthenticated
 from django.core import serializers
 from utils import slugify
 from django.http import Http404
@@ -431,9 +432,7 @@ def api_comment_responses(request, comment_id, output_format='json',
                 # User is logged in, get the user object
                 user = UserProfile.objects.get(user__id = user_id)
             else:
-                pass
-                # TODO: Handle the case when a user who isn't logged in tries
-                # to comment.
+                raise UserNotAuthenticated
 
             if request.method == 'POST':
 
@@ -515,6 +514,9 @@ def api_comment_responses(request, comment_id, output_format='json',
         data['error'] = "%s" % e
     except MethodUnsupported, e:
         status = 405 # Method not allowed
+        data['error'] = "%s" % e
+    except UserNotAuthenticated as e:
+        status = 401 # Unauthorized
         data['error'] = "%s" % e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
