@@ -43,7 +43,7 @@
 	<h2>Recent Questions & Concerns</h2>
 		<ul class="recentquestcons">
 			{% for comment, indentlevel in thetopic.comments_to_show %}
-				<li class="comment comment-level{{indentlevel}}" id="comment-{{comment.id}}">
+				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}}" id="comment-{{comment.id}}">
 					<p class="bbq">{{ comment.text }}</p>
 					
 					<a href="#" class="youagree">I concur</a>
