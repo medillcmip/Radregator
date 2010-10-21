@@ -15,6 +15,7 @@
 	<meta name="viewport" content="width=960" /> 
 	
 	<link href="/static/css/style.css" rel="stylesheet" type="text/css" /> 
+	<link href="/static/css/colorbox.css" rel="stylesheet" type="text/css" /> 
 	
 	
 	<script src="/static/js/jquery.tools.min.js"></script>
@@ -40,7 +41,7 @@
             });
 			
 			// Registration/Login Overlay
-			$("a.colorbox").colorbox();
+			$('a.cbox').colorbox({width:750, height:450, iframe:true});
 
   		});
   		
@@ -56,7 +57,7 @@
 		   <div id="header">
 		<div class="reglog">
             {% if user.is_authenticated %}
-            <a class="cbox" href='/logout'>logout</a>
+            Hello {{ user.username }}. <a href='/logout'>Not you?</a>
             {% else %}
 			<a class="cbox" href="/authenticate">Login or register</a>
             {% endif %}

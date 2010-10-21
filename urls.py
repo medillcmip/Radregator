@@ -24,12 +24,20 @@ urlpatterns = patterns('',
     (r'^deletetopics', 'radregator.core.views.deletetopics'),
     (r'^mergecomments', 'radregator.core.views.mergecomments'),
     (r'^newtopic', 'radregator.core.views.newtopic'),
+    (r'^associatecomment', 'radregator.core.views.associatecomment'),
+    (r'^disassociatecomment', 'radregator.core.views.disassociatecomment'),
     (r'^disabled_act', 'radregator.users.views.disabled_act'),
 
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'radregator.core.views.api_topic_comments'),
 
     (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/responses/(?P<response_id>\d*)$',
      'radregator.core.views.api_comment_responses'),
+
+    (r'^api/(?P<output_format>json)/users/(?P<uri_username>[a-zA-Z]\w+)/login/$',
+     'radregator.users.views.api_auth'),
+
+    (r'^api/(?P<output_format>json)/users/$',
+     'radregator.users.views.api_users'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

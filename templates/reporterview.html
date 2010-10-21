@@ -27,6 +27,24 @@ Create a new topic, with optional starting comment:
 </form>
 
 <br><br>
+<form action="/associatecomment/" method="post">
+Associate a comment with a topic:
+{{ associatecommentform.as_p }}
+
+{% csrf_token %}
+<input type = "submit" value = "Submit" />
+</form>
+
+<br><br>
+<form action="/disassociatecomment/" method="post">
+Disassociate a comment from a topic:
+{{ disassociatecommentform.as_p }}
+
+{% csrf_token %}
+<input type = "submit" value = "Submit" />
+</form>
+
+<br><br>
 <form action="/mergecomments"/" method="post">
 Merge comments into a parent comment.
 {{ mergecommentform.as_p }}
