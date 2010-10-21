@@ -39,6 +39,12 @@ urlpatterns = patterns('',
     (r'^api/(?P<output_format>json)/users/$',
      'radregator.users.views.api_users'),
 
+    (r'^api/(?P<output_format>json)/comments/submit',
+     'radregator.core.views.api_commentsubmission'),
+
+    (r'^commentsubmit',
+     'radregator.core.views.api_commentsubmission'), # For debugging purposes
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

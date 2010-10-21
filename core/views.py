@@ -17,7 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from core.exceptions import MethodUnsupported, NonAjaxRequest
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
-                                       MethodUnsupported
+                                       MethodUnsupported,InvalidTopic
 from django.core import serializers
 from utils import slugify
 from django.http import Http404
@@ -56,6 +56,8 @@ def simpletest(request, whichtest):
         form = CommentTopicForm()
     elif whichtest == 'disassociatecomment':
         form = CommentTopicForm()
+    elif whichtest == 'commentsubmit':
+        form = CommentSubmitForm()
     else:
         raise Http404
         
@@ -272,7 +274,7 @@ def newtopic(request):
 
 
 
-def commentsubmission(request):
+def api_commentsubmission(request, output_format = 'json'):
     
     data = {} # response data
     status = 200 # OK
