@@ -7,6 +7,13 @@ from django.forms.widgets import CheckboxSelectMultiple
 class CommentDeleteForm(forms.Form):
     allcomments = Comment.objects.filter(is_deleted=False).filter(is_parent=True)
     comments = forms.ModelMultipleChoiceField(allcomments, )
+
+class CommentTopicForm(forms.Form):
+    allcomments = Comment.objects.filter(is_deleted=False).filter(is_parent=True)
+    alltopics = Topic.objects.filter(is_deleted=False)
+    comment = forms.ModelChoiceField(allcomments, empty_label = None)
+    topic = forms.ModelChoiceField(alltopics, empty_label = None)
+
     
 class TopicDeleteForm(forms.Form):
     alltopics = Topic.objects.filter(is_deleted=False)
@@ -50,7 +57,7 @@ class CommentSubmitForm(forms.Form):
     comment_type_str = forms.ModelChoiceField(comment_types,label = 'I have a', widget = forms.Select(attrs = {'class' : 'questorcon'}), empty_label = None)
     text = forms.CharField(required=True, label = '', widget=forms.TextInput(attrs= {'class' : 'conquest', }))
     topic = forms.CharField(initial = Topic.objects.all()[0].title, widget=forms.widgets.HiddenInput(attrs = {'class' : 'topic'} ))
-    in_reply_to = forms.ModelChoiceField(allcomments, widget = forms.HiddenInput)
+    in_reply_to = forms.ModelChoiceField(allcomments, widget = forms.HiddenInput, required=False)
 
     class Meta:
         fields = ['comment_type_str', 'text', 'tags', 'newtag', 'topic', 'in_reply_to']

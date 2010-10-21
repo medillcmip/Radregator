@@ -42,3 +42,10 @@ FB_SECRET_KEY = ''
 ENABLE_FIREPYTHON=False
 if DEBUG and ENABLE_FIREPYTHON:
     MIDDLEWARE_CLASSES += ('firepython.middleware.FirePythonDjango',)
+
+
+# Set to True to show uncaught exceptions in the runserver window.
+# Don't use this in a production environment
+# See http://stackoverflow.com/questions/690723/log-all-errors-to-console-or-file-on-django-site/691252#691252
+if DEBUG:
+    DEBUG_PROPAGATE_EXCEPTIONS = False 

@@ -7,11 +7,15 @@ class ApiTestCase(unittest.TestCase):
     def setUp(self):
         pass
 
+    def test_create_concur_response(self):
+        pass
+
     def test_get_responses(self):
         c = Client()
         response = c.get('/api/json/comments/1/responses/',
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         json_content = json.loads(response.content)
+        print json_content
 
         self.fail("Test not yet implemented.")
 

@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate, login, logout
 from models import Topic,CommentType, Comment, Summary, CommentRelation, CommentResponse
 from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDeleteForm, NewTopicForm, MergeCommentForm
+from radregator.core.forms import CommentTopicForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
@@ -20,31 +21,8 @@ from django.core import serializers
 from utils import slugify
 from django.http import Http404
 
-import logging
 import json
 import datetime
-
-# Set up logging
-
-# create logger
-logger = logging.getLogger("radregator") 
-
-# create console handler and set level to debug
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-
-# create formatter
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
-# add formatter to ch
-ch.setFormatter(formatter)
-
-# add ch to logger
-logger.addHandler(ch)
-
-if settings.DEBUG:
-    # If we're in DEBUG mode, set log level to DEBUG
-    logger.setLevel(logging.DEBUG) 
 
 def reporterview(request):
     """ VERY rudimentary reporter view"""
@@ -53,7 +31,10 @@ def reporterview(request):
         'commentdeleteform' : CommentDeleteForm(),
         'topicdeleteform' : TopicDeleteForm(),
         'newtopicform' : NewTopicForm(),
-        'mergecommentform' : MergeCommentForm()
+        'mergecommentform' : MergeCommentForm(),
+        'associatecommentform' : CommentTopicForm(),
+        'disassociatecommentform' : CommentTopicForm(),
+
         }
 
     template_dict.update(csrf(request))
@@ -70,6 +51,10 @@ def simpletest(request, whichtest):
         form = NewTopicForm()
     elif whichtest == 'mergecomments':
         form = MergeCommentForm()
+    elif whichtest == 'associatecomment':
+        form = CommentTopicForm()
+    elif whichtest == 'disassociatecomment':
+        form = CommentTopicForm()
     else:
         raise Http404
         
@@ -80,6 +65,67 @@ def simpletest(request, whichtest):
 
     return render_to_response('simpletest.html', template_dict)
         
+def disassociatecomment(request):
+    """ Associate a comment with a given topic"""
+
+    if request.method != 'POST':
+        return HttpResponseRedirect("/reporterview")
+
+    if request.user.is_anonymous():
+        return HttpResponseRedirect("/authenticate")
+
+    userprofile = UserProfile.objects.get(user=request.user)
+
+    if not userprofile.is_reporter():
+        # Needs to handle this case better
+        return HttpResponseRedirect("/authenticate")
+
+    # So, it's a reporter
+
+    form = CommentTopicForm(request.POST)
+
+    if not form.is_valid():
+        return HttpResponseRedirect("/reporterview")
+
+    comment = form.cleaned_data['comment']
+    topic = form.cleaned_data['topic']
+
+    comment.topics.remove(topic)
+    comment.save()
+    topic.save()
+    return HttpResponseRedirect("/reporterview")
+
+def associatecomment(request):
+    """ Associate a comment with a given topic"""
+
+    if request.method != 'POST':
+        return HttpResponseRedirect("/reporterview")
+
+    if request.user.is_anonymous():
+        return HttpResponseRedirect("/authenticate")
+
+    userprofile = UserProfile.objects.get(user=request.user)
+
+    if not userprofile.is_reporter():
+        # Needs to handle this case better
+        return HttpResponseRedirect("/authenticate")
+
+    # So, it's a reporter
+
+    form = CommentTopicForm(request.POST)
+
+    if not form.is_valid():
+        return HttpResponseRedirect("/reporterview")
+
+    comment = form.cleaned_data['comment']
+    topic = form.cleaned_data['topic']
+
+    comment.topics.add(topic)
+    comment.save()
+    topic.save()
+    return HttpResponseRedirect("/reporterview")
+
+
 def mergecomments(request):
     if request.method != 'POST':
         return HttpResponseRedirect("/reporterview")
@@ -180,6 +226,11 @@ def deletecomments(request):
 
     return HttpResponseRedirect("/reporterview")
 
+
+
+
+    
+
 def newtopic(request):
     if request.method != 'POST':
         return HttpResponseRedirect("/reporterview")
@@ -233,6 +284,13 @@ def replytocomment(request):
             
 
 
+
+
+
+
+
+    
+
 def frontpage(request):
     """ Front page demo"""
 
@@ -253,10 +311,16 @@ def frontpage(request):
             comment.save() # We have to save the comment object so it has a primary key, before we can link tags to it.
 
             topic = form.cleaned_data['topic']
+            in_reply_to = form.cleaned_data['in_reply_to']
 
             comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
             comment.save()
             form = CommentSubmitForm() # successfully submitted, give them a new form
+
+            if in_reply_to: # Comment is in reply to another comment
+                reply_relation = CommentRelation(left_comment = comment, right_comment = in_reply_to, relation_type = 'reply')
+                reply_relation.save()
+
     
     else: form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
     template_dict = {}
@@ -265,6 +329,9 @@ def frontpage(request):
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
+    template_dict['comments'] = {}
+
+        
     template_dict.update(csrf(request)) # Required for csrf system
     return render_to_response('frontpage.html', template_dict,context_instance=RequestContext(request))
    

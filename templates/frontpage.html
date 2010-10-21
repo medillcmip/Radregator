@@ -42,7 +42,7 @@
 			
 	<h2>Recent Questions & Concerns</h2>
 		<ul class="recentquestcons">
-			{% for comment in thetopic.comments_to_show %}
+			{% for comment, indentlevel in thetopic.comments_to_show %}
 				<li>
 					<p class="bbq">{{ comment.text }}</p>
 					
