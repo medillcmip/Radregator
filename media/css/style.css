@@ -288,7 +288,7 @@ ul.recentquestcons li p.response-counter {
 	padding-top: 20px;
 }
 
-ul.recentquestcons li p.response-counter span {
+ul.recentquestcons li p.response-counter span.description {
 	display: block;
 	text-align: center;
 	font-size: 0.7em;
