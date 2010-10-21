@@ -27,3 +27,10 @@ class UserEmailExists(Exception):
 
    def __str__(self):
        return repr(self.msg)
+
+class UserNotAuthenticated(Exception):
+   def __init__(self, msg='User is not authenticated.  Please login.'):
+       self.msg = msg 
+
+   def __str__(self):
+       return repr(self.msg)
