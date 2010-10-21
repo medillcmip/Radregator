@@ -12,6 +12,12 @@ def slugify(s):
     return new_s
 
 def get_logger():
+    """Configure logging.
+     
+       Thanks http://djangosnippets.org/snippets/16/  
+    
+    """
+    
     # create logger
     logger = logging.getLogger() 
 
