@@ -14,9 +14,10 @@ from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDel
 from radregator.core.forms import CommentTopicForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
+from core.exceptions import MethodUnsupported, NonAjaxRequest
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
-                                       MethodUnsupported
+                                       MethodUnsupported,InvalidTopic
 from django.core import serializers
 from utils import slugify
 from django.http import Http404
@@ -55,6 +56,8 @@ def simpletest(request, whichtest):
         form = CommentTopicForm()
     elif whichtest == 'disassociatecomment':
         form = CommentTopicForm()
+    elif whichtest == 'commentsubmit':
+        form = CommentSubmitForm()
     else:
         raise Http404
         
@@ -271,16 +274,63 @@ def newtopic(request):
 
 
 
-def replytocomment(request):
-    if request.method == 'POST':
-        if request.user.is_anonymous():
-            return HttpResponseDirect("/authenticate")
+def api_commentsubmission(request, output_format = 'json'):
+    
+    data = {} # response data
+    status = 200 # OK
 
-        form = CommentReplyForm(request.POST)
+    try:
+        if request.method == 'POST':
 
-        if not form.is_valid():
-            # Raise exceptions
-            return
+            form = CommentSubmitForm(request.POST)
+
+            if request.user.is_anonymous():
+                status = 401 # Unauthorized
+                data['error'] = "You need to log in"
+                data['field_errors'] = form.errors
+
+            userprofile = UserProfile.objects.get(user=request.user)
+
+            if not form.is_valid():
+                # Raise exceptions
+
+                status = 400 # Bad request
+                data['error'] = "Some required fields are missing or invalid."
+                data['field_errors'] = form.errors
+
+
+            else:
+                # Form is good
+                
+                f_comment_type = form.cleaned_data['comment_type_str'] # a comment type
+                f_text = form.cleaned_data['text'] # Text
+                try: f_topic = Topic.objects.get(title = form.cleaned_data['topic']) # a topic name
+                except:
+                    raise InvalidTopic()
+
+                f_in_reply_to = form.cleaned_data['in_reply_to'] # a comment
+
+                comment = Comment(text = form.cleaned_data['text'], user = userprofile)
+                comment.comment_type = f_comment_type
+                comment.save()
+                comment.topics = [f_topic]
+                comment.save()
+
+                if f_in_reply_to: # Comment is in reply to another comment
+                    reply_relation = CommentRelation(left_comment = comment, right_comment = f_in_reply_to, relation_type = 'reply')
+                    reply_relation.save()
+
+
+        else: # Not a post
+            raise MethodUnsupported("This endpoint only accepts POSTs.")
+        
+    except InvalidTopic:
+        status = 400 # Bad Request
+        data['error'] = "Invalid topic"
+
+    return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
+
+
             
 
 
@@ -301,6 +351,7 @@ def frontpage(request):
         
         # If someone just submitted a comment, load the form
         form = CommentSubmitForm(request.POST)
+        
         
         if form.is_valid():
             # Validate the form
@@ -323,12 +374,14 @@ def frontpage(request):
 
     
     else: form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
+    reply_form = CommentSubmitForm(initial = {'in_reply_to' : Comment.objects.all()[0]})
     template_dict = {}
 
     topics = Topic.objects.filter(is_deleted=False)[:5] # Will want to filter, order in later versions
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
+    template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
 
         
@@ -406,7 +459,8 @@ def api_comment_responses(request, comment_id, output_format='json',
        Create a new concur response
        Method: POST
        URI: /api/json/comments/1/responses/
-       Request data: {"type":"concur"}
+       Request paramets:
+        type:   "concur"
        Response code: 201 Created
        Response data: {"uri": "/api/json/comments/1/responses/1/"} 
        
@@ -432,10 +486,11 @@ def api_comment_responses(request, comment_id, output_format='json',
                 # to comment.
 
             if request.method == 'POST':
-                request_data = json.loads(request.raw_post_data)
 
-                if "type" not in request_data.keys():
+                if "type" not in request.POST.keys():
                     raise MissingParameter("You must specify a 'type' parameter to indicate which kind of comment response is being created")
+
+                response_type = request.POST['type']
 
                 # Try to get the comment object
                 comment = Comment.objects.get(id = comment_id)
@@ -443,7 +498,7 @@ def api_comment_responses(request, comment_id, output_format='json',
                 try:
                     # Check if the user has already responded
                     response = CommentResponse.objects.get(comment=comment, \
-                        user__user__id=user_id,type=request_data['type'])
+                        user__user__id=user_id, type=response_type)
 
                 except ObjectDoesNotExist:
                     pass
@@ -475,7 +530,7 @@ def api_comment_responses(request, comment_id, output_format='json',
                         (wait_hours, wait_minutes))
         
                 comment_response = CommentResponse(user=user, comment=comment, \
-                                                   type=request_data['type']) 
+                                                   type=response_type) 
                 comment_response.save()
 
                 status = 201

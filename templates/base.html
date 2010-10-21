@@ -43,6 +43,35 @@
 			// Registration/Login Overlay
 			$('a.cbox').colorbox({width:750, height:450, iframe:true});
 
+            // Response links
+            $('a.youagree').click(function() {
+                var thiscomment = $(this).closest('.comment'); 
+                var thiscomment_id = 
+                    thiscomment.attr('id').replace('comment-', '');
+                var response_type = 'concur';
+
+                $.ajax({
+                    type: "post", 
+                    url: "/api/json/comments/" + thiscomment_id + "/responses/",
+                    data: { type : response_type },
+				    success: function(data){
+                        // TODO: Update counter
+					},
+				    error: function (requestError, status, errorResponse) {
+						var errorNum = requestError.status;
+						if (errorNum == "404") {
+							var errorMsg = "Error: Please enter a username.";
+						} else {
+							var errorMsg = " Error: That username + password failed. Please try again."
+							// alert(errorMsg);
+						}
+				    }
+                });
+            });
+
+
+
+
   		});
   		
 	</script> 
