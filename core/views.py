@@ -352,6 +352,7 @@ def frontpage(request):
         # If someone just submitted a comment, load the form
         form = CommentSubmitForm(request.POST)
         
+        
         if form.is_valid():
             # Validate the form
             comment_type = form.cleaned_data['comment_type_str'] # look up comment by name
@@ -373,12 +374,14 @@ def frontpage(request):
 
     
     else: form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
+    reply_form = CommentSubmitForm(initial = {'in_reply_to' : Comment.objects.all()[0]})
     template_dict = {}
 
     topics = Topic.objects.filter(is_deleted=False)[:5] # Will want to filter, order in later versions
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
+    template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
 
         

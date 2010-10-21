@@ -62,6 +62,13 @@
 		</div>-->
 	</div>
 
+    <div id = "replyform">
+    <form action = "/api/json/comments/submit/" method="post">
+    {{ reply_form.as_p}}
+
+    </form>
+    </div>
+
 {% endfor %}
 </div><!--END PANES CONTAINER-->
 
