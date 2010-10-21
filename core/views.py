@@ -456,7 +456,8 @@ def api_comment_responses(request, comment_id, output_format='json',
        Create a new concur response
        Method: POST
        URI: /api/json/comments/1/responses/
-       Request data: {"type":"concur"}
+       Request paramets:
+        type:   "concur"
        Response code: 201 Created
        Response data: {"uri": "/api/json/comments/1/responses/1/"} 
        
@@ -482,10 +483,11 @@ def api_comment_responses(request, comment_id, output_format='json',
                 # to comment.
 
             if request.method == 'POST':
-                request_data = json.loads(request.raw_post_data)
 
-                if "type" not in request_data.keys():
+                if "type" not in request.POST.keys():
                     raise MissingParameter("You must specify a 'type' parameter to indicate which kind of comment response is being created")
+
+                response_type = request.POST['type']
 
                 # Try to get the comment object
                 comment = Comment.objects.get(id = comment_id)
@@ -493,7 +495,7 @@ def api_comment_responses(request, comment_id, output_format='json',
                 try:
                     # Check if the user has already responded
                     response = CommentResponse.objects.get(comment=comment, \
-                        user__user__id=user_id,type=request_data['type'])
+                        user__user__id=user_id, type=response_type)
 
                 except ObjectDoesNotExist:
                     pass
@@ -525,7 +527,7 @@ def api_comment_responses(request, comment_id, output_format='json',
                         (wait_hours, wait_minutes))
         
                 comment_response = CommentResponse(user=user, comment=comment, \
-                                                   type=request_data['type']) 
+                                                   type=response_type) 
                 comment_response.save()
 
                 status = 201
