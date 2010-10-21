@@ -66,10 +66,14 @@
                         var response_data = jQuery.parseJSON(response_text);
 						var errorNum = requestError.status;
 
-						if (errorNum == "401" || errorNum == "403") {
+						if (errorNum == "401") {
 							var errorMsg = response_data.error; 
                             // TODO: Prompt user to login
 						} 
+                        else if (errorNum == "403") {
+							var errorMsg = response_data.error; 
+                            // TODO: Tell user why they can't respond again
+                        }
 
                         console.error(errorMsg);
 				    }
