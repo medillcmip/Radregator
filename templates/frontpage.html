@@ -38,18 +38,75 @@
 			
 			
 	{% include "form.html" %}			
+	
+	<script type="text/javascript">
+	
+		// CLOSE REPLY FUNCTION
+		function closeReplyform (replytype,parentid) {
+			$("#"+parentid+" div."+replytype+"div").animate({
+				height: 0,
+				overflow: 'hidden'
+			}, 150, function() {
+				$("#"+parentid+" div."+replytype+"div").html("").removeClass("opened");
+			});
+		}
+					
+		// OPEN REPLY FUNCTION
+		function openReplyform (replytype,parentid) {				
+			//$("div#"+replytype+"form").append('YO!');
+						
+			var contents = $("div#"+replytype+"form").html();
 			
+			$("#"+parentid+" div."+replytype+"div").animate({
+				height: "100px",
+				overflow: 'hidden'
+			}, 150, function() {
+				$("#"+parentid+" div."+replytype+"div").html(contents).addClass("opened");
+				$("#"+parentid+" div."+replytype+"div").append('<a href="javascript:closeReplyform(\''+replytype+'\',\''+parentid+'\');" class="closereply">close</a>');
+
+			});
+		}
+	
+		$(document).ready(function() {
 			
+			$("a.commenttabs").click(function() {
+				if (docready == "complete") {return false;}
+				
+				var parentid = $(this).closest("li.comment").attr("id");
+				
+				if ($(this).hasClass("attach")) { var replytype = "attach"; }
+					else { var replytype = "reply"; }
+									
+				var docready = "complete";
+				
+				if ($("."+replytype+"div").hasClass("opened")) {
+					closeReplyform(replytype,parentid);
+					return false;
+				}
+
+				openReplyform(replytype, parentid);	
+				return false;	
+			});
+			
+		});
+	
+	
+	</script>		
+	
 	<h2>Recent Questions & Concerns</h2>
 		<ul class="recentquestcons">
 			{% for comment, indentlevel in thetopic.comments_to_show %}
 				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}}" id="comment-{{comment.id}}">
-					<p class="bbq">{{ comment.text }}</p>
-					
-					<a href="#" class="youagree">I concur</a>
-					<p class="agrees">0<span>concur</span></p>
-					<p class="chef">by <span>{{ comment.user }}</span>
-                    <div class="commentreply"> </div>
+					<ul class="commentguts">
+						<li class="bbq"><p class="valign">{{ comment.text }}</p></li>
+						<li class="youagree"><a href="#">I concur</a></li>
+						<li class="agrees">0<span>concur</span></li>
+						<li class="chef">by <span>{{ comment.user }}</span></li>
+					</ul>
+					<a href="#" class="attach commenttabs">Attach an article</a>
+					<a href="#" class="reply commenttabs">Reply</a>
+					<div class="replydiv replyinput"></div>
+					<div class="attachdiv replyinput"></div>
 				</li>
 			{% empty %}
     			<li><p class="bbq">This topic has no related questions, yet.</p></li>
@@ -63,10 +120,19 @@
 	</div>
 
     <div id = "replyform">
-    <form action = "/api/json/comments/submit/" method="post">
-    {{ reply_form.as_p}}
-
-    </form>
+	    <form action = "/api/json/comments/submit/" method="post">
+	   <!-- {{ reply_form.as_p }} -->
+		{{comment_form.text}}
+		<input type="hidden" value="3" name="comment_type_str">
+		{% csrf_token %}
+		<input type="submit" name="submit" class="submit" value="Submit" />
+	    </form>
+    </div>
+    
+    <div id="attachform">
+    <!-- HEY SHANE PUT YOUR SHIZ HERE -->
+    
+    
     </div>
 
 {% endfor %}
