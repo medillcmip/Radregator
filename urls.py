@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     
     (r'^clipper_select', 'radregator.clipper.views.clipper_submit_select'),
     
-    (r'^clipper', 'radregator.clipper.views.clipper_paste_url'),
+    (r'^clipper/(?P<comment_id>\d+)/', 'radregator.clipper.views.clipper_paste_url'),
 
     (r'^deletecomments', 'radregator.core.views.deletecomments'),
     (r'^deletetopics', 'radregator.core.views.deletetopics'),

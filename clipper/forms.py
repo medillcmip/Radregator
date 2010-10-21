@@ -7,4 +7,4 @@ class ClipTextForm(forms.Form):
     #TODO: enlarge via CSS
     selected_text = forms.CharField(widget=forms.Textarea, required=True)
     url_field = forms.URLField(required=True, widget=forms.HiddenInput)
-
+    comment_id_field = forms.CharField(widget=forms.HiddenInput, required=True)

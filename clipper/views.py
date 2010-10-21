@@ -34,9 +34,7 @@ def get_page(url):
 
 @login_required()
 def clipper_submit_select(request):
-    template_dict = {}
-    form = None
-    return_page = 'frontpage.html'
+    template_dict = {} 
     if request.method == 'POST':
         form = clipper.forms.ClipTextForm(request.POST)
         if form.is_valid():
@@ -44,14 +42,25 @@ def clipper_submit_select(request):
             selected_text = form.cleaned_data['selected_text']
             user = users.models.UserProfile.objects.get(user=request.user)
             try:
+                comment = core.models.Comment.objects.get(id=form.cleaned_data['comment_id_field'])
                 the_article = clipper.models.Article.objects.get(url=url)
                 the_clip = clipper.models.Clip(article=the_article, \
                     text = selected_text, user=user)
                 the_clip.save()
+                comment.clips.add(the_clip)
+                comment.save()
+                return HttpResponseRedirect('/')
             except clipper.models.Article.DoesNotExist, e:
                print 'clipper_submit_select(request): ' + str(e)
-    return HttpResponseRedirect('/')
-
+            except core.models.Comment.DoesNotExist, e:
+               print 'clipper_submit_select(request): ' + str(e)
+        else:
+            template_dict['form'] = form
+            return render_to_response('clipper_select_text.html',template_dict,\
+                context_instance=RequestContext(request))
+    #TODO: need to figure out how to deal with the case that people just landed 
+    #here without going through the workflow
+    return HttpResponseRedirect('/404.html')
 
 def create_article(url):
     #ok got the page back lets create an article
@@ -73,7 +82,7 @@ def create_article(url):
         the_article.save()
 
 @login_required()
-def clipper_paste_url(request):
+def clipper_paste_url(request, comment_id):
     """
     grab an html page (or holla back if the input was too rough)
     and fuck that baby up, and spit it out on a new page so the 
@@ -91,7 +100,8 @@ def clipper_paste_url(request):
             #html to output on the next page
             template_dict['requested_page'] = get_page(url)
             template_dict['url'] = url
-            form = clipper.forms.ClipTextForm(initial={'url_field': url})
+            form = clipper.forms.ClipTextForm(initial={'url_field': url,\
+                 'comment_id_field': comment_id})
             return_page = 'clipper_select_text.html'
     else: #first time we hit the page
         form = clipper.forms.UrlSubmitForm()

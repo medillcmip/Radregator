@@ -44,12 +44,15 @@
 		<ul class="recentquestcons">
 			{% for comment, indentlevel in thetopic.comments_to_show %}
 				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}}" id="comment-{{comment.id}}">
+                    {% if comment.clips.all %}
+					<p class="bbq">{{ comment.clips.all.0.text }}</p>
+                    {% else %}
 					<p class="bbq">{{ comment.text }}</p>
-					
+				    {% endif %}	
 					<a href="#" class="youagree">I concur</a>
 					<p class="agrees">0<span>concur</span></p>
 					<p class="chef">by <span>{{ comment.user }}</span>
-                    <div class="commentreply"> </div>
+                    <div class="commentreply"><a href='/clipper/{{comment.id}}'>clip</a> </div>
 				</li>
 			{% empty %}
     			<li><p class="bbq">This topic has no related questions, yet.</p></li>

@@ -63,7 +63,7 @@
 
     <textarea id="selectArea"rows="5" cols="45" wrap="physical"></textarea>
 -->
-    <form name="form1" method='POST' action='clipper_select'>
+    <form name="form1" method='POST' action='/clipper_select'>
     {{form.as_p}}
     {% csrf_token %} 
     <input type="submit" class="btn" value="Submit selection" />
