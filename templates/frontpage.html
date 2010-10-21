@@ -43,12 +43,13 @@
 	<h2>Recent Questions & Concerns</h2>
 		<ul class="recentquestcons">
 			{% for comment, indentlevel in thetopic.comments_to_show %}
-				<li id="comment-{{ comment.id }}" class="comment">
+				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}}" id="comment-{{comment.id}}">
 					<p class="bbq">{{ comment.text }}</p>
 					
 					<a href="#" class="youagree">I concur</a>
 					<p class="agrees">0<span>concur</span></p>
 					<p class="chef">by <span>{{ comment.user }}</span>
+                    <div class="commentreply"> </div>
 				</li>
 			{% empty %}
     			<li><p class="bbq">This topic has no related questions, yet.</p></li>
@@ -60,6 +61,13 @@
 			<a href="#">( prev )</a> <a href="#">( next )</a>
 		</div>-->
 	</div>
+
+    <div id = "replyform">
+    <form action = "/api/json/comments/submit/" method="post">
+    {{ reply_form.as_p}}
+
+    </form>
+    </div>
 
 {% endfor %}
 </div><!--END PANES CONTAINER-->

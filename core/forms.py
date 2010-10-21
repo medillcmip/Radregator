@@ -60,7 +60,7 @@ class CommentSubmitForm(forms.Form):
     in_reply_to = forms.ModelChoiceField(allcomments, widget = forms.HiddenInput, required=False)
 
     class Meta:
-        fields = ['comment_type_str', 'text', 'tags', 'newtag', 'topic', 'in_reply_to']
+        fields = ['comment_type_str', 'text', 'topic', 'in_reply_to']
         model = Comment 
     
 

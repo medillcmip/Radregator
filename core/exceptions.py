@@ -5,6 +5,11 @@ class UnknownOutputFormat(Exception):
        an unknown format."""
     pass
 
+class InvalidTopic(Exception):
+    """Exception thrown when an API call requests an invalid topic via
+    title."""
+    pass
+
 class NonAjaxRequest(Exception):
     """Exception thrown when an API call is made that is not an AJAX request
        and we don't want to allow this kind of (potentially) cross-site 
