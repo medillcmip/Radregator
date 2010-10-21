@@ -1,14 +1,17 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib.auth.decorators import login_required
 import urllib2
 import urlparse
 from urllib2 import HTTPError
 from urllib2 import URLError
 from BeautifulSoup import BeautifulSoup
 
-import forms
-import models
+import core.models
+import users.models
+import clipper.forms
+import clipper.models
 
 
 def get_page(url):
@@ -29,8 +32,26 @@ def get_page(url):
         print e.reason
 
 
+@login_required()
 def clipper_submit_select(request):
-   pass 
+    template_dict = {}
+    form = None
+    return_page = 'frontpage.html'
+    if request.method == 'POST':
+        form = clipper.forms.ClipTextForm(request.POST)
+        if form.is_valid():
+            url = form.cleaned_data['url_field']
+            selected_text = form.cleaned_data['selected_text']
+            user = users.models.UserProfile.objects.get(user=request.user)
+            try:
+                the_article = clipper.models.Article.objects.get(url=url)
+                the_clip = clipper.models.Clip(article=the_article, \
+                    text = selected_text, user=user)
+                the_clip.save()
+            except clipper.models.Article.DoesNotExist, e:
+               print 'clipper_submit_select(request): ' + str(e)
+    return HttpResponseRedirect('/')
+
 
 def create_article(url):
     #ok got the page back lets create an article
@@ -38,14 +59,20 @@ def create_article(url):
     #fields necessary for an Article object
     url_o = urlparse.urlparse(url)
     try:
-        newsorg = models.NewsOrganization.objects.get(name=url_o[1])
-    except models.NewsOrganization.DoesNotExist:
-        newsorg = models.NewsOrganization(url=url,name=url_o[1])
-        newsorg.save()
-    newarticle = models.Article(url=url, news_organization=newsorg,\
-        source=newsorg)
-    newarticle.save()
+        news_org = clipper.models.NewsOrganization.objects.get(name=url_o[1])
+    except clipper.models.NewsOrganization.DoesNotExist, e:
+        print 'create_article(): ' + str(e)
+        news_org = clipper.models.NewsOrganization(url=url,name=url_o[1])
+        news_org.save()
+    try:
+        the_article = clipper.models.Article.objects.get(url=url)
+    except clipper.models.Article.DoesNotExist, e:
+        print 'create_article(): ' + str(e)
+        the_article = clipper.models.Article(url=url, news_organization=news_org,\
+            source=news_org)
+        the_article.save()
 
+@login_required()
 def clipper_paste_url(request):
     """
     grab an html page (or holla back if the input was too rough)
@@ -56,17 +83,18 @@ def clipper_paste_url(request):
     form = None
     return_page = 'clipper.html'
     if request.method == 'POST':
-        form = forms.UrlSubmitForm(request.POST)
+        form = clipper.forms.UrlSubmitForm(request.POST)
         if form.is_valid():
             #start parsing out the page and get ready to forward us onto 
-            url = form.cleaned_data['urlfield']
-            form = forms.ClipTextForm()
+            url = form.cleaned_data['url_field']
             create_article(url)
+            #html to output on the next page
             template_dict['requested_page'] = get_page(url)
             template_dict['url'] = url
+            form = clipper.forms.ClipTextForm(initial={'url_field': url})
             return_page = 'clipper_select_text.html'
     else: #first time we hit the page
-        form = UrlSubmitForm()
+        form = clipper.forms.UrlSubmitForm()
     template_dict['form'] = form
     return render_to_response(return_page,template_dict,\
         context_instance=RequestContext(request))

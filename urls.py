@@ -19,10 +19,14 @@ urlpatterns = patterns('',
     (r'^register', 'radregator.users.views.register'),
 
     (r'^authenticate', 'radregator.users.views.auth'),
+    
+    (r'^accounts/login/$', 'radregator.users.views.weblogin'),
 
-    (r'^clipper', 'radregator.clipper.views.clipper_paste_url'),
-
+    (r'^accounts/login/register/$', 'radregator.users.views.register'),
+    
     (r'^clipper_select', 'radregator.clipper.views.clipper_submit_select'),
+    
+    (r'^clipper', 'radregator.clipper.views.clipper_paste_url'),
 
     (r'^deletecomments', 'radregator.core.views.deletecomments'),
     (r'^deletetopics', 'radregator.core.views.deletetopics'),

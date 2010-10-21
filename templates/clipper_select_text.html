@@ -50,6 +50,7 @@
 
     $(document).ready(function(){
         $(document).bind("mouseup", radregator.select.mouseup);
+        //$('#id_url_field').val({{url}});
     });
 </script>
 
@@ -62,8 +63,9 @@
 
     <textarea id="selectArea"rows="5" cols="45" wrap="physical"></textarea>
 -->
-    <form name="form1" method='POST' action='clipper_submit_select'>
+    <form name="form1" method='POST' action='clipper_select'>
     {{form.as_p}}
+    {% csrf_token %} 
     <input type="submit" class="btn" value="Submit selection" />
 
     </form>
