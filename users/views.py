@@ -1,3 +1,5 @@
+import logging
+
 from models import UserProfile
 from models import User
 from forms import LoginForm, RegisterForm  
@@ -10,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from core.exceptions import MethodUnsupported, NonAjaxRequest
 from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
                              UserUsernameExists, UserEmailExists
+import core.utils
 
 def disabled_act(request):
     template_dict = {}
@@ -276,7 +279,6 @@ def api_users(request, output_format='json'):
                 form = RegisterForm(request.POST)
 
                 if form.is_valid():
-                    form = RegisterForm(request.POST)
                     f_username = form.cleaned_data['username']
                     f_password = form.cleaned_data['password']
                     f_email = form.cleaned_data['email']
@@ -301,14 +303,14 @@ def api_users(request, output_format='json'):
                     newuser.save()
 
                     # Create user
-                    user = authenticate(username=username, password=password)
+                    user = authenticate(username=f_username, password=f_password)
                     login(request, user)
 
                     # Set our response codes and data
                     status = 201 # Created
-                    data['username'] = username
+                    data['username'] = f_username
                     data['uri'] = '/api/%s/users/%s/' % (output_format, \
-                        username)
+                        f_username)
 
                 else:
                     # Form didn't validate
