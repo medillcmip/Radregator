@@ -14,6 +14,7 @@ from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDel
 from radregator.core.forms import CommentTopicForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
+from core.exceptions import MethodUnsupported, NonAjaxRequest
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
                                        MethodUnsupported
@@ -271,16 +272,63 @@ def newtopic(request):
 
 
 
-def replytocomment(request):
-    if request.method == 'POST':
-        if request.user.is_anonymous():
-            return HttpResponseDirect("/authenticate")
+def commentsubmission(request):
+    
+    data = {} # response data
+    status = 200 # OK
 
-        form = CommentReplyForm(request.POST)
+    try:
+        if request.method == 'POST':
 
-        if not form.is_valid():
-            # Raise exceptions
-            return
+            form = CommentSubmitForm(request.POST)
+
+            if request.user.is_anonymous():
+                status = 401 # Unauthorized
+                data['error'] = "You need to log in"
+                data['field_errors'] = form.errors
+
+            userprofile = UserProfile.objects.get(user=request.user)
+
+            if not form.is_valid():
+                # Raise exceptions
+
+                status = 400 # Bad request
+                data['error'] = "Some required fields are missing or invalid."
+                data['field_errors'] = form.errors
+
+
+            else:
+                # Form is good
+                
+                f_comment_type = form.cleaned_data['comment_type_str'] # a comment type
+                f_text = form.cleaned_data['text'] # Text
+                try: f_topic = Topic.objects.get(title = form.cleaned_data['topic']) # a topic name
+                except:
+                    raise InvalidTopic()
+
+                f_in_reply_to = form.cleaned_data['in_reply_to'] # a comment
+
+                comment = Comment(text = form.cleaned_data['text'], user = userprofile)
+                comment.comment_type = f_comment_type
+                comment.save()
+                comment.topics = [f_topic]
+                comment.save()
+
+                if f_in_reply_to: # Comment is in reply to another comment
+                    reply_relation = CommentRelation(left_comment = comment, right_comment = f_in_reply_to, relation_type = 'reply')
+                    reply_relation.save()
+
+
+        else: # Not a post
+            raise MethodUnsupported("This endpoint only accepts POSTs.")
+        
+    except InvalidTopic:
+        status = 400 # Bad Request
+        data['error'] = "Invalid topic"
+
+    return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
+
+
             
 
 
