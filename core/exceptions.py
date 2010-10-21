@@ -31,3 +31,7 @@ class MethodUnsupported(Exception):
     """Exception thrown when an HTTP request method isn't supported by the REST
        API"""
     pass
+
+class MaximumExceeded(Exception):
+    """Exception thrown when some API call exceeds a threshold.""" 
+    pass
