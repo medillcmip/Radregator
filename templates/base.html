@@ -56,6 +56,10 @@
                     data: { type : response_type },
 				    success: function(data){
                         // TODO: Update counter
+                        var count = thiscomment.children(".response-counter").children('.count');
+                        count_val = count.text();
+                        count_val++;
+                        count.text(count_val);
 					},
 				    error: function (requestError, status, errorResponse) {
                         var response_text = requestError.responseText;
