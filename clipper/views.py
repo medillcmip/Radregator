@@ -6,12 +6,14 @@ import urllib2
 import urlparse
 from urllib2 import HTTPError
 from urllib2 import URLError
-from BeautifulSoup import BeautifulSoup
-
+from BeautifulSoup import BeautifulSoup, Tag
+import re
 import core.models
 import users.models
 import clipper.forms
 import clipper.models
+
+relative_url_exp = re.compile("(src|href|action)\s*=\s*(\'|\"|(?!\"|\'))(?!(http:|ftp:|mailto:|https:|#))")
 
 
 def get_page(url):
@@ -26,7 +28,24 @@ def get_page(url):
         #TODO:check path's for relative and make absolute
         response = urllib2.urlopen(url)
         page = BeautifulSoup(response)
-        return page.body
+        url_o = urlparse.urlparse(url)
+        scripts = page.findAll('script')
+        #remove all scripts so we can use the ones on our site to scrape
+        #the users selection... any ideas on how to remove a whole subtree?
+        for i in scripts:
+            i.extract()
+        script_tags = page.findAll(['a','img','link','href'])
+        for idx, ele in enumerate(script_tags):
+            match =  relative_url_exp.split(ele.prettify())
+            #for i,m in enumerate(match):
+            #    print i,m
+            if len(match) > 1:
+                path = re.split("\"", match[4])
+                new_str = url_o[0] + "://" + url_o[1] +'/'+ path[0]
+                ele[match[1]] = new_str
+            else:
+                pass
+        return page.prettify()
     except URLError, e:
         #TODO:Add more exception handling
         print e.reason
