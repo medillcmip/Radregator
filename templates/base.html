@@ -45,7 +45,7 @@
 			$('a.cbox').colorbox({width:750, height:450, iframe:true});
 
             // Response links
-            $('a.youagree').click(function() {
+            $('.youagree a').click(function() {
                 var thiscomment = $(this).closest('.comment'); 
                 var thiscomment_id = 
                     thiscomment.attr('id').replace('comment-', '');
@@ -56,8 +56,8 @@
                     url: "/api/json/comments/" + thiscomment_id + "/responses/",
                     data: { type : response_type },
 				    success: function(data){
-                        // TODO: Update counter
-                        var count = thiscomment.children(".response-counter").children('.count');
+                        // Update counter
+                        var count = thiscomment.children(".commentguts").children(".response-counter").children('.count');
                         count_val = count.text();
                         count_val++;
                         count.text(count_val);
