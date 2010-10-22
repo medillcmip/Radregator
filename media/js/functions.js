@@ -20,31 +20,41 @@
 
 // CLOSE REPLY FUNCTION
 function closeReplyform (replytype,parentid) {
-	var dropdown = "#"+parentid+" div."+replytype+"div";
-	
-	$(dropdown).animate({
+	var drawer = "#"+parentid+" div."+replytype+"div";
+	$(drawer).animate({
 		height: 0,
 		overflow: 'hidden'
 	}, 150, function() {
-		$(dropdown).html("").removeClass("opened");
+		$(drawer).html("").removeClass("opened");
 	});
 }
 
 			
 // OPEN REPLY FUNCTION
 function openReplyform (replytype,parentid) {				
-				
-	var contents = $("div#"+replytype+"form").html();
-	var dropdown = "#"+parentid+" div."+replytype+"div";
+	// MAKE SURE BOTH ARE ALREADY CLOSED
+	if ($("#"+parentid+" .replyinputdiv").hasClass("opened")) { closeReplyform("replyinput",parentid); $("a.commenttabs").removeClass("opened"); }
 	
-	$(dropdown).animate({
+	// THEN SET UP AND OPEN THEM
+	var contents = $("div#"+replytype+"form").html();
+	var drawer = "#"+parentid+" div."+replytype+"div";
+	
+	$(drawer).animate({
 		height: "100px",
 		overflow: 'hidden'
 	}, 150, function() {
-		$(dropdown).html(contents).addClass("opened");
-		$(dropdown).append('<a href="javascript:closeReplyform(\''+replytype+'\',\''+parentid+'\');" class="closereply">close</a>');
+		$(drawer).html(contents).addClass("opened");
+		$(drawer).append('<a href="javascript:closeReplyform(\''+replytype+'\',\''+parentid+'\');" class="closereply">close</a>');
 		var pkid = parentid.substr(8);
-		$(dropdown+" form #id_in_reply_to").attr("value",pkid);
+		
+		if (replytype == "attach") {
+			var postto = "/clipper/"+pkid;
+			$(drawer+ " form").attr("action",postto);
+			
+		} else {
+			$(drawer+" form #id_in_reply_to").attr("value",pkid);
+		}
+		
 	});
 }
 
@@ -57,10 +67,11 @@ function handleReplyform() {
 						
 	
 	if ($("#"+parentid+" ."+replytype+"div").hasClass("opened")) {
+		$(this).removeClass("opened");
 		closeReplyform(replytype,parentid);
 		return false;
 	}
-
-	openReplyform(replytype, parentid);	
+	openReplyform(replytype, parentid);
+	$(this).addClass("opened");
 	return false;
 }

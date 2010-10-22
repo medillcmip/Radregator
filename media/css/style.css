@@ -313,6 +313,10 @@ ul.recentquestcons li a.commenttabs {
 	text-align: center;
 }
 
+ul.recentquestcons li a.opened {
+	background: #333;
+}
+
 ul.recentquestcons li a.commenttabs:hover {
 	background: #555;
 }
@@ -320,7 +324,7 @@ ul.recentquestcons li a.commenttabs:hover {
 ul.recentquestcons li a.reply {right: 10px;width: 60px;}
 ul.recentquestcons li a.attach {right: 80px;width: 100px;}
 
-div.replyinput {
+div.replyinputdiv {
 	display: block;
 	clear: both;
 	background:#eee;
