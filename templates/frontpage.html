@@ -62,8 +62,8 @@
 				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}}" id="comment-{{comment.id}}">
 					<ul class="commentguts">
 						<li class="bbq"><p class="valign">{{ comment.text }}</p></li>
-						<li class="youagree"><a href="#">vote</a></li>
-						<li class="agrees">0<span>votes</span></li>
+						<li class="youagree"><a href="#">Me too!</a></li>
+						<li class="response-counter"><span class="count">{{ comment.responses.count }}</span><span class="description">Ask this too</span></li>
 						<li class="chef">by <span>{{ comment.user }}</span></li>
 					</ul>
 					<a href="#" class="attach commenttabs">Attach an article</a>

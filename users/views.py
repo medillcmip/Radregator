@@ -1,9 +1,9 @@
-import logging
+import json
 
 from models import UserProfile
 from models import User
 from forms import LoginForm, RegisterForm  
-from fbapi.facebook import *
+from fbapi import facebook 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -64,7 +64,7 @@ def auth(request):
     """
     if request.user.is_authenticated():    
         return HttpResponseRedirect('/')
-    user = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,\
+    user = facebook.get_user_from_cookie(request.COOKIES, settings.FB_API_ID,\
         settings.FB_SECRET_KEY )
     if user:
         #user has a FB account and we need to see if they have been 
@@ -80,7 +80,7 @@ def auth(request):
             return HttpResponseRedirect('/')
         except UserProfile.DoesNotExist:
             #they're not, so we need to create them and move em along
-            graph = GraphAPI(user['access_token'])
+            graph = facebook.GraphAPI(user['access_token'])
             profile = graph.get_object("me")
             username=profile['first_name']+profile['last_name']
             password=profile['id']
@@ -122,7 +122,7 @@ def weblogin(request):
     template_dict = {}
     template_dict['fb_app_id']=settings.FB_API_ID
     template_dict['auth_page']='authenticate'
-    fbuser = get_user_from_cookie(request.COOKIES, settings.FB_API_ID,\
+    fbuser = facebook.get_user_from_cookie(request.COOKIES, settings.FB_API_ID,\
         settings.FB_SECRET_KEY )
     if fbuser:
         #the user hit this page again after using the FB signin link, 
