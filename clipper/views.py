@@ -27,24 +27,24 @@ def get_page(url):
         #TODO:append the paths for css to our head
         #TODO:check path's for relative and make absolute
         response = urllib2.urlopen(url)
-        page = BeautifulSoup(response, convertEntities=BeautifulSoup.HTML_ENTITIES)
+        page = BeautifulSoup(response)
         url_o = urlparse.urlparse(url)
-        script_tags = page.findAll(['script','img','link','href'])
+        scripts = page.findAll('script')
+        #remove all scripts so we can use the ones on our site to scrape
+        #the users selection... any ideas on how to remove a whole subtree?
+        for i in scripts:
+            i.extract()
+        script_tags = page.findAll(['a','img','link','href'])
         for idx, ele in enumerate(script_tags):
             match =  relative_url_exp.split(ele.prettify())
-            #for i,e in enumerate(match):
-            #    print i,e
+            #for i,m in enumerate(match):
+            #    print i,m
             if len(match) > 1:
-                #build the new script tag with absolute URLS
-                #new_str = match[0]+ ' ' + match[1]+ '=' + match[2] + url_o[1]\
-                #    +match[4]
                 path = re.split("\"", match[4])
                 new_str = url_o[0] + "://" + url_o[1] +'/'+ path[0]
-                print new_str
-                ele['src'] = new_str
-                print ele['src']
+                ele[match[1]] = new_str
             else:
-                print 'false'
+                pass
         return page.prettify()
     except URLError, e:
         #TODO:Add more exception handling
