@@ -6,12 +6,14 @@ import urllib2
 import urlparse
 from urllib2 import HTTPError
 from urllib2 import URLError
-from BeautifulSoup import BeautifulSoup
-
+from BeautifulSoup import BeautifulSoup, Tag
+import re
 import core.models
 import users.models
 import clipper.forms
 import clipper.models
+
+relative_url_exp = re.compile("(src|href|action)\s*=\s*(\'|\"|(?!\"|\'))(?!(http:|ftp:|mailto:|https:|#))")
 
 
 def get_page(url):
@@ -25,8 +27,25 @@ def get_page(url):
         #TODO:append the paths for css to our head
         #TODO:check path's for relative and make absolute
         response = urllib2.urlopen(url)
-        page = BeautifulSoup(response)
-        return page.body
+        page = BeautifulSoup(response, convertEntities=BeautifulSoup.HTML_ENTITIES)
+        url_o = urlparse.urlparse(url)
+        script_tags = page.findAll(['script','img','link','href'])
+        for idx, ele in enumerate(script_tags):
+            match =  relative_url_exp.split(ele.prettify())
+            #for i,e in enumerate(match):
+            #    print i,e
+            if len(match) > 1:
+                #build the new script tag with absolute URLS
+                #new_str = match[0]+ ' ' + match[1]+ '=' + match[2] + url_o[1]\
+                #    +match[4]
+                path = re.split("\"", match[4])
+                new_str = url_o[0] + "://" + url_o[1] +'/'+ path[0]
+                print new_str
+                ele['src'] = new_str
+                print ele['src']
+            else:
+                print 'false'
+        return page.prettify()
     except URLError, e:
         #TODO:Add more exception handling
         print e.reason
