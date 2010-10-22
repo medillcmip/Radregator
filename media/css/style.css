@@ -257,29 +257,33 @@ ul.recentquestcons {
 	margin-left: 10px;
 }
 
-ul.recentquestcons li {
-	height: 80px;
+ul.recentquestcons li.comment {
+	min-height: 80px;
+	height: auto;
+	overflow: auto;
 	border: 1px solid #aaa;
 	margin-bottom: 10px;
 	padding:10px 10px 10px 20px;
+	position: relative;
 }
 
-ul.recentquestcons li p.bbq {
-	line-height: 80px;
+ul.recentquestcons li li.bbq {
 	font-size: 1.15em;
 	width:500px;
 	float: left;
+	min-height: 80px;
+	height: auto;
 	overflow:hidden;
 }
 
-ul.recentquestcons li p.chef {
+ul.recentquestcons li li.chef {
 	line-height: 80px;
 	font-size: 1em;
 	margin-right: 15px;
 	float: right;
 }
 
-ul.recentquestcons li p.response-counter {
+ul.recentquestcons li li.agrees {
 	font-size: 1.4em;
 	float: right;
 	text-align: center;
@@ -288,13 +292,13 @@ ul.recentquestcons li p.response-counter {
 	padding-top: 20px;
 }
 
-ul.recentquestcons li p.response-counter span.description {
+ul.recentquestcons li li.agrees span {
 	display: block;
 	text-align: center;
 	font-size: 0.7em;
 }
 
-ul.recentquestcons li a.youagree {
+ul.recentquestcons li.youagree, ul.recentquestcons li a.youagree {
 	float: right;
 	display: block;
 	font-size: 1em;
@@ -302,6 +306,32 @@ ul.recentquestcons li a.youagree {
 	height: 80px;
 	width: 100px;
 	text-align: center;
+}
+
+ul.recentquestcons li a.commenttabs {
+	display: block;
+	position: absolute;
+	bottom: 1px;
+	height: 16px;
+	line-height: 16px;
+	background: #888;
+	font-size: 0.7em;
+	text-decoration: none;
+	color: #fff;
+	text-align: center;
+}
+
+ul.recentquestcons li a.commenttabs:hover {
+	background: #555;
+}
+
+ul.recentquestcons li a.reply {right: 10px;width: 60px;}
+ul.recentquestcons li a.attach {right: 80px;width: 100px;}
+
+div.replyinput {
+	display: block;
+	clear: both;
+	background:#eee;
 }
 
 div.moreline {
