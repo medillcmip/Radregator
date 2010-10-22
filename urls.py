@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 
     (r'^reporterview', 'radregator.core.views.reporterview'),
 
+    (r'^loginstatus', 'radregator.core.views.login_status'),
     (r'^login', 'radregator.users.views.weblogin'),
 
     (r'^logout', 'radregator.users.views.weblogout'),

@@ -117,6 +117,22 @@ def reporter_api(request, formconstructor, logic):
 
     return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
 
+def login_status(request):
+    data = {}
+    status = 200
+
+    try:
+        check_reporter(request)
+    except UserNotReporter:
+        status = 403
+        data['error']= 'User must be reporter'
+    except UserNotAuthenticated:
+        status = 401 # unauthorized
+        data['error'] = 'User not logged in'
+
+    return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
+    
+
 def disassociatecomment_logic(form, userprofile):
    comment = form.cleaned_data['comment']
    topic = form.cleaned_data['topic']
