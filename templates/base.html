@@ -36,6 +36,9 @@
 			});
 
             // Switch tab, toggle topic setting
+            var txt = $("ul.tabs a.current").html();
+            $("input.topic").attr("value", txt);
+            
             $('.switchtab').click(function() {
                 var txt = $(this).html();
                 $("input.topic").attr("value", txt);
@@ -82,9 +85,10 @@
             });
             // VARIABLE VERTICAL ALIGNMENT
 			$('.valign').valign();
+			
   		});
   		
-	</script> 
+	</script> 	
 	
 	{% block addscripts %}
    	{% endblock addscripts %}
@@ -101,7 +105,6 @@
             {% else %}
 			<a class="cbox" href="/authenticate">Login or register</a>
             {% endif %}
-			<input type="submit" name="submit" class="submit" value="Submit" />
 		</div>
 				
 				<h1><a href="#" id="logo">Logo</a></h1>

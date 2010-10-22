@@ -14,6 +14,49 @@
 
 //
 //
+// LAUNCH LOG IN OVERLAY
+//
+//
+function launchLogin () {
+	$.fn.colorbox({href:'/authenticate', open:true});
+}
+
+
+
+//
+//
+// LOGGED IN?
+//
+//
+//NOTE TO SELF: LOGIC NEEDS TO INCLUDE LINK PASS THROUGH/POST PASS THROUGH BEFORE IMPLEMENTATION
+function authCheck() {
+	$.ajax({
+	    type: "post", url: "/loginstatus",
+	    success: function(data){
+			return;
+		},
+	    error: function (requestError, status, errorResponse) {
+			var errorNum = requestError.status;
+			
+			//FINISH THIS LOGIC:
+			if (errorNum == "401" || errorNum == "403") {
+				launchLogin();
+			} else {
+				launchLogin();
+			}
+		}
+	});
+}
+
+
+//
+//
+// TAKE IN DATA FROM LOGIN FORM
+//
+//
+
+//
+//
 // FUNCTIONS FOR REPLY/ATTACH
 //
 //
@@ -48,7 +91,7 @@ function openReplyform (replytype,parentid) {
 		var pkid = parentid.substr(8);
 		
 		if (replytype == "attach") {
-			var postto = "/clipper/"+pkid;
+			var postto = "/clipper/"+pkid+"/";
 			$(drawer+ " form").attr("action",postto);
 			
 		} else {

@@ -15,6 +15,7 @@ from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, \
                                   TopicDeleteForm, NewTopicForm, \
                                   MergeCommentForm
 from radregator.core.forms import CommentTopicForm
+from radregator.clipper.forms import UrlSubmitForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
@@ -347,7 +348,7 @@ def api_commentsubmission(request, output_format = 'json'):
 
 def frontpage(request):
     """ Front page demo"""
-
+    clipper_url_form = None
     if request.method == 'POST':
         if request.user.is_anonymous():
             # This scenario should be handled more gracefully in JavaScript
@@ -377,7 +378,9 @@ def frontpage(request):
                 reply_relation.save()
 
     
-    else: form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
+    else: 
+        form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
+        clipper_url_form = UrlSubmitForm()
     reply_form = CommentSubmitForm(initial = {'in_reply_to' : Comment.objects.all()[0]})
     template_dict = {}
 
@@ -387,7 +390,7 @@ def frontpage(request):
     template_dict['comment_form'] = form
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
-
+    template_dict['clipper_url_form'] = clipper_url_form
         
     template_dict.update(csrf(request)) # Required for csrf system
     return render_to_response('frontpage.html', template_dict,context_instance=RequestContext(request))

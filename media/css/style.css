@@ -200,8 +200,12 @@ form.questionform input.conquest {
 }
 
 form.questionform textarea {
-    rows: 10;
-    cols: 40;
+	font-size: 1.5em;
+	width: 580px;
+	height: 60px;
+	line-height: 20px;
+	padding: 5px;
+	margin-bottom: 17px;
 }
 
 form.questionform label.questbump {
@@ -267,9 +271,14 @@ ul.recentquestcons li.comment {
 	position: relative;
 }
 
+ul.recentquestcons li.childcomment {width: 50px; height: 50px; margin-left: 10px; border:1px solid #ccc;border-top: 0;border-right: 0;float: left;}
+ul.recentquestcons li.indent1 {margin-left: 70px;}
+ul.recentquestcons li.indent2 {margin-left: 130px;}
+
 ul.recentquestcons li li.bbq {
 	font-size: 1.15em;
-	width:500px;
+	width:auto;
+	max-width: 500px;
 	float: left;
 	min-height: 80px;
 	height: auto;
@@ -319,6 +328,7 @@ ul.recentquestcons li a.commenttabs {
 	text-decoration: none;
 	color: #fff;
 	text-align: center;
+	z-index: 1000;
 }
 
 ul.recentquestcons li a.opened {
@@ -336,8 +346,62 @@ div.replyinputdiv {
 	display: block;
 	clear: both;
 	background:#eee;
+	position: relative;
+}
+
+div.formcache {
+	display: none;
 }
 
 div.moreline {
 	text-align: right;
 }
+
+form.authcheck {
+	display: block;
+	padding: 20px;
+	width: 600px;
+	margin: auto;
+}
+
+form.authcheck label {
+	float: left;
+	width: 90px;
+	display: block;
+	padding: 3px;
+}
+
+form.authcheck textarea {
+	float: left;
+	width: 300px;
+	display: block;
+	height: 50px;
+	padding: 3px;
+}
+
+form.authcheck input#id_url_field {
+	float: left;
+	width: 300px;
+	display: block;
+	padding: 3px;
+}
+
+form.authcheck .replysubmit {
+	float: left;
+	width: 100px;
+	display: block;
+	height: 20px;
+	margin: 0 0 0 20px;
+	padding: 3px;
+}
+
+.closereply {
+	display: block;
+	position: absolute;
+	top: 5px;
+	right: 10px;
+	text-decoration: none;
+	font-size: 0.8em;
+	font-weight: bold;
+}
+

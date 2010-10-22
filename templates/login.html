@@ -10,43 +10,40 @@
   		$(document).ready(function() {  			
 			// GRAB THE FORM INPUT AND KILL BEHAVIOR
 			$('.loginreg form').submit(function() {
-				var thisform = $(this).closest('form').attr("class");
-				var thisuser = $("."+thisform+" #id_username").val();
-				var thispass = $("."+thisform+" #id_password").val();
-
-				if (thisform == "login") {
-					var posturl = "/api/json/users/"+thisuser+"/login/";
-					// alert(posturl);
-				} else {
-					var posturl = "/api/json/users/";
-				}			
-			
-				$.ajax({
-				    type: "post", url: posturl, data: { username: thisuser, password: thispass },
-				    success: function(data){
-						// console.log(data);
-						var loggeduser = data.username;
-						parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
-						parent.$.fn.colorbox.close();
-					},
-				    error: function (requestError, status, errorResponse) {
-						var errorNum = requestError.status;
-						if (errorNum == "404") {
-							var errorMsg = "Error: Please enter a username.";
-						} else {
-							var errorMsg = " Error: That username + password failed. Please try again."
-							// alert(errorMsg);
-						}
+					var thisform = $(this).closest('form').attr("class");
+					var thisuser = $("."+thisform+" #id_username").val();
+					var thispass = $("."+thisform+" #id_password").val();
 					
-						$("p.errormsg").html(errorMsg);
-						$("p.errormsg").css("display","block");	
-				    }
-				});
-						return false;
-			});
+					if (thisform == "login") {
+						var posturl = "/api/json/users/"+thisuser+"/login/";
+						// alert(posturl);
+					} else {
+						var posturl = "/api/json/users/";
+					}			
+					
+					$.ajax({
+					    type: "post", url: posturl, data: { username: thisuser, password: thispass },
+					    success: function(data){
+							// console.log(data);
+							var loggeduser = data.username;
+							parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
+							parent.$.fn.colorbox.close();
+						},
+					    error: function (requestError, status, errorResponse) {
+							var errorNum = requestError.status;
+							if (errorNum == "404") {
+								var errorMsg = "Error: Please enter a username.";
+							} else {
+								var errorMsg = " Error: That username + password failed. Please try again."
+								// alert(errorMsg);
+							}
 						
-		
-			
+							$("p.errormsg").html(errorMsg);
+							$("p.errormsg").css("display","block");	
+					    }
+					});
+				return false;
+			});
   		});
 	
 	</script>
@@ -90,8 +87,10 @@
     if (response.session) {
       // A user has logged in, and a new cookie has been saved
       parent.location.href="/{{auth_page}}";
-    } else {
+      // AP.NTS: need to rewrite reglog div to show "you are logged in" context
+ } else {
       // The user has logged out, and the cookie has been cleared
+      // AP.NTS: need to rewrite reglog div to show "login" option
     }
   });
 </script>

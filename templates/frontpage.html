@@ -4,6 +4,23 @@
 	Questions Interaction v0.1
 {% endblock %}
 
+{% block addscripts %}
+<script type="text/javascript">
+	
+		$(document).ready(function() {
+			$('a.commenttabs').unbind('click', handleReplyform).bind('click', handleReplyform); 
+			
+			// DEAL WITH INDENTED COMMENTS
+			$('li.comment-level2').before('<li class="childcomment"></li>');
+			$('li.comment-level3').before('<li class="childcomment indent1"></li>');
+			$('li.comment-level4').before('<li class="childcomment indent2"></li>');
+		});
+</script>
+{% endblock %}
+
+
+
+
 
 {% block body %}
 	<div id="introblurb">
@@ -37,26 +54,16 @@
 		</ul>
 			
 			
-	{% include "form.html" %}			
+	{% include "form.html" %}				
 	
-	<script type="text/javascript">
-	
-		$(document).ready(function() {
-			$('a.commenttabs').unbind('click', handleReplyform).bind('click', handleReplyform); 
-					
-		});
-	
-	
-	</script>		
-	
-	<h2>Recent Questions & Concerns</h2>
+	<h2>Recent Questions</h2>
 		<ul class="recentquestcons">
 			{% for comment, indentlevel in thetopic.comments_to_show %}
 				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}}" id="comment-{{comment.id}}">
 					<ul class="commentguts">
 						<li class="bbq"><p class="valign">{{ comment.text }}</p></li>
-						<li class="youagree"><a href="#">I concur</a></li>
-						<li class="agrees">0<span>concur</span></li>
+						<li class="youagree"><a href="#">vote</a></li>
+						<li class="agrees">0<span>votes</span></li>
 						<li class="chef">by <span>{{ comment.user }}</span></li>
 					</ul>
 					<a href="#" class="attach commenttabs">Attach an article</a>
@@ -75,26 +82,31 @@
 		</div>-->
 	</div>
 
-    <div id = "replyform">
-	    <form action = "/api/json/comments/submit/" method="post">
-	   <!-- {{ reply_form.as_p }} -->
-		{{comment_form.text}}
-		<input type="hidden" value="3" name="comment_type_str">
-		<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to">
-		{% csrf_token %}
-		<input type="submit" name="submit" class="submit" value="Submit" />
-	    </form>
-    </div>
-    
-    <div id="attachform">
-		<form action = "/clipper/" method="post">
-			{{url_field.text}}
-<!--			<input type="hidden" value="3" name="comment_type_str">
-			<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->
+	<div class="formcache">
+	    <div id="replyform">
+		    <form action = "/api/json/comments/submit/" method="post" class="authcheck">
+		   <!-- {{ reply_form.as_p }} -->
+		    <label>Reply: </label>
+			{{comment_form.text}}
+			<input type="hidden" value="3" name="comment_type_str">
+			<input type="hidden" value="3" name="in_reply_to" id="id_in_reply_to">
+			<input type="hidden" value="" name="topic" class="topic">
 			{% csrf_token %}
-			<input type="submit" name="submit" class="submit" value="Submit" />
-	    </form>    
-   </div>
+			<input type="submit" name="submit" class="replysubmit" value="Submit" />
+		    </form>
+	    </div>
+	    
+	    <div id="attachform">
+			<form action = "/clipper/" method="post" class="authcheck">
+				<label>Enter a URL: </label>
+				{{clipper_url_form.url_field}}
+	<!--			<input type="hidden" value="3" name="comment_type_str">
+				<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->
+				{% csrf_token %}
+				<input type="submit" name="submit" class="replysubmit" value="Submit" />
+		    </form>    
+	   </div>
+	</div>
 
 {% endfor %}
 </div><!--END PANES CONTAINER-->
