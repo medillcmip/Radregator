@@ -1,4 +1,4 @@
-import logging
+import json
 
 from models import UserProfile
 from models import User
