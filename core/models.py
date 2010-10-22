@@ -3,6 +3,7 @@ from django.contrib.sites.models import Site
 from radregator.clipper.models import Article
 from radregator.tagger.models import Tag
 from radregator.users.models import UserProfile
+from radregator.clipper.models import Clip
 
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
@@ -98,7 +99,8 @@ class Comment(models.Model):
                                        related_name="responses")
     is_parent = models.BooleanField(default = True)
     is_deleted = models.BooleanField(default = False)
-
+    
+    clips = models.ManyToManyField(Clip, blank=True, null=True)
     def __unicode__(self):
         return self.text[:80]
 

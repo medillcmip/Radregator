@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 
     (r'^reporterview', 'radregator.core.views.reporterview'),
 
+    (r'^loginstatus', 'radregator.core.views.login_status'),
     (r'^login', 'radregator.users.views.weblogin'),
 
     (r'^logout', 'radregator.users.views.weblogout'),
@@ -19,6 +20,14 @@ urlpatterns = patterns('',
     (r'^register', 'radregator.users.views.register'),
 
     (r'^authenticate', 'radregator.users.views.auth'),
+    
+    (r'^accounts/login/$', 'radregator.users.views.weblogin'),
+
+    (r'^accounts/login/register/$', 'radregator.users.views.register'),
+    
+    (r'^clipper_select', 'radregator.clipper.views.clipper_submit_select'),
+    
+    (r'^clipper/(?P<comment_id>\d+)/', 'radregator.clipper.views.clipper_paste_url'),
 
     (r'^deletecomments', 'radregator.core.views.deletecomments'),
     (r'^deletetopics', 'radregator.core.views.deletetopics'),

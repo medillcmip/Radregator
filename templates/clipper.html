@@ -1,0 +1,49 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>radregator</title>
+  </head>
+<script type="text/javascript">
+  function toggleItem(id){
+      var item = document.getElementById(id);
+      if(item){
+        if ( item.style.display == "none"){
+          item.style.display = "";
+        }
+        else{
+          item.style.display = "none";
+        } 
+      }
+    }
+
+</script>
+  <body>
+    <h1>radregator</h1>
+
+
+    <a href="javascript:toggleItem('clipper');" style="width:100%; text-align: middle; color: #FF0000; font-family: Arial;">Clip?</a>
+
+<div class="" id="clipper">
+
+
+  <div id="urlEntry" style="border: 1px solid black;">
+
+    <form name="form1" method='POST' action=''>
+{{form.as_p}}
+{% csrf_token %}
+    <input type="submit" class="btn" value="Go!" />
+
+    </form>
+
+  </div>
+
+  <div id="closebox">
+
+    <a href="javascript:toggleItem('clipper');" style="width:100%; text-align: middle; color: #FF0000; font-family: Arial;">x</a>
+
+  </div>
+
+</div>
+  </body>
+</html>

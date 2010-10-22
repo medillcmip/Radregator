@@ -1,0 +1,85 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>radregator</title>
+    <script src="/static/js/jquery.tools.min.js"></script>
+    <script src="/static/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript">
+
+    if(!window.radregator){
+        radregator = {};
+    }
+
+    radregator.select = {};
+
+    function toggleItem(id){
+      var item = document.getElementById(id);
+      if(item){
+        if ( item.style.display == "none"){
+          item.style.display = "";
+        }
+        else{
+          item.style.display = "none";
+        } 
+      }
+    }
+
+    radregator.select.getSelected = function(){
+      var txt = '';
+      if (window.getSelection){
+        txt = window.getSelection();
+      }
+      else if (document.getSelection){
+        txt = document.getSelection();
+      }
+      else if (document.selection){
+        txt = document.selection.createRange().text;
+      }
+      else return;
+      return txt;
+    }
+
+
+    radregator.select.mouseup = function(){
+        var st = radregator.select.getSelected();
+        if(st!=''){
+          $("#id_selected_text").val(st);
+        }
+    }
+
+    $(document).ready(function(){
+        $(document).bind("mouseup", radregator.select.mouseup);
+        //$('#id_url_field').val({{url}});
+    });
+</script>
+
+</head>
+  <body>
+    <h1>radregator</h1>
+
+  <div id="select_feedback" style="border: 1px solid black;">
+<!--
+
+    <textarea id="selectArea"rows="5" cols="45" wrap="physical"></textarea>
+-->
+    <form name="form1" method='POST' action='/clipper_select'>
+    {{form.as_p}}
+    {% csrf_token %} 
+    <input type="submit" class="btn" value="Submit selection" />
+
+    </form>
+
+  </div>
+<BR> 
+    <a href="javascript:toggleItem('requested_page');" style="width:100%; text-align: middle; color: #FF0000; font-family: Arial;">Clip?</a>
+
+<div class="" id="requested_page" style="border: 1px solid black;">
+{% autoescape off %}
+{{requested_page}}
+{% endautoescape %}
+
+
+</div>
+  </body>
+</html>
