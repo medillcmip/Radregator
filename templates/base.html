@@ -67,7 +67,7 @@
 					},
 				    error: function (requestError, status, errorResponse) {
                         var response_text = requestError.responseText;
-                        var response_data = jQuery.parseJSON(response_text);
+                        var response_data = $.parseJSON(response_text);
 						var errorNum = requestError.status;
 
 						if (errorNum == "401") {
