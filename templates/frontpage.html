@@ -41,53 +41,9 @@
 	
 	<script type="text/javascript">
 	
-		// CLOSE REPLY FUNCTION
-		function closeReplyform (replytype,parentid) {
-			$("#"+parentid+" div."+replytype+"div").animate({
-				height: 0,
-				overflow: 'hidden'
-			}, 150, function() {
-				$("#"+parentid+" div."+replytype+"div").html("").removeClass("opened");
-			});
-		}
-					
-		// OPEN REPLY FUNCTION
-		function openReplyform (replytype,parentid) {				
-			//$("div#"+replytype+"form").append('YO!');
-						
-			var contents = $("div#"+replytype+"form").html();
-			
-			$("#"+parentid+" div."+replytype+"div").animate({
-				height: "100px",
-				overflow: 'hidden'
-			}, 150, function() {
-				$("#"+parentid+" div."+replytype+"div").html(contents).addClass("opened");
-				$("#"+parentid+" div."+replytype+"div").append('<a href="javascript:closeReplyform(\''+replytype+'\',\''+parentid+'\');" class="closereply">close</a>');
-
-			});
-		}
-	
 		$(document).ready(function() {
-			
-			$("a.commenttabs").click(function() {
-				if (docready == "complete") {return false;}
-				
-				var parentid = $(this).closest("li.comment").attr("id");
-				
-				if ($(this).hasClass("attach")) { var replytype = "attach"; }
-					else { var replytype = "reply"; }
-									
-				var docready = "complete";
-				
-				if ($("."+replytype+"div").hasClass("opened")) {
-					closeReplyform(replytype,parentid);
-					return false;
-				}
-
-				openReplyform(replytype, parentid);	
-				return false;	
-			});
-			
+			$('a.commenttabs').unbind('click', handleReplyform).bind('click', handleReplyform); 
+					
 		});
 	
 	
@@ -124,6 +80,7 @@
 	   <!-- {{ reply_form.as_p }} -->
 		{{comment_form.text}}
 		<input type="hidden" value="3" name="comment_type_str">
+		<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to">
 		{% csrf_token %}
 		<input type="submit" name="submit" class="submit" value="Submit" />
 	    </form>
