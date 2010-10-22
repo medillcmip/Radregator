@@ -36,7 +36,7 @@ class UserNotAuthenticated(Exception):
        return self.msg
 
 class UserNotReporter(Exception):
-    def __init__(self, msg='User is not a reporter.')
+    def __init__(self, msg='User is not a reporter.'):
         self.msg = msg
     
     def __str__(self):

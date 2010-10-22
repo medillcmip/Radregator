@@ -85,84 +85,55 @@ def check_reporter(request):
 
         
     
-def disassociatecomment(request):
-    """ Associate a comment with a given topic"""
+def reporter_api(request, formconstructor, logic):
+    """ Handle reporter operations"""
 
     data = {} # response data
     status = 200 # OK
 
     try:
         if request.method == 'POST':
-           check_reporter(request) 
+           userprofile = check_reporter(request) 
 
-        form = CommentTopicForm(request.POST)
+           form = formconstructor(request.POST)
 
-        if not form.is_valid():
-            status = 400 # Caught in a bad request
-            data['error'] = "Some required fields are missing or invalid
-            data['field_errors'] = form.errors
+           if not form.is_valid():
+               status = 400 # Caught in a bad request
+               data['error'] = "Some required fields are missing or invalid"
+               data['field_errors'] = form.errors
+           else:
+               # Form is good 
+               logic(form, userprofile)
         else:
-           # Form is good 
+            # Not a post
+            raise MethodUnsupported("This endpoint only accepts POSTs.")
 
-            comment = form.cleaned_data['comment']
-            topic = form.cleaned_data['topic']
+    except UserNotReporter:
+        status = 403 # forbidden
+        data['error'] = 'User must be reporter'
+    except UserNotAuthenticated:
+        status = 401 # unauthorized
+        data['error'] = 'User not logged in'
 
-            comment.topics.remove(topic)
-            comment.save()
-            topic.save()
-            return HttpResponseRedirect("/reporterview")
+    return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
 
-def associatecomment(request):
-    """ Associate a comment with a given topic"""
+def disassociatecomment_logic(form, userprofile):
+   comment = form.cleaned_data['comment']
+   topic = form.cleaned_data['topic']
 
-    if request.method != 'POST':
-        return HttpResponseRedirect("/reporterview")
+   comment.topics.remove(topic)
+   comment.save()
+   topic.save()
 
-    if request.user.is_anonymous():
-        return HttpResponseRedirect("/authenticate")
-
-    userprofile = UserProfile.objects.get(user=request.user)
-
-    if not userprofile.is_reporter():
-        # Needs to handle this case better
-        return HttpResponseRedirect("/authenticate")
-
-    # So, it's a reporter
-
-    form = CommentTopicForm(request.POST)
-
-    if not form.is_valid():
-        return HttpResponseRedirect("/reporterview")
-
+def associatecomment_logic(form, userprofile):
     comment = form.cleaned_data['comment']
     topic = form.cleaned_data['topic']
 
     comment.topics.add(topic)
     comment.save()
     topic.save()
-    return HttpResponseRedirect("/reporterview")
 
-
-def mergecomments(request):
-    if request.method != 'POST':
-        return HttpResponseRedirect("/reporterview")
-
-    if request.user.is_anonymous():
-        return HttpResponseRedirect("/authenticate")
-
-    userprofile = UserProfile.objects.get(user=request.user)
-
-    if not userprofile.is_reporter():
-        # Needs to handle this case better
-        return HttpResponseRedirect("/authenticate")
-
-    # So, it's a reporter
-
-    form = MergeCommentForm(request.POST)
-
-    if not form.is_valid():
-        return HttpResponseRedirect("/reporterview")
-
+def mergecomment_logic(form, userprofile):
     comments = form.cleaned_data['comments']
     parent = form.cleaned_data['parent']
 
@@ -179,95 +150,38 @@ def mergecomments(request):
 
         comment.is_parent = False
         comment.save()
-
-
-        
         
     parent.is_parent = True
     parent.save()
-    return HttpResponseRedirect("/reporterview")
 
-
-def deletetopics(request):
+def disassociatecomment(request):
+    return reporter_api(request, CommentTopicForm, disassociatecomment_logic)
     
-    if request.method != 'POST':
-        return HttpResponseRedirect("/reporterview")
+def associatecomment(request):
+    return reporter_api(request, CommentTopicForm, associatecomment_logic)
 
-    if request.user.is_anonymous():
-        return HttpResponseRedirect("/authenticate")
+def mergecomments(request):
+    return reporter_api(request, MergeCommentForm, mergecomment_logic)
 
-    userprofile = UserProfile.objects.get(user=request.user)
-
-    if not userprofile.is_reporter():
-        # Needs to handle this case better
-        return HttpResponseRedirect("/authenticate")
-
-    # So, it's a reporter
-
-    form = TopicDeleteForm(request.POST)
-
-    if not form.is_valid():
-        return HttpResponseRedirect("/reporterview")
-
+def topicdelete_logic(form, userprofile):
     for topic in form.cleaned_data['topics']:
        # We don't want to actually delete the topic.
        topic.is_deleted = True
        topic.save()
 
-    return HttpResponseRedirect("/reporterview")
-
-def deletecomments(request):
-    if request.method != 'POST':
-        return HttpResponseRedirect("/reporterview")
-
-    if request.user.is_anonymous():
-        return HttpResponseRedirect("/authenticate")
-
-    userprofile = UserProfile.objects.get(user=request.user)
-
-    if not userprofile.is_reporter():
-        # Needs to handle this case better
-        return HttpResponseRedirect("/authenticate")
-
-    # So, it's a reporter
-
-    form = CommentDeleteForm(request.POST)
-
-    if not form.is_valid():
-        return HttpResponseRedirect("/reporterview")
-
+def commentdelete_logic(form, userprofile):
     for comment in form.cleaned_data['comments']:
        # We don't want to actually delete the comment.
        comment.is_deleted = True
        comment.save()
 
-    return HttpResponseRedirect("/reporterview")
-
-
-
-
+def deletetopics(request):
+    return reporter_api(request, TopicDeleteForm, topicdelete_logic)
     
+def deletecomments(request):
+    return reporter_api(request, CommentDeleteForm, commentdelete_logic)
 
-def newtopic(request):
-    if request.method != 'POST':
-        return HttpResponseRedirect("/reporterview")
-
-    if request.user.is_anonymous():
-        return HttpResponseRedirect("/authenticate")
-
-    userprofile = UserProfile.objects.get(user=request.user)
-
-    if not userprofile.is_reporter():
-        # Needs to handle this case better
-        return HttpResponseRedirect("/authenticate")
-
-    # So, it's a reporter
-
-    form = NewTopicForm(request.POST)
-
-    if not form.is_valid():
-        return HttpResponseRedirect("/reporterview")
-
+def newtopic_logic(form, userprofile):
     title = form.cleaned_data['title']
     summary_text = form.cleaned_data['summary_text']
     source_comment = form.cleaned_data['source_comment']
@@ -284,8 +198,8 @@ def newtopic(request):
         topic.comments = [source_comment]
     topic.save()
 
-    return HttpResponseRedirect("/reporterview")
-
+def newtopic(request):
+    return reporter_api(request, NewTopicForm, newtopic_logic)
 
 
 def api_commentsubmission(request, output_format = 'json'):
