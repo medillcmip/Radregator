@@ -405,3 +405,29 @@ form.authcheck .replysubmit {
 	font-weight: bold;
 }
 
+
+.error-message {
+    display: none;
+
+    width: 300px;
+    padding: 10px; 
+
+    position: absolute;
+    right: 0;
+    top: -5px;
+
+    cursor: pointer;
+    background: none repeat scroll 0 0 #CCCCCC;
+    color: #ffffff;
+
+    z-index: 1001;
+}
+
+.error-message p {
+    margin: 5px !important;
+}
+
+.error-message .instruction {
+    text-align: center;
+    font-size: 0.6em;
+}

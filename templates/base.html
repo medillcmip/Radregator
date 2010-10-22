@@ -70,19 +70,27 @@
                         var response_data = $.parseJSON(response_text);
 						var errorNum = requestError.status;
 
-						if (errorNum == "401") {
+						if (errorNum == "401" || errorNum == "403") {
 							var errorMsg = response_data.error; 
                             // TODO: Prompt user to login
+                            thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                            error_message = thiscomment.children('.error-message');
+                            error_message.css('display','block');
+
+                            $('.error-message').click(function() {
+                                console.debug('got here');
+                                $(this).remove();
+                            });
 						} 
-                        else if (errorNum == "403") {
-							var errorMsg = response_data.error; 
-                            // TODO: Tell user why they can't respond again
-                        }
 
                         console.error(errorMsg);
 				    }
                 });
+
+                return false;
             });
+
+
             // VARIABLE VERTICAL ALIGNMENT
 			$('.valign').valign();
 			
