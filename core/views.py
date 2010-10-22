@@ -272,7 +272,9 @@ def api_commentsubmission(request, output_format = 'json'):
         status = 400 # Bad Request
         data['error'] = "Invalid topic"
 
-    return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
+    #return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
+    # TK - need code on JavaScript side to to Ajax, etc.
+    return HttpResponseRedirect("/")
 
 
             
