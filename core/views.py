@@ -21,7 +21,7 @@ from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
                                        MethodUnsupported, InvalidTopic, \
                                        MaximumExceeded
-from radregator.users.exceptions import UserNotAuthenticated
+from radregator.users.exceptions import UserNotAuthenticated, UserNotReporter
 from django.core import serializers
 from utils import slugify
 from django.http import Http404
@@ -72,35 +72,45 @@ def simpletest(request, whichtest):
 
     return render_to_response('simpletest.html', template_dict)
         
-def disassociatecomment(request):
-    """ Associate a comment with a given topic"""
-
-    if request.method != 'POST':
-        return HttpResponseRedirect("/reporterview")
-
+def check_reporter(request):
     if request.user.is_anonymous():
-        return HttpResponseRedirect("/authenticate")
+        raise UserNotAuthenticated()
 
     userprofile = UserProfile.objects.get(user=request.user)
 
     if not userprofile.is_reporter():
-        # Needs to handle this case better
-        return HttpResponseRedirect("/authenticate")
+        raise UserNotReporter()
+    
+    return userprofile
 
-    # So, it's a reporter
+        
+    
+def disassociatecomment(request):
+    """ Associate a comment with a given topic"""
 
-    form = CommentTopicForm(request.POST)
+    data = {} # response data
+    status = 200 # OK
 
-    if not form.is_valid():
-        return HttpResponseRedirect("/reporterview")
+    try:
+        if request.method == 'POST':
+           check_reporter(request) 
 
-    comment = form.cleaned_data['comment']
-    topic = form.cleaned_data['topic']
+        form = CommentTopicForm(request.POST)
 
-    comment.topics.remove(topic)
-    comment.save()
-    topic.save()
-    return HttpResponseRedirect("/reporterview")
+        if not form.is_valid():
+            status = 400 # Caught in a bad request
+            data['error'] = "Some required fields are missing or invalid
+            data['field_errors'] = form.errors
+        else:
+           # Form is good 
+
+            comment = form.cleaned_data['comment']
+            topic = form.cleaned_data['topic']
+
+            comment.topics.remove(topic)
+            comment.save()
+            topic.save()
+            return HttpResponseRedirect("/reporterview")
 
 def associatecomment(request):
     """ Associate a comment with a given topic"""
