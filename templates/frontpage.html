@@ -80,32 +80,33 @@
 		<!--<div class="moreline">
 			<a href="#">( prev )</a> <a href="#">( next )</a>
 		</div>-->
-	</div>
-
-	<div class="formcache">
-	    <div id="replyform">
-		    <form action = "/api/json/comments/submit/" method="post" class="authcheck">
-		   <!-- {{ reply_form.as_p }} -->
-		    <label>Reply: </label>
-			{{comment_form.text}}
-			<input type="hidden" value="3" name="comment_type_str">
-			<input type="hidden" value="3" name="in_reply_to" id="id_in_reply_to">
-			<input type="hidden" value="" name="topic" class="topic">
-			{% csrf_token %}
-			<input type="submit" name="submit" class="replysubmit" value="Submit" />
-		    </form>
-	    </div>
-	    
-	    <div id="attachform">
-			<form action = "/clipper/" method="post" class="authcheck">
-				<label>Enter a URL: </label>
-				{{clipper_url_form.url_field}}
-	<!--			<input type="hidden" value="3" name="comment_type_str">
-				<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->
+	
+		<div class="formcache">
+		    <div id="replyform">
+			    <form action = "/api/json/comments/submit/" method="post" class="authcheck">
+			   <!-- {{ reply_form.as_p }} -->
+			    <label>Reply: </label>
+				{{comment_form.text}}
+				<input type="hidden" value="3" name="comment_type_str">
+				<input type="hidden" value="3" name="in_reply_to" id="id_in_reply_to">
+				<input type="hidden" value="" name="topic" class="topic">
 				{% csrf_token %}
 				<input type="submit" name="submit" class="replysubmit" value="Submit" />
-		    </form>    
-	   </div>
+			    </form>
+		    </div>
+		    
+		    <div id="attachform">
+				<form action = "/clipper/" method="post" class="authcheck">
+					<label>Enter a URL: </label>
+					{{clipper_url_form.url_field}}
+		<!--			<input type="hidden" value="3" name="comment_type_str">
+					<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->
+					{% csrf_token %}
+					<input type="submit" name="submit" class="replysubmit" value="Submit" />
+			    </form>    
+		   </div>
+		</div>
+	
 	</div>
 
 {% endfor %}
