@@ -8,16 +8,20 @@ from django.core.urlresolvers import reverse
 from radregator.users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
-from models import Topic,CommentType, Comment, Summary, CommentRelation, CommentResponse
+from models import Topic,CommentType, Comment, Summary, CommentRelation, \
+                   CommentResponse
 from radregator.tagger.models import Tag
-from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, TopicDeleteForm, NewTopicForm, MergeCommentForm
+from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, \
+                                  TopicDeleteForm, NewTopicForm, \
+                                  MergeCommentForm
 from radregator.core.forms import CommentTopicForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
-from core.exceptions import MethodUnsupported, NonAjaxRequest
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
-                                       MethodUnsupported,InvalidTopic
+                                       MethodUnsupported, InvalidTopic, \
+                                       MaximumExceeded
+from radregator.users.exceptions import UserNotAuthenticated
 from django.core import serializers
 from utils import slugify
 from django.http import Http404
@@ -467,8 +471,15 @@ def api_comment_responses(request, comment_id, output_format='json',
     """
 
     # A user can only respond once during this time period
-    RESPONSE_WINDOW_HOURS = 0
-    RESPONSE_WINDOW_MINUTES = 5
+    # Set these to numbers to make limits take effect,
+    # set to None for no limits
+    #RESPONSE_WINDOW_HOURS = 0
+    #RESPONSE_WINDOW_MINUTES = 5
+    RESPONSE_WINDOW_HOURS = None 
+    RESPONSE_WINDOW_MINUTES = None 
+
+    # A user can only make this many responses per comment, per type
+    MAX_RESPONSES = 1
 
     data = {}
     status=200 # Be optimistic
@@ -481,66 +492,82 @@ def api_comment_responses(request, comment_id, output_format='json',
                 # User is logged in, get the user object
                 user = UserProfile.objects.get(user__id = user_id)
             else:
-                pass
-                # TODO: Handle the case when a user who isn't logged in tries
-                # to comment.
+                raise UserNotAuthenticated
 
             if request.method == 'POST':
-
                 if "type" not in request.POST.keys():
-                    raise MissingParameter("You must specify a 'type' parameter to indicate which kind of comment response is being created")
+                    raise MissingParameter("You must specify a 'type' " + \
+                        "parameter ' + 'to indicate which kind of comment " + \
+                        "response is being created")
 
                 response_type = request.POST['type']
 
                 # Try to get the comment object
                 comment = Comment.objects.get(id = comment_id)
 
-                try:
-                    # Check if the user has already responded
-                    response = CommentResponse.objects.get(comment=comment, \
-                        user__user__id=user_id, type=response_type)
+                # Get any previous responses
+                responses = CommentResponse.objects.filter(comment=comment, \
+                    user__user__id=user_id, \
+                    type=response_type).order_by('created')
 
-                except ObjectDoesNotExist:
+                if responses.count() < MAX_RESPONSES and \
+                   responses.count() > 0:
+                    # User hasn't exceeded the maximum number of responses 
+                    # allowed
+                    
+                    if RESPONSE_WINDOW_HOURS is not None and \
+                       RESPONSE_WINDOW_MINUTS is not None:
+                        # If time limits are enabled check to see
+                        # if the user has commented too recently
+                    
+                        # Get the current time
+                        now = datetime.datetime.now()
+
+                        # Get the difference between now and when the user last 
+                        # responded
+                        time_diff = now - responses[0].created
+
+                        # Calculate the allowable window
+                        time_window = datetime.timedelta( \
+                            hours=RESPONSE_WINDOW_HOURS, \
+                            minutes=RESPONSE_WINDOW_MINUTES);
+
+                        if time_diff < time_window:
+                          # User has already commented within the allowable 
+                          # window 
+
+                          # Calculate how long the user has to wait
+                          wait = time_window - time_diff
+                          wait_hours, remainder = divmod(wait.seconds, 3600)
+                          wait_minutes, wait_seconds = divmod(remainder, 60)
+
+                          raise RecentlyResponded( \
+                            "You must wait %d hours, %d minutes " +
+                            "before responding" % (wait_hours, wait_minutes))
+
+                elif responses.count() == 0:
                     pass
-                    # The user hasn't responded to this comment.  We're cool.
+                            
                 else:
-                    # Get the current time
-                    now = datetime.datetime.now()
-
-                    # Get the difference between now and when the user last 
-                    # responded
-                    time_diff = now - response.created
-
-                    # Calculate the allowable window
-                    time_window = datetime.timedelta( \
-                        hours=RESPONSE_WINDOW_HOURS, \
-                        minutes=RESPONSE_WINDOW_MINUTES);
-
-                    # Check when the user commented
-                    if time_diff < time_window:
-                      # User has already commented within the allowable window 
-
-                      # Calculate how long the user has to wait
-                      wait = time_window - time_diff
-                      wait_hours, remainder = divmod(wait.seconds, 3600)
-                      wait_minutes, wait_seconds = divmod(remainder, 60)
-
-                      raise RecentlyResponded( \
-                        "You must wait %d hours, %d minutes before responding" % \
-                        (wait_hours, wait_minutes))
+                    raise MaximumExceeded("User has already made maximum " + \
+                                          "number of responses")
         
-                comment_response = CommentResponse(user=user, comment=comment, \
+                comment_response = CommentResponse(user=user, \
+                                                   comment=comment, \
                                                    type=response_type) 
                 comment_response.save()
 
                 status = 201
                 data['uri'] = "/api/%s/comments/%s/responses/%s/" % \
-                              (output_format, comment_id, comment_response.id)
+                              (output_format, comment_id, \
+                               comment_response.id)
                     
             elif request.method == 'PUT':
                 raise MethodUnsupported("PUT is not supported at this time.")
+
             elif request.method == 'DELETE':
                 raise MethodUnsupported("DELETE is not supported at this time.")
+                
             else:
                 # GET 
                 raise MethodUnsupported("GET is not supported at this time.")
@@ -565,6 +592,12 @@ def api_comment_responses(request, comment_id, output_format='json',
         data['error'] = "%s" % e
     except MethodUnsupported, e:
         status = 405 # Method not allowed
+        data['error'] = "%s" % e
+    except UserNotAuthenticated as e:
+        status = 401 # Unauthorized
+        data['error'] = "%s" % e
+    except MaximumExceeded as e:
+        status = 403 # Forbidden
         data['error'] = "%s" % e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',

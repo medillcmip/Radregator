@@ -19,6 +19,7 @@
 	
 	
 	<script src="/static/js/jquery.tools.min.js"></script>
+	<script src="/static/js/functions.js"></script>
 	<script src="/static/js/jquery.colorbox-min.js"></script>
  
 	<script type="text/javascript"> 
@@ -56,22 +57,31 @@
                     data: { type : response_type },
 				    success: function(data){
                         // TODO: Update counter
+                        var count = thiscomment.children(".response-counter").children('.count');
+                        count_val = count.text();
+                        count_val++;
+                        count.text(count_val);
 					},
 				    error: function (requestError, status, errorResponse) {
+                        var response_text = requestError.responseText;
+                        var response_data = jQuery.parseJSON(response_text);
 						var errorNum = requestError.status;
-						if (errorNum == "404") {
-							var errorMsg = "Error: Please enter a username.";
-						} else {
-							var errorMsg = " Error: That username + password failed. Please try again."
-							// alert(errorMsg);
-						}
+
+						if (errorNum == "401") {
+							var errorMsg = response_data.error; 
+                            // TODO: Prompt user to login
+						} 
+                        else if (errorNum == "403") {
+							var errorMsg = response_data.error; 
+                            // TODO: Tell user why they can't respond again
+                        }
+
+                        console.error(errorMsg);
 				    }
                 });
             });
-
-
-
-
+            // VARIABLE VERTICAL ALIGNMENT
+			$('.valign').valign();
   		});
   		
 	</script> 
@@ -82,6 +92,7 @@
 </head> 
 
    <body>
+       <div id="messages"></div> 
 	   <div id="pagewrap">
 		   <div id="header">
 		<div class="reglog">
@@ -90,6 +101,7 @@
             {% else %}
 			<a class="cbox" href="/authenticate">Login or register</a>
             {% endif %}
+			<input type="submit" name="submit" class="submit" value="Submit" />
 		</div>
 				
 				<h1><a href="#" id="logo">Logo</a></h1>
