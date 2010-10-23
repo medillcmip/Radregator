@@ -118,3 +118,44 @@ function handleReplyform() {
 	$(this).addClass("opened");
 	return false;
 }
+
+// Handle responses to questions (i.e. 'Me too!') links
+function handleResponseLink() {
+    var thiscomment = $(this).closest('.comment'); 
+    var thiscomment_id = 
+        thiscomment.attr('id').replace('comment-', '');
+    var response_type = 'concur';
+
+    $.ajax({
+        type: "post", 
+        url: "/api/json/comments/" + thiscomment_id + "/responses/",
+        data: { type : response_type },
+        success: function(data){
+            // Update counter
+            var count = thiscomment.children(".commentguts").children(".response-counter").children('.count');
+            count_val = count.text();
+            count_val++;
+            count.text(count_val);
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            if (errorNum == "401" || errorNum == "403") {
+                var errorMsg = response_data.error; 
+                // TODO: Prompt user to login
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                error_message = thiscomment.children('.error-message');
+                error_message.css('display','block');
+
+                $('.error-message').click(function() {
+                    $(this).remove();
+                });
+            } 
+
+        }
+    });
+
+    return false;
+}
