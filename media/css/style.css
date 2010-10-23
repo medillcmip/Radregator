@@ -431,3 +431,8 @@ form.authcheck .replysubmit {
     text-align: center;
     font-size: 0.6em;
 }
+
+a.login {
+    font-weight: bold;
+    text-decoration: underline;
+}
