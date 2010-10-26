@@ -9,6 +9,7 @@
 	
 		$(document).ready(function() {
 			$('a.commenttabs').unbind('click', handleReplyform).bind('click', handleReplyform); 
+            $('.youagree a').unbind('click', handleResponseLink).bind('click', handleResponseLink);
 			
 			// DEAL WITH INDENTED COMMENTS
 			$('li.comment-level2').before('<li class="childcomment"></li>');

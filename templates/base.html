@@ -47,42 +47,6 @@
 			// Registration/Login Overlay
 			$('a.cbox').colorbox({width:750, height:450, iframe:true});
 
-            // Response links
-            $('.youagree a').click(function() {
-                var thiscomment = $(this).closest('.comment'); 
-                var thiscomment_id = 
-                    thiscomment.attr('id').replace('comment-', '');
-                var response_type = 'concur';
-
-                $.ajax({
-                    type: "post", 
-                    url: "/api/json/comments/" + thiscomment_id + "/responses/",
-                    data: { type : response_type },
-				    success: function(data){
-                        // Update counter
-                        var count = thiscomment.children(".commentguts").children(".response-counter").children('.count');
-                        count_val = count.text();
-                        count_val++;
-                        count.text(count_val);
-					},
-				    error: function (requestError, status, errorResponse) {
-                        var response_text = requestError.responseText;
-                        var response_data = jQuery.parseJSON(response_text);
-						var errorNum = requestError.status;
-
-						if (errorNum == "401") {
-							var errorMsg = response_data.error; 
-                            // TODO: Prompt user to login
-						} 
-                        else if (errorNum == "403") {
-							var errorMsg = response_data.error; 
-                            // TODO: Tell user why they can't respond again
-                        }
-
-                        console.error(errorMsg);
-				    }
-                });
-            });
             // VARIABLE VERTICAL ALIGNMENT
 			$('.valign').valign();
 			
