@@ -13,7 +13,7 @@ from models import Topic,CommentType, Comment, Summary, CommentRelation, \
 from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, \
                                   TopicDeleteForm, NewTopicForm, \
-                                  MergeCommentForm
+                                  MergeCommentForm, NewSummaryForm
 from radregator.core.forms import CommentTopicForm
 from radregator.clipper.forms import UrlSubmitForm
 from django.core.context_processors import csrf
@@ -37,6 +37,7 @@ def reporterview(request):
         'commentdeleteform' : CommentDeleteForm(),
         'topicdeleteform' : TopicDeleteForm(),
         'newtopicform' : NewTopicForm(),
+        'newsummaryform' : NewSummaryForm(),
         'mergecommentform' : MergeCommentForm(),
         'associatecommentform' : CommentTopicForm(),
         'disassociatecommentform' : CommentTopicForm(),
@@ -55,6 +56,8 @@ def simpletest(request, whichtest):
         form = TopicDeleteForm()
     elif whichtest == 'newtopic':
         form = NewTopicForm()
+    elif whichtest == 'newsummary':
+        form = NewSummaryForm()
     elif whichtest == 'mergecomments':
         form = MergeCommentForm()
     elif whichtest == 'associatecomment':
@@ -198,6 +201,17 @@ def deletetopics(request):
 def deletecomments(request):
     return reporter_api(request, CommentDeleteForm, commentdelete_logic)
 
+def newsummary_logic(form, userprofile):
+    summary_text = form.cleaned_data['summary_text']
+    topic = form.cleaned_data['topic'] # A topic object
+
+    summary = Summary.objects.get_or_create(text=summary_text)[0] # get_or_create returns (obj, is_new)
+    summary.save()
+
+    topic.summary = summary
+    topic.save()
+
+    
 def newtopic_logic(form, userprofile):
     title = form.cleaned_data['title']
     summary_text = form.cleaned_data['summary_text']
@@ -218,6 +232,8 @@ def newtopic_logic(form, userprofile):
 def newtopic(request):
     return reporter_api(request, NewTopicForm, newtopic_logic)
 
+def newsummary(request):
+    return reporter_api(request, NewSummaryForm, newsummary_logic)
 
 def api_commentsubmission(request, output_format = 'json'):
     
