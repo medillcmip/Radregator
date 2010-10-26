@@ -19,10 +19,19 @@ class TopicDeleteForm(forms.Form):
     alltopics = Topic.objects.filter(is_deleted=False)
     topics = forms.ModelMultipleChoiceField(alltopics, )
 
+class NewSummaryForm(forms.Form):
+    """ Form to let a user create a new summary for a topic"""
+
+    alltopics = Topic.objects.filter(is_deleted=False)
+    topic = forms.ModelChoiceField(alltopics, )
+    summary_text = forms.CharField(required = True, widget = forms.TextInput)
+
+
+
 class NewTopicForm(forms.ModelForm):
     # Comment to source from should default to null
     # Really just using the modelform to validate the title as new
-    summary_text = forms.CharField(required = True, widget = forms.TextInput)
+    summary_texty = forms.CharField(required = True, widget = forms.TextInput)
     allcomments = Comment.objects.filter(is_deleted=False).filter(is_parent=True)
     source_comment = forms.ModelChoiceField(allcomments, required = False)
 
