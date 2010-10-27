@@ -21,10 +21,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
                                        MethodUnsupported, InvalidTopic, \
-                                       MaximumExceeded
+                                       MaximumExceeded, UserOwnsItem
 from radregator.users.exceptions import UserNotAuthenticated, UserNotReporter
 from django.core import serializers
-from utils import slugify
+import core.utils
 from django.http import Http404
 
 import json
@@ -222,7 +222,7 @@ def newtopic_logic(form, userprofile):
     summary = Summary.objects.get_or_create(text=summary_text)[0] # get_or_create returns (obj, is_new)
     summary.save()
 
-    topic = Topic(title = title, slug = slugify(title), summary = summary, is_deleted = False)
+    topic = Topic(title = title, slug = core.utils.slugify(title), summary = summary, is_deleted = False)
     topic.save()
     topic.curators = curators
     if source_comment:
@@ -466,6 +466,13 @@ def api_comment_responses(request, comment_id, output_format='json',
                 # Try to get the comment object
                 comment = Comment.objects.get(id = comment_id)
 
+                # Check to see if the user created the comment.  You can't
+                # respond to a comment you created.
+                if comment.user.user.id == user.id:
+                    # They match!
+                    raise UserOwnsItem("You can't vote on an item that you " + \
+                                       "created!")
+
                 # Get any previous responses
                 responses = CommentResponse.objects.filter(comment=comment, \
                     user__user__id=user_id, \
@@ -558,6 +565,9 @@ def api_comment_responses(request, comment_id, output_format='json',
         status = 401 # Unauthorized
         data['error'] = "%s" % e
     except MaximumExceeded as e:
+        status = 403 # Forbidden
+        data['error'] = "%s" % e
+    except UserOwnsItem, e:
         status = 403 # Forbidden
         data['error'] = "%s" % e
 
