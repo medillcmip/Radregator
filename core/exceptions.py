@@ -35,3 +35,8 @@ class MethodUnsupported(Exception):
 class MaximumExceeded(Exception):
     """Exception thrown when some API call exceeds a threshold.""" 
     pass
+
+class UserOwnsItem(Exception):
+    """Exception thrown when a user tries to vote on an item that she has 
+       created"""
+    pass
