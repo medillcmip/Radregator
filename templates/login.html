@@ -13,6 +13,11 @@
 					var thisform = $(this).closest('form').attr("class");
 					var thisuser = $("."+thisform+" #id_username").val();
 					var thispass = $("."+thisform+" #id_password").val();
+
+                    // Clear prior error messages
+                    $('.errormsg').each(function(index) {
+                        $(this).html('');
+                    });
 					
 					if (thisform == "login") {
 						var posturl = "/api/json/users/"+thisuser+"/login/";
@@ -22,7 +27,7 @@
 					}			
 					
 					$.ajax({
-					    type: "post", url: posturl, data: { username: thisuser, password: thispass },
+					    type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
 					    success: function(data){
 							// console.log(data);
 							var loggeduser = data.username;
@@ -31,15 +36,10 @@
 						},
 					    error: function (requestError, status, errorResponse) {
 							var errorNum = requestError.status;
-							if (errorNum == "404") {
-								var errorMsg = "Error: Please enter a username.";
-							} else {
-								var errorMsg = " Error: That username + password failed. Please try again."
-								// alert(errorMsg);
-							}
 						
-							$("p.errormsg").html(errorMsg);
-							$("p.errormsg").css("display","block");	
+                            errorMsg = jQuery.parseJSON(requestError.responseText).error;
+                            $(this).find(".errormsg").html(errorMsg);
+                            $(this).find(".errormsg").css("display", "block");
 					    }
 					});
 				return false;
@@ -72,6 +72,7 @@
 		<form method="POST" action="/api/json/users/" class="register">
 			{{form.as_p}} 
 			{% csrf_token %}
+			<p class="errormsg" style="display:none;"></p>
 			<input type="submit" class="btn" value="Go!" />
 		</form>
     </div>
