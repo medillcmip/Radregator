@@ -19,6 +19,7 @@ def disabled_act(request):
     return render_to_response('disabled_user.html',\
         template_dict,context_instance=RequestContext(request))
 
+
 def do_login(username,password,request):
     user = authenticate(username=username, password=password)
     if user is not None:
@@ -64,23 +65,32 @@ def auth(request):
     """
     if request.user.is_authenticated():    
         return HttpResponseRedirect('/')
-    user = facebook.get_user_from_cookie(request.COOKIES, settings.FB_API_ID,\
-        settings.FB_SECRET_KEY )
-    if user:
+
+    # Check to see if there's a cookie indicating that the user
+    # is logged in with Facebook.
+    fb_user = facebook.get_user_from_cookie(request.COOKIES, \
+                                            settings.FB_API_ID,\
+                                            settings.FB_SECRET_KEY)
+
+    if fb_user:
         #user has a FB account and we need to see if they have been 
         #registered in our db
         try:
-            ouruser =  UserProfile.objects.get(facebook_user_id=user['uid'])
+            user_profile =  UserProfile.objects.get(\
+                facebook_user_id=user['uid'])
             #we need to log the FB user in
             #http://zcentric.com/2010/05/12/django-fix-for-user-object-has-no-attribute-backend/
             #TODO: send message telling the user they have been logged in
             # via FB
-            ouruser.user.backend = 'django.contrib.auth.backends.ModelBackend'
-            login(request,ouruser.user)
-            #return HttpResponseRedirect('/')
+            user_profile.user.backend = \
+                'django.contrib.auth.backends.ModelBackend'
+            login(request, user_profile.user)
+
+            return HttpResponseRedirect('/')
+
         except UserProfile.DoesNotExist:
             #they're not, so we need to create them and move em along
-            graph = facebook.GraphAPI(user['access_token'])
+            graph = facebook.GraphAPI(fb_user['access_token'])
             profile = graph.get_object("me")
             username=profile['first_name']+profile['last_name']
             password=profile['id']
@@ -89,6 +99,7 @@ def auth(request):
             newuser = UserProfile(user=baseuser,\
                 facebook_user_id=profile['id'])
             newuser.save()
+
             return do_login(username,password,request)
     else:
        #no residual auth tokens found, move the user to login 
@@ -189,6 +200,7 @@ def register(request):
         return render_to_response('register.html', template_dict,\
             context_instance=RequestContext(request))
 
+
 def api_auth(request, uri_username, output_format='json'):
     """Like auth() but through AJAX"""
 
@@ -260,6 +272,7 @@ def api_auth(request, uri_username, output_format='json'):
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
 
+
 def api_users(request, output_format='json'):
     """Catch-all view for user api calls."""
     
@@ -298,7 +311,8 @@ def api_users(request, output_format='json'):
                     newuser.save()
 
                     # Create user
-                    user = authenticate(username=f_username, password=f_password)
+                    user = authenticate(username=f_username, \
+                                        password=f_password)
                     login(request, user)
 
                     # Set our response codes and data
@@ -315,7 +329,8 @@ def api_users(request, output_format='json'):
                     # We'll detect this and try to return a more reasonable 
                     # error message.
                     if 'username' in form.errors.keys():
-                        if form.errors['username'] == [form.USERNAME_EXISTS_MSG]:
+                        if form.errors['username'] == \
+                           [form.USERNAME_EXISTS_MSG]:
                             raise UserUsernameExists(form.USERNAME_EXISTS_MSG) 
 
                     if 'email' in form.errors.keys():
@@ -342,7 +357,6 @@ def api_users(request, output_format='json'):
     except (UserUsernameExists, UserEmailExists) as detail:
         status = 409 # Conflict
         data['error'] = "%s" % detail 
-
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
