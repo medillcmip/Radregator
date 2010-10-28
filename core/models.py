@@ -48,7 +48,7 @@ class Topic(models.Model):
     def recursive_traverse(self, comment, level = 1):
         # Pass through comment replies, showing
         retlist = [(comment, level)]
-        for child in sorted(comment.comment_set.filter(is_deleted=False, is_parent=True), cmp=comment_cmp):
+        for child in sorted(comment.comment_set.filter(is_deleted=False, is_parent=True, topics=self), cmp=comment_cmp):
             retlist += self.recursive_traverse(child, level+1)
         return retlist
 

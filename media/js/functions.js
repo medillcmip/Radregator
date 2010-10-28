@@ -119,6 +119,12 @@ function handleReplyform() {
 	return false;
 }
 
+// CREATE A NEW SOURCE
+
+function handleNewSourceForm() {
+    return false;
+}
+
 // CREATE A NEW TOPIC
 function handleNewTopicForm(){
     // Add a topic via Ajax
@@ -136,6 +142,7 @@ function handleNewTopicForm(){
         success: function(data){
            // Close Topic Form 
             $('#addtopic').hide();
+            location.reload(); // TODO - make this clearer
         },
         error: function (requestError, status, errorResponse) {
             var response_text = requestError.responseText;
@@ -185,6 +192,7 @@ function handleReplySubmit(){
         },
         success: function(data){
         closeReplyform('reply', parentid);
+        location.reload(); // TODO - make this clearer
             
         },
         error: function (requestError, status, errorResponse) {
@@ -241,6 +249,7 @@ function handleDisassociateCommentLink() {
             var response_text = requestError.responseText;
             var response_data = $.parseJSON(response_text);
             var errorNum = requestError.status;
+            
 
             if (errorNum == "401") {
                 // User isn't logged in

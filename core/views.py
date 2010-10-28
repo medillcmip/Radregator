@@ -140,10 +140,8 @@ def login_status(request):
 def disassociatecomment_logic(form, userprofile):
    comment = form.cleaned_data['comment']
    topic = form.cleaned_data['topic']
-   print topic
 
    comment.topics.remove(topic)
-   print comment.topics.all()
    comment.save()
    topic.save()
 
