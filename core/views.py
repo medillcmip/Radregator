@@ -297,6 +297,7 @@ def frontpage(request):
     """ Front page demo"""
 
     clipper_url_form = None
+
     if request.method == 'POST':
         if request.user.is_anonymous():
             # This scenario should be handled more gracefully in JavaScript
@@ -304,7 +305,6 @@ def frontpage(request):
         
         # If someone just submitted a comment, load the form
         form = CommentSubmitForm(request.POST)
-        
         
         if form.is_valid():
             # Validate the form
@@ -357,6 +357,7 @@ def frontpage(request):
     template_dict['clipper_url_form'] = clipper_url_form
         
     template_dict.update(csrf(request)) # Required for csrf system
+
     return render_to_response('frontpage.html', template_dict, \
                               context_instance=RequestContext(request))
    
