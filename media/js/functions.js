@@ -166,3 +166,12 @@ function handleResponseLink() {
 
     return false;
 }
+
+// Handler for logout (.logout) links
+function handleLogoutLink() {
+    FB.logout(); // Log the user out of Facebook
+
+    // Return true so the browser follows the link (and logs the user out
+    // of our site too)
+    return true; 
+}
