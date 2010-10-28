@@ -51,6 +51,9 @@
 
             // VARIABLE VERTICAL ALIGNMENT
 			$('.valign').valign();
+
+            // Handle logout link
+			$('a.logout').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
 			
   		});
   		
@@ -67,7 +70,7 @@
 		   <div id="header">
 		<div class="reglog">
             {% if user.is_authenticated %}
-            Hello {{ user.username }}. <a href='/logout'>Not you?</a>
+            Hello {{ user.username }}. <a href='/logout' class="logout">Log out</a>
             {% else %}
 			<a class="cbox" href="/authenticate">Login or register</a>
             {% endif %}
