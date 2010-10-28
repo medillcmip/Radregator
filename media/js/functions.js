@@ -89,6 +89,7 @@ function openReplyform (replytype,parentid) {
 		$(drawer).html(contents).addClass("opened");
 		$(drawer).append('<a href="javascript:closeReplyform(\''+replytype+'\',\''+parentid+'\');" class="closereply">close</a>');
 		var pkid = parentid.substr(8);
+        $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 		
 		if (replytype == "attach") {
 			var postto = "/clipper/"+pkid+"/";
