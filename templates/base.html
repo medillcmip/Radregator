@@ -63,28 +63,6 @@
 </head> 
 
    <body>
-       <div id="messages"></div> 
-	   <div id="pagewrap">
-		   <div id="header">
-		<div class="reglog">
-            {% if user.is_authenticated %}
-            Hello {{ user.username }}. <a href='/logout' class="logout">Log out</a>
-            {% else %}
-			<a class="cbox" href="/authenticate">Login or register</a>
-            {% endif %}
-
-		</div>
-				
-				<h1><a href="#" id="logo">Logo</a></h1>
-			</div>
-		
-		   
-		   {% block body %}
-		   {% endblock body %}
-		   
-	   </div>
-
-
         <div id="fb-root"></div>
         <script type="text/javascript">
         window.fbAsyncInit = function() {
@@ -109,7 +87,29 @@
           document.getElementById('fb-root').appendChild(e);
         }());
 
-        </script>
+       </script>
+       <div id="messages"></div> 
+	   <div id="pagewrap">
+		   <div id="header">
+		<div class="reglog">
+            {% if user.is_authenticated %}
+            Hello {{ user.username }}. <a href='/logout' class="logout">Log out</a>
+            {% else %}
+			<a class="cbox" href="/authenticate">Login or register</a>
+            {% endif %}
+
+		</div>
+				
+				<h1><a href="#" id="logo">Logo</a></h1>
+			</div>
+		
+		   
+		   {% block body %}
+		   {% endblock body %}
+		   
+	   </div>
+
+
 
     </body>
 
