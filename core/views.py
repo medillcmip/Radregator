@@ -110,7 +110,7 @@ def reporter_api(request, formconstructor, logic):
                logic(form, userprofile)
         else:
             # Not a post
-            raise MethodUnsupported("This endpoint only accepts POSTs.")
+            raise MethodUnsupported("This endpoint only accepts POSTs, you used: " + request.method)
 
     except UserNotReporter:
         status = 403 # forbidden
@@ -241,9 +241,9 @@ def api_commentsubmission(request, output_format = 'json'):
     status = 200 # OK
 
     try:
-        if request.method == 'POST':
+        if request.method:
 
-            form = CommentSubmitForm(request.POST)
+            form = CommentSubmitForm(request.REQUEST)
 
             if request.user.is_anonymous():
                 status = 401 # Unauthorized
@@ -283,13 +283,13 @@ def api_commentsubmission(request, output_format = 'json'):
 
 
         else: # Not a post
-            raise MethodUnsupported("This endpoint only accepts POSTs.")
+            raise MethodUnsupported("This endpoint only accepts POSTs, you used:" + request.method)
         
     except InvalidTopic:
         status = 400 # Bad Request
         data['error'] = "Invalid topic"
 
-    #return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
+    return HttpResponse(content = json.dumps(data), mimetype='text/html', status=status)
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 

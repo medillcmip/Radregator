@@ -142,11 +142,7 @@ function handleReplySubmit(){
         text : thiscomment_text
         },
         success: function(data){
-            // Update counter
-            var count = thiscomment.children(".commentguts").children(".response-counter").children('.count');
-            count_val = count.text();
-            count_val++;
-            count.text(count_val);
+            
         },
         error: function (requestError, status, errorResponse) {
             var response_text = requestError.responseText;
