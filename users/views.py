@@ -63,6 +63,8 @@ def auth(request):
      account won't be merged, thus we have two unique accounts with no
      bridge.  
     """
+    logger = core.utils.get_logger()
+
     if request.user.is_authenticated():    
         return HttpResponseRedirect('/')
 
@@ -72,12 +74,14 @@ def auth(request):
                                             settings.FB_API_ID,\
                                             settings.FB_SECRET_KEY)
 
+    logger.debug(fb_user)
+
     if fb_user:
         #user has a FB account and we need to see if they have been 
         #registered in our db
         try:
             user_profile =  UserProfile.objects.get(\
-                facebook_user_id=user['uid'])
+                facebook_user_id=fb_user['uid'])
             #we need to log the FB user in
             #http://zcentric.com/2010/05/12/django-fix-for-user-object-has-no-attribute-backend/
             #TODO: send message telling the user they have been logged in
