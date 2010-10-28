@@ -119,7 +119,68 @@ function handleReplyform() {
 	return false;
 }
 
-// Handle responses to questions (i.e. 'Me too!') links
+function handleReplySubmit(){
+    alert("foo");
+    var thiscomment = $(this).closest('.comment'); 
+    var thiscomment_id = 
+        thiscomment.attr('id').replace('comment-', '');
+
+    var thisin_reply_to = $("#replyform #id_in_reply_to").val();
+    var thistext = $("#replyform #id_text").val();
+    var thiscomment_type = "3"; // Reply
+    var thiscomment_text = $("#replyform #id_text").val();
+    var thistopic = $("ul.tabs a.current").html();
+
+
+    $.ajax({
+        type: "post",
+        url: "/api/json/comments/",
+        data: { in_reply_to : thisin_reply_to,
+        text : thistext,
+        topic: thistopic,
+        comment_type : thiscomment_type,
+        text : thiscomment_text
+        },
+        success: function(data){
+            // Update counter
+            var count = thiscomment.children(".commentguts").children(".response-counter").children('.count');
+            count_val = count.text();
+            count_val++;
+            count.text(count_val);
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            if (errorNum == "401") {
+                // User isn't logged in
+                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                $('a.login').bind('click', launchLogin);
+            } 
+            else if (errorNum == "403") {
+                // Another error
+                var errorMsg = response_data.error; 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+            }
+
+            error_message = thiscomment.children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    alert("foo");
+    return false;
+
+
+}
+
 function handleResponseLink() {
     var thiscomment = $(this).closest('.comment'); 
     var thiscomment_id = 

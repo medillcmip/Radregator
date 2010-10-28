@@ -94,7 +94,7 @@
 		</div>-->
 	
 		<div class="formcache">
-		    <div id="replyform">
+		    <div id="replyform" class="replyform">
 			    <form action = "/api/json/comments/submit/" method="post" class="authcheck">
 			   <!-- {{ reply_form.as_p }} -->
 			    <label>Reply: </label>
@@ -114,7 +114,7 @@
 		<!--			<input type="hidden" value="3" name="comment_type_str">
 					<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->
 					{% csrf_token %}
-					<input type="submit" name="submit" class="replysubmit" value="Submit" />
+					<input type="submit" name="submit" class="attachsubmit" value="Submit" />
 			    </form>    
 		   </div>
 		</div>
