@@ -89,6 +89,13 @@
         <script type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
         <script type="text/javascript">
           FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,xfbml: true});
+          // Check if the user is logged into Facebook and change
+          // the logout link accordingly
+          FB.getLoginStatus(function(response) {
+              if (response.session) {
+                  $('a.logout').text('Log out of this site and Facebook');
+              }
+          });
         </script>
 
    </body>
