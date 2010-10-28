@@ -293,17 +293,6 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
-
-            
-
-
-
-
-
-
-
-    
-
 def frontpage(request):
     """ Front page demo"""
     clipper_url_form = None
@@ -318,31 +307,47 @@ def frontpage(request):
         
         if form.is_valid():
             # Validate the form
-            comment_type = form.cleaned_data['comment_type_str'] # look up comment by name
-            userprofile = UserProfile.objects.get(user = request.user) # Assumes consistency between users, UserProfiles
-            comment = Comment(text = form.cleaned_data['text'], user = userprofile)
+
+            # look up comment by name
+            comment_type = form.cleaned_data['comment_type_str'] 
+
+            # Assumes consistency between users, UserProfiles
+            userprofile = UserProfile.objects.get(user = request.user) 
+
+            comment = Comment(text = form.cleaned_data['text'], \
+                              user = userprofile)
             comment.comment_type = comment_type
-            comment.save() # We have to save the comment object so it has a primary key, before we can link tags to it.
+            # We have to save the comment object so it has a primary key, 
+            # before we can link tags to it.
+            comment.save() 
 
             topic = form.cleaned_data['topic']
             in_reply_to = form.cleaned_data['in_reply_to']
 
-            comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
+            # See forms for simplification possibilities   
+            comment.topics = [Topic.objects.get(title=topic)] 
             comment.save()
-            form = CommentSubmitForm() # successfully submitted, give them a new form
+            # successfully submitted, give them a new form
+            form = CommentSubmitForm() 
 
             if in_reply_to: # Comment is in reply to another comment
-                reply_relation = CommentRelation(left_comment = comment, right_comment = in_reply_to, relation_type = 'reply')
+                reply_relation = CommentRelation(left_comment = comment, \
+                                                 right_comment = in_reply_to, \
+                                                 relation_type = 'reply')
                 reply_relation.save()
 
-    
     else: 
-        form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
+        # Give them a new form if have either a valid submission, 
+        # or no submission
+        form = CommentSubmitForm() 
         clipper_url_form = UrlSubmitForm()
-    reply_form = CommentSubmitForm(initial = {'in_reply_to' : Comment.objects.all()[0]})
+
+    reply_form = CommentSubmitForm(initial = { \
+        'in_reply_to' : Comment.objects.all()[0]})
     template_dict = {}
 
-    topics = Topic.objects.filter(is_deleted=False)[:5] # Will want to filter, order in later versions
+    # Will want to filter, order in later versions
+    topics = Topic.objects.filter(is_deleted=False)[:5] 
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
@@ -351,7 +356,8 @@ def frontpage(request):
     template_dict['clipper_url_form'] = clipper_url_form
         
     template_dict.update(csrf(request)) # Required for csrf system
-    return render_to_response('frontpage.html', template_dict,context_instance=RequestContext(request))
+    return render_to_response('frontpage.html', template_dict, \
+                              context_instance=RequestContext(request))
    
 def index(request):
     """Really basic default view."""
