@@ -140,8 +140,10 @@ def login_status(request):
 def disassociatecomment_logic(form, userprofile):
    comment = form.cleaned_data['comment']
    topic = form.cleaned_data['topic']
+   print topic
 
    comment.topics.remove(topic)
+   print comment.topics.all()
    comment.save()
    topic.save()
 
@@ -190,8 +192,10 @@ def topicdelete_logic(form, userprofile):
        topic.save()
 
 def commentdelete_logic(form, userprofile):
+    
     for comment in form.cleaned_data['comments']:
        # We don't want to actually delete the comment.
+       print comment
        comment.is_deleted = True
        comment.save()
 
@@ -307,6 +311,7 @@ def api_commentsubmission(request, output_format = 'json'):
 def frontpage(request):
     """ Front page demo"""
     clipper_url_form = None
+    
     if request.method == 'POST':
         if request.user.is_anonymous():
             # This scenario should be handled more gracefully in JavaScript
@@ -339,6 +344,14 @@ def frontpage(request):
     else: 
         form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
         clipper_url_form = UrlSubmitForm()
+
+    if not request.user.is_anonymous():
+        # Logged in user
+        is_reporter = UserProfile.objects.get(user = request.user).is_reporter()
+    else:
+        is_reporter = False
+        
+        
     reply_form = CommentSubmitForm(initial = {'in_reply_to' : Comment.objects.all()[0]})
     template_dict = {}
 
@@ -349,6 +362,8 @@ def frontpage(request):
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
     template_dict['clipper_url_form'] = clipper_url_form
+    template_dict['is_reporter'] = is_reporter
+    print is_reporter
         
     template_dict.update(csrf(request)) # Required for csrf system
     return render_to_response('frontpage.html', template_dict,context_instance=RequestContext(request))

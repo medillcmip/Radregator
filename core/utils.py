@@ -4,6 +4,26 @@ import re
 import logging
 from django.conf import settings
 
+
+def comment_cmp(comm1, comm2):
+    
+    # Reporter comments take priority
+    if comm1.user.is_reporter() and not comm2.user.is_reporter():
+        return -1
+
+    if comm2.user.is_reporter() and not comm1.user.is_reporter():
+        return 1
+
+    # Then comments with clips
+    if comm1.clips and not comm2.clips: return -1
+    
+    if comm2.clips and not comm1.clips: return 1
+    
+    # Then comments with more upvotes
+    return cmp(comm2.responses.count(), comm1.responses.count())
+
+
+
 def slugify(s):
     p = re.compile('\W') # match non-alphanumeric characters 
     new_s = p.sub('-', s) # and replace them with '-'

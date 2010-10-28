@@ -1,4 +1,5 @@
 from django.db import models
+from utils import comment_cmp
 from django.contrib.sites.models import Site
 from radregator.clipper.models import Article
 from radregator.tagger.models import Tag
@@ -45,14 +46,16 @@ class Topic(models.Model):
         return self.title
 
     def recursive_traverse(self, comment, level = 1):
+        # Pass through comment replies, showing
         retlist = [(comment, level)]
-        for child in comment.comment_set.all():
+        for child in sorted(comment.comment_set.filter(is_deleted=False, is_parent=True), cmp=comment_cmp):
             retlist += self.recursive_traverse(child, level+1)
         return retlist
 
     def comments_to_show(self):
         # Comment refers to the parent
-        rootset = self.comments.filter(is_deleted=False, is_parent=True, related=None)
+        rootset = sorted(self.comments.filter(is_deleted=False, is_parent=True, related=None), cmp=comment_cmp)
+
 
         treemap = {}
         allcomments = rootset
