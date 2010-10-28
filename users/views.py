@@ -77,7 +77,7 @@ def auth(request):
             # via FB
             ouruser.user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request,ouruser.user)
-            return HttpResponseRedirect('/')
+            #return HttpResponseRedirect('/')
         except UserProfile.DoesNotExist:
             #they're not, so we need to create them and move em along
             graph = facebook.GraphAPI(user['access_token'])
@@ -97,13 +97,8 @@ def auth(request):
 
 def weblogout(request):
     """
-    log a django user out... if they
-    logged in with Facebook we only 
-    deauthorize their django user so when
-    they return, if their fb cookie didn't
-    expire then they will be logged back in
-    w/o going to the login page (auth will
-    catch them)
+    log a django user out... 
+    Facebook logout is handled via Javascript.
     """
     logout(request)
     return HttpResponseRedirect('/')
