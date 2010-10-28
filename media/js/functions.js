@@ -169,7 +169,11 @@ function handleResponseLink() {
 
 // Handler for logout (.logout) links
 function handleLogoutLink() {
-    FB.logout(); // Log the user out of Facebook
+    console.debug('Entering handleLogoutLink()');
+
+    FB.logout(function(response) {
+        console.debug('User logged out of Facebook');
+    }); // Log the user out of Facebook
 
     // Return true so the browser follows the link (and logs the user out
     // of our site too)
