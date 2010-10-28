@@ -355,6 +355,7 @@ def frontpage(request):
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
     template_dict['clipper_url_form'] = clipper_url_form
+    template_dict['fb_app_id']=settings.FB_API_ID
         
     template_dict.update(csrf(request)) # Required for csrf system
 
