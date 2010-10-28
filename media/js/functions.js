@@ -121,28 +121,31 @@ function handleReplyform() {
 }
 
 function handleReplySubmit(){
-    alert("foo");
     var thiscomment = $(this).closest('.comment'); 
     var thiscomment_id = 
         thiscomment.attr('id').replace('comment-', '');
 
-    var thisin_reply_to = $("#replyform #id_in_reply_to").val();
-    var thistext = $("#replyform #id_text").val();
+    var thisin_reply_to = $(".replydiv form #id_in_reply_to").val();
+    var thistext = $('.replydiv form #id_text').val();
     var thiscomment_type = "3"; // Reply
-    var thiscomment_text = $("#replyform #id_text").val();
     var thistopic = $("ul.tabs a.current").html();
+	var parentid = $(this).closest("li.comment").attr("id");
+    $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
 
     $.ajax({
         type: "post",
         url: "/api/json/comments/",
         data: { in_reply_to : thisin_reply_to,
-        text : thistext,
         topic: thistopic,
-        comment_type : thiscomment_type,
-        text : thiscomment_text
+        comment_type_str : thiscomment_type,
+        text : thistext,
+        in_reply_to: thisin_reply_to,
+
+
         },
         success: function(data){
+        closeReplyform('reply', parentid);
             
         },
         error: function (requestError, status, errorResponse) {
@@ -172,7 +175,6 @@ function handleReplySubmit(){
         }
     });
 
-    alert("foo");
     return false;
 
 
