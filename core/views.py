@@ -295,6 +295,7 @@ def api_commentsubmission(request, output_format = 'json'):
 
 def frontpage(request):
     """ Front page demo"""
+
     clipper_url_form = None
     if request.method == 'POST':
         if request.user.is_anonymous():
