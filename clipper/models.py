@@ -9,7 +9,7 @@ class Article(models.Model):
     source = models.ForeignKey("NewsOrganization", related_name = 'articles_sourced')
     authors = models.ManyToManyField(UserProfile) 
     title = models.CharField(max_length=200)
-
+    date_published = models.DateTimeField(null=True)
     # But we'll probably not be tagging articles initially, just aggregating tags from
     # related clips
     tags = models.ManyToManyField(Tag, null=True) 
@@ -23,6 +23,8 @@ class Clip(models.Model):
     article = models.ForeignKey(Article) 
     user = models.ForeignKey(UserProfile)
     text = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    user_comments = models.TextField()
 
     def __unicode__(self):
         return self.text[:80]

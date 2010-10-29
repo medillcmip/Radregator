@@ -9,6 +9,7 @@ class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
        if we want to do versioning."""
     text = models.TextField(blank=True, unique = True)
+    date_created = models.DateTimeField(auto_now_add=True)
     
     def __unicode__(self):
         return self.text[:80]
@@ -40,6 +41,7 @@ class Topic(models.Model):
     curators = models.ManyToManyField(UserProfile)
     articles = models.ManyToManyField(Article, blank=True)
     is_deleted = models.BooleanField(default = False)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return self.title
@@ -99,7 +101,8 @@ class Comment(models.Model):
                                        related_name="responses")
     is_parent = models.BooleanField(default = True)
     is_deleted = models.BooleanField(default = False)
-    
+    date_created = models.DateTimeField(auto_now_add=True)
+
     clips = models.ManyToManyField(Clip, blank=True, null=True)
     def __unicode__(self):
         return self.text[:80]
