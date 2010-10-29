@@ -267,6 +267,7 @@ def api_commentsubmission(request, output_format = 'json'):
                 
                 f_comment_type = form.cleaned_data['comment_type_str'] # a comment type
                 f_text = form.cleaned_data['text'] # Text
+                f_sources = form.cleaned_data['sources']
                 try: f_topic = Topic.objects.get(title = form.cleaned_data['topic']) # a topic name
                 except:
                     raise InvalidTopic()
@@ -277,6 +278,8 @@ def api_commentsubmission(request, output_format = 'json'):
                 comment.comment_type = f_comment_type
                 comment.save()
                 comment.topics = [f_topic]
+                if f_sources:
+                    comment.sources = [f_sources]
                 comment.save()
 
                 if f_in_reply_to: # Comment is in reply to another comment
@@ -331,6 +334,7 @@ def frontpage(request):
             in_reply_to = form.cleaned_data['in_reply_to']
 
             comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
+            comment.sources = [form.cleaned_data['sources']]
             comment.save()
             form = CommentSubmitForm() # successfully submitted, give them a new form
 

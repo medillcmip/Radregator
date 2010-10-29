@@ -122,7 +122,50 @@ function handleReplyform() {
 // CREATE A NEW SOURCE
 
 function handleNewSourceForm() {
+
+    var sourcefirstname = $('#sourcefirstname').val();
+    var sourcelastname = $('#sourcelastname').val();
+    var sourceemail = $('#sourceemail').val();
+    var sourcephone = $('#sourcephone').val();
+
+    var sourceusername = sourcefirstname + sourcelastname;
+    $.ajax({
+        type: "post",
+        url: "/api/json/users/",
+        data: { username: sourceusername,
+        password : 'password',
+        email : sourceemail,
+        phone : sourcephone,
+        first_name : sourcefirstname,
+        last_name : sourcelastname,
+        dont_log_user_in : true,
+
+        },
+        success: function(data){
+           // TK - Close Topic Form 
+            location.reload(); // TODO - make this clearer
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            var errorMsg = response_data['error'];
+            $('#addsource').append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+            error_message = $('#addtopic').children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    
     return false;
+    
+
 }
 
 // CREATE A NEW TOPIC
@@ -176,6 +219,8 @@ function handleReplySubmit(){
     var thiscomment_type = "3"; // Reply
     var thistopic = $("ul.tabs a.current").html();
 	var parentid = $(this).closest("li.comment").attr("id");
+    var this_sources = $('.replydiv form #id_sources').val();
+    alert(this_sources);
     $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
 
@@ -187,6 +232,7 @@ function handleReplySubmit(){
         comment_type_str : thiscomment_type,
         text : thistext,
         in_reply_to: thisin_reply_to,
+        sources : this_sources,
 
 
         },

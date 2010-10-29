@@ -117,6 +117,13 @@
 						<li class="youagree"><a href="#">Me too!</a></li>
 						<li class="response-counter"><span class="count">{{ comment.responses.count }}</span><span class="description">Ask this too</span></li>
 						<li class="chef">by <span>{{ comment.user }}</span></li>
+                        {% if comment.sources.all %}
+                        <li class = "attribution">According to 
+                        {% for source in comment.sources.all %}
+                        {{ source }}</li>
+                        {% endfor %}
+
+                        {% endif %}
                         {% if is_reporter %}
                         <li>
                             <a href="#" class="deletecommentlink commenttabs">Delete Comment</a>
@@ -176,6 +183,9 @@
 				<input type="hidden" value="3" name="comment_type_str">
 				<input type="hidden" value="3" name="in_reply_to" id="id_in_reply_to">
 				<input type="hidden" value="" name="topic" class="topic">
+                {% if is_reporter %}
+                <br> Attribute to (optional): {{comment_form.sources}} <br>
+                {% endif %}
 				{% csrf_token %}
 				<input type="submit" name="submit" class="replysubmit" value="Submit" />
 			    </form>

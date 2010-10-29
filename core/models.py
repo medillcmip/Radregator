@@ -90,7 +90,7 @@ class Comment(models.Model):
        to true, since comment is assumed to be its own parent when it's independent/visible."""
     text = models.TextField()
     user = models.ForeignKey(UserProfile, related_name="comments")
-    sources = models.ManyToManyField(UserProfile, related_name = "sourced_comments", blank=True)
+    sources = models.ManyToManyField(UserProfile, related_name = "sourced_comments", blank=True, null = True)
     tags = models.ManyToManyField(Tag, null=True, blank=True) 
     related = models.ManyToManyField("self", through="CommentRelation", 
                                      symmetrical=False, null=True)

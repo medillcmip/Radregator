@@ -14,6 +14,9 @@
 			<br><label for="about" class="questbump"></label>
 		
             {{comment_form.topic}} {{comment_form.topic.errors}}
+            {% if is_reporter %}
+            Attribute to (optional): {{comment_form.sources}} {{comment_form.sources.errors}}
+            {% endif %}
 			<input type="submit" name="submit" class="submit" value="Submit" />
             {% csrf_token %}
 			
