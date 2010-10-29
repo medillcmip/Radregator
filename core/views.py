@@ -224,7 +224,7 @@ def newtopic_logic(form, userprofile):
     summary = Summary.objects.get_or_create(text=summary_text)[0] # get_or_create returns (obj, is_new)
     summary.save()
 
-    topic = Topic(title = title, slug = core.utils.slugify(title), summary = summary, is_deleted = False)
+    topic = Topic(title = title, slug = radregator.core.utils.slugify(title), summary = summary, is_deleted = False)
     topic.save()
     topic.curators = curators
     if source_comment:
