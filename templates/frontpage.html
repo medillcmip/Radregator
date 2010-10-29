@@ -10,6 +10,24 @@
 		$(document).ready(function() {
 			$('a.commenttabs').unbind('click', handleReplyform).bind('click', handleReplyform); 
             $('.youagree a').unbind('click', handleResponseLink).bind('click', handleResponseLink);
+            $('#addtopicform').unbind('submit', handleNewTopicForm).bind('submit', handleNewTopicForm);
+            $('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
+            $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
+            $('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
+            $('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
+            $('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
+            $('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
+            $('#addatopic').click(function ()
+            {
+                $('#addtopic').show();
+            });
+            $('#addtopic').hide();
+            $('#addasource').click(function ()
+            {
+                $('#addsource').show();
+            });
+            $('#addsource').hide();
+
 			
 			// DEAL WITH INDENTED COMMENTS
 			$('li.comment-level2').before('<li class="childcomment"></li>');
@@ -29,12 +47,42 @@
 		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ac elit nec lectus imperdiet tincidunt. Morbi neque nisl, tincidunt cursus molestie in, eleifend at dui. Fusce lorem diam, condimentum ac luctus at, tincidunt sit amet neque. Sed imperdiet mollis diam, et lobortis velit feugiat at.</p>
 	</div>	
 	
+    {% if is_reporter %}
+    <a href="#" id="addatopic">Add a topic</a>
+    <div id= "addtopic">
+    <form action="#" method="post" id="addtopicform">
+        Topic name: <input type = "text" id = "addtopictitle" name="title" /> <br />
+    Summary:<br /> <textarea id = "addtopicsummary" name="summary"></textarea>
+    <br>
+    <input type = "submit" name="submit" value="submit" />
+    </form>
+    <br>
+    </div>
+    <br />
+    <a href="#" id="addasource">Add a source</a>
+    <div id= "addsource">
+    <form action="#" method="post" id="addsourceform">
+        First name: <input type = "text" id ="sourcefirstname" name="firstname" /> <br />
+        Last name: <input type = "text" id = "sourcelastname" name = "lastname" /> <br />
+        Email: <input type = "text" id = "sourceemail" name = "sourceemail" /> <br />
+        Phone: <input type = "text" id = "sourcephone" name = "sourcephone" /> <br />
+
+
+    <br>
+    <input type = "submit" name="submit" value="submit" />
+    </form>
+    <br>
+    </div>
+    
+    {% endif%}
+
 	<ul class="tabs">
 		{% for topic in topics.all %}
-			<li><a href="#" class="switchtab">{{ topic.title }}</a></li>
+			<li><a href="#" class="switchtab" id="topic-{{ topic.id }}">{{ topic.title }}</a></li>
 		{% endfor %}
 	</ul>
 	
+
 	<div class="panes">
 	
 	{% for thetopic in topics.all %}
@@ -54,21 +102,54 @@
 		{% endfor %}
 		</ul>
 			
+
+
+
 			
 	{% include "form.html" %}				
 	
 	<h2>Recent Questions</h2>
 		<ul class="recentquestcons">
 			{% for comment, indentlevel in thetopic.comments_to_show %}
-				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}}" id="comment-{{comment.id}}">
+				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}} {{comment.user.is_reporter|yesno:"reportercomment,usercomment"}} topic-{{thetopic.id}} " id="comment-{{comment.id}}">
 					<ul class="commentguts">
 						<li class="bbq"><p class="valign">{{ comment.text }}</p></li>
 						<li class="youagree"><a href="#">Me too!</a></li>
 						<li class="response-counter"><span class="count">{{ comment.responses.count }}</span><span class="description">Ask this too</span></li>
 						<li class="chef">by <span>{{ comment.user }}</span></li>
+                        {% if comment.sources.all %}
+                        <li class = "attribution">According to 
+                        {% for source in comment.sources.all %}
+                        {{ source }}</li>
+                        {% endfor %}
+
+                        {% endif %}
+                        {% if is_reporter %}
+                        <li>
+                            <a href="#" class="deletecommentlink commenttabs">Delete Comment</a>
+                            <a href="#" class="disassociatecommentlink commenttabs">Remove Comment from Topic</a>
+                        {% endif %}
+					    <a href="#" class="attach commenttabs">Attach an article</a>
+					    <a href="#" class="reply commenttabs">Reply</a>
+                        </li>
 					</ul>
-					<a href="#" class="attach commenttabs">Attach an article</a>
-					<a href="#" class="reply commenttabs">Reply</a>
+                    {% if is_reporter %}
+
+                        <p><br>
+                        <label>Copy to another topic: </label>
+                        <select class = "copytotopic">
+                            <option selected="selected">-----</option>
+                            {% for atopic in topics.all %}
+                            {% if atopic != thetopic %}
+
+                            <option value="{{ atopic.id }}">{{ atopic.title }} </option>
+                            {% endif %}
+
+                        {% endfor %}
+                        </select>
+                        
+                    </p>
+                    {% endif %}
 					<div class="replydiv replyinputdiv"></div>
 					<div class="attachdiv replyinputdiv"></div>
 				</li>
@@ -94,7 +175,7 @@
 		</div>-->
 	
 		<div class="formcache">
-		    <div id="replyform">
+		    <div id="replyform" class="replyform">
 			    <form action = "/api/json/comments/submit/" method="post" class="authcheck">
 			   <!-- {{ reply_form.as_p }} -->
 			    <label>Reply: </label>
@@ -102,6 +183,9 @@
 				<input type="hidden" value="3" name="comment_type_str">
 				<input type="hidden" value="3" name="in_reply_to" id="id_in_reply_to">
 				<input type="hidden" value="" name="topic" class="topic">
+                {% if is_reporter %}
+                <br> Attribute to (optional): {{comment_form.sources}} <br>
+                {% endif %}
 				{% csrf_token %}
 				<input type="submit" name="submit" class="replysubmit" value="Submit" />
 			    </form>
@@ -114,7 +198,7 @@
 		<!--			<input type="hidden" value="3" name="comment_type_str">
 					<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->
 					{% csrf_token %}
-					<input type="submit" name="submit" class="replysubmit" value="Submit" />
+					<input type="submit" name="submit" class="attachsubmit" value="Submit" />
 			    </form>    
 		   </div>
 		</div>

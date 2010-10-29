@@ -309,6 +309,7 @@ def api_users(request, output_format='json'):
                     f_zip_code = form.cleaned_data['zip_code']
                     f_phone = form.cleaned_data['phone']
                     f_dob = form.cleaned_data['dob']
+                    f_dont_log_user_in = form.cleaned_data['dont_log_user_in']
                     #we validate the username / email is unique by overriding
                     #clean_field methods in RegisterForm
                     baseuser = User.objects.create_user(username=f_username,\
@@ -321,10 +322,12 @@ def api_users(request, output_format='json'):
                         zip=f_zip_code, phone_number=f_phone)
                     newuser.save()
 
-                    # Create user
-                    user = authenticate(username=f_username, \
-                                        password=f_password)
-                    login(request, user)
+                    if not f_dont_log_user_in:
+
+                        # Create user
+                        user = authenticate(username=f_username, \
+                                            password=f_password)
+                        login(request, user)
 
                     # Set our response codes and data
                     status = 201 # Created

@@ -22,7 +22,6 @@ function launchLogin () {
 }
 
 
-
 //
 //
 // LOGGED IN?
@@ -89,6 +88,7 @@ function openReplyform (replytype,parentid) {
 		$(drawer).html(contents).addClass("opened");
 		$(drawer).append('<a href="javascript:closeReplyform(\''+replytype+'\',\''+parentid+'\');" class="closereply">close</a>');
 		var pkid = parentid.substr(8);
+        $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 		
 		if (replytype == "attach") {
 			var postto = "/clipper/"+pkid+"/";
@@ -119,7 +119,301 @@ function handleReplyform() {
 	return false;
 }
 
-// Handle responses to questions (i.e. 'Me too!') links
+// CREATE A NEW SOURCE
+
+function handleNewSourceForm() {
+
+    var sourcefirstname = $('#sourcefirstname').val();
+    var sourcelastname = $('#sourcelastname').val();
+    var sourceemail = $('#sourceemail').val();
+    var sourcephone = $('#sourcephone').val();
+
+    var sourceusername = sourcefirstname + sourcelastname;
+    $.ajax({
+        type: "post",
+        url: "/api/json/users/",
+        data: { username: sourceusername,
+        password : 'password',
+        email : sourceemail,
+        phone : sourcephone,
+        first_name : sourcefirstname,
+        last_name : sourcelastname,
+        dont_log_user_in : true,
+
+        },
+        success: function(data){
+           // TK - Close Topic Form 
+            location.reload(); // TODO - make this clearer
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            var errorMsg = response_data['error'];
+            $('#addsource').append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+            error_message = $('#addtopic').children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    
+    return false;
+    
+
+}
+
+// CREATE A NEW TOPIC
+function handleNewTopicForm(){
+    // Add a topic via Ajax
+    var thissummary = $('#addtopicsummary').val();
+    var thistitle = $('#addtopictitle').val();
+
+    $.ajax({
+        type: "post",
+        url: "/newtopic/",
+        data: { title : thistitle,
+        summary_text: thissummary }
+
+
+        ,
+        success: function(data){
+           // Close Topic Form 
+            $('#addtopic').hide();
+            location.reload(); // TODO - make this clearer
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            var errorMsg = response_data['error'];
+            $('#addtopic').append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+            error_message = $('#addtopic').children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    
+    return false;
+}
+
+// HANDLE A REPLY
+function handleReplySubmit(){
+    var thiscomment = $(this).closest('.comment'); 
+    var thiscomment_id = 
+        thiscomment.attr('id').replace('comment-', '');
+
+    var thisin_reply_to = $(".replydiv form #id_in_reply_to").val();
+    var thistext = $('.replydiv form #id_text').val();
+    var thiscomment_type = "3"; // Reply
+    var thistopic = $("ul.tabs a.current").html();
+	var parentid = $(this).closest("li.comment").attr("id");
+    var this_sources = $('.replydiv form #id_sources').val();
+    $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
+
+
+    $.ajax({
+        type: "post",
+        url: "/api/json/comments/",
+        data: { in_reply_to : thisin_reply_to,
+        topic: thistopic,
+        comment_type_str : thiscomment_type,
+        text : thistext,
+        in_reply_to: thisin_reply_to,
+        sources : this_sources,
+
+
+        },
+        success: function(data){
+        closeReplyform('reply', parentid);
+        location.reload(); // TODO - make this clearer
+            
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            if (errorNum == "401") {
+                // User isn't logged in
+                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                $('a.login').bind('click', launchLogin);
+            } 
+            else if (errorNum == "403") {
+                // Another error
+                var errorMsg = response_data.error; 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+            }
+
+            error_message = thiscomment.children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    return false;
+
+
+}
+
+// DISASSOCIATE A COMMENT
+
+function handleDisassociateCommentLink() {
+    // Todo - hide children
+    //
+    var thiscomment = $(this).closest('.comment'); 
+    var thiscomment_id = 
+        thiscomment.attr('id').replace('comment-', '');
+
+    var curtopicid = $("ul.tabs a.current").attr('id').replace('topic-', '');
+    $.ajax({
+        type: "post", 
+        url: "/disassociatecomment",
+        data: { comment : thiscomment_id,
+        topic : curtopicid},
+        success: function(data){
+            thiscomment.fadeOut();
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+            
+
+            if (errorNum == "401") {
+                // User isn't logged in
+                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                $('a.login').bind('click', launchLogin);
+            } 
+            else if (errorNum == "403") {
+                // User has already responded
+                var errorMsg = response_data.error; 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+            }
+
+            error_message = thiscomment.children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    return false;
+}
+    
+// DELETE A COMMENT
+function handleDeleteCommentLink() {
+    // Todo - hide children
+    //
+    var thiscomment = $(this).closest('.comment'); 
+    var thiscomment_id = 
+        thiscomment.attr('id').replace('comment-', '');
+    $.ajax({
+        type: "post", 
+        url: "/deletecomments",
+        data: { comments : thiscomment_id },
+        success: function(data){
+            thiscomment.fadeOut();
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            if (errorNum == "401") {
+                // User isn't logged in
+                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                $('a.login').bind('click', launchLogin);
+            } 
+            else if (errorNum == "403") {
+                // User has already responded
+                var errorMsg = response_data.error; 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+            }
+
+            error_message = thiscomment.children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    return false;
+}
+
+function handleCopyComment() {
+    var thiscomment = $(this).closest('.comment'); 
+    var thiscomment_id = 
+        thiscomment.attr('id').replace('comment-', '');
+
+    var thistopic = $(this).val();
+
+    $.ajax({
+        type: "post", 
+        url: "/associatecomment",
+        data: { comment : thiscomment_id,
+        topic : thistopic }
+        ,
+        success: function(data){
+            alert("Copied"); // Beautify me
+
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            if (errorNum == "401") {
+                // User isn't logged in
+                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                $('a.login').bind('click', launchLogin);
+            } 
+            else {
+                // User has already responded
+                var errorMsg = response_data.error; 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+            }
+            
+
+            alert(errorMsg);
+            error_message = thiscomment.children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    return false;
+}
+
 function handleResponseLink() {
     var thiscomment = $(this).closest('.comment'); 
     var thiscomment_id = 

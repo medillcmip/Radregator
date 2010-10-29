@@ -261,11 +261,21 @@ ul.recentquestcons {
 	margin-left: 10px;
 }
 
-ul.recentquestcons li.comment {
+ul.recentquestcons li.usercomment {
 	min-height: 80px;
 	height: auto;
 	overflow: auto;
 	border: 1px solid #aaa;
+	margin-bottom: 10px;
+	padding:10px 10px 30px 20px;
+	position: relative;
+}
+
+ul.recentquestcons li.reportercomment {
+	min-height: 80px;
+	height: auto;
+	overflow: auto;
+	border: 1px solid #f00;
 	margin-bottom: 10px;
 	padding:10px 10px 30px 20px;
 	position: relative;
@@ -341,6 +351,7 @@ ul.recentquestcons li a.commenttabs:hover {
 
 ul.recentquestcons li a.reply {right: 10px;width: 60px;}
 ul.recentquestcons li a.attach {right: 80px;width: 100px;}
+ul.recentquestcons li a.deletecommentlink {right: 190px; width: 100px;}
 
 div.replyinputdiv {
 	display: block;

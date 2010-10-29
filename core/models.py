@@ -1,4 +1,5 @@
 from django.db import models
+from utils import comment_cmp
 from django.contrib.sites.models import Site
 from radregator.clipper.models import Article
 from radregator.tagger.models import Tag
@@ -9,6 +10,7 @@ class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
        if we want to do versioning."""
     text = models.TextField(blank=True, unique = True)
+    date_created = models.DateTimeField(auto_now_add=True)
     
     def __unicode__(self):
         return self.text[:80]
@@ -40,19 +42,22 @@ class Topic(models.Model):
     curators = models.ManyToManyField(UserProfile)
     articles = models.ManyToManyField(Article, blank=True)
     is_deleted = models.BooleanField(default = False)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return self.title
 
     def recursive_traverse(self, comment, level = 1):
+        # Pass through comment replies, showing
         retlist = [(comment, level)]
-        for child in comment.comment_set.all():
+        for child in sorted(comment.comment_set.filter(is_deleted=False, is_parent=True, topics=self), cmp=comment_cmp):
             retlist += self.recursive_traverse(child, level+1)
         return retlist
 
     def comments_to_show(self):
         # Comment refers to the parent
-        rootset = self.comments.filter(is_deleted=False, is_parent=True, related=None)
+        rootset = sorted(self.comments.filter(is_deleted=False, is_parent=True, related=None), cmp=comment_cmp)
+
 
         treemap = {}
         allcomments = rootset
@@ -87,7 +92,7 @@ class Comment(models.Model):
        to true, since comment is assumed to be its own parent when it's independent/visible."""
     text = models.TextField()
     user = models.ForeignKey(UserProfile, related_name="comments")
-    sources = models.ManyToManyField(UserProfile, related_name = "sourced_comments", blank=True)
+    sources = models.ManyToManyField(UserProfile, related_name = "sourced_comments", blank=True, null = True)
     tags = models.ManyToManyField(Tag, null=True, blank=True) 
     related = models.ManyToManyField("self", through="CommentRelation", 
                                      symmetrical=False, null=True)
@@ -99,7 +104,8 @@ class Comment(models.Model):
                                        related_name="responses")
     is_parent = models.BooleanField(default = True)
     is_deleted = models.BooleanField(default = False)
-    
+    date_created = models.DateTimeField(auto_now_add=True)
+
     clips = models.ManyToManyField(Clip, blank=True, null=True)
     def __unicode__(self):
         return self.text[:80]

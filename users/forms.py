@@ -53,6 +53,7 @@ class RegisterForm(forms.Form):
     zip_code = USZipCodeField(required=False)
     phone = USPhoneNumberField(required=False)
     dob = forms.DateField(initial=datetime.date.today, required=False)
+    dont_log_user_in = forms.BooleanField(required = False, initial=False)
     def clean_email(self):
         """
         ensure no other users have the same email

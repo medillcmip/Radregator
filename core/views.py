@@ -110,7 +110,7 @@ def reporter_api(request, formconstructor, logic):
                logic(form, userprofile)
         else:
             # Not a post
-            raise MethodUnsupported("This endpoint only accepts POSTs.")
+            raise MethodUnsupported("This endpoint only accepts POSTs, you used: " + request.method)
 
     except UserNotReporter:
         status = 403 # forbidden
@@ -190,8 +190,10 @@ def topicdelete_logic(form, userprofile):
        topic.save()
 
 def commentdelete_logic(form, userprofile):
+    
     for comment in form.cleaned_data['comments']:
        # We don't want to actually delete the comment.
+       print comment
        comment.is_deleted = True
        comment.save()
 
@@ -241,9 +243,9 @@ def api_commentsubmission(request, output_format = 'json'):
     status = 200 # OK
 
     try:
-        if request.method == 'POST':
+        if request.method:
 
-            form = CommentSubmitForm(request.POST)
+            form = CommentSubmitForm(request.REQUEST)
 
             if request.user.is_anonymous():
                 status = 401 # Unauthorized
@@ -265,6 +267,7 @@ def api_commentsubmission(request, output_format = 'json'):
                 
                 f_comment_type = form.cleaned_data['comment_type_str'] # a comment type
                 f_text = form.cleaned_data['text'] # Text
+                f_sources = form.cleaned_data['sources']
                 try: f_topic = Topic.objects.get(title = form.cleaned_data['topic']) # a topic name
                 except:
                     raise InvalidTopic()
@@ -275,6 +278,8 @@ def api_commentsubmission(request, output_format = 'json'):
                 comment.comment_type = f_comment_type
                 comment.save()
                 comment.topics = [f_topic]
+                if f_sources:
+                    comment.sources = [f_sources]
                 comment.save()
 
                 if f_in_reply_to: # Comment is in reply to another comment
@@ -283,13 +288,13 @@ def api_commentsubmission(request, output_format = 'json'):
 
 
         else: # Not a post
-            raise MethodUnsupported("This endpoint only accepts POSTs.")
+            raise MethodUnsupported("This endpoint only accepts POSTs, you used:" + request.method)
         
     except InvalidTopic:
         status = 400 # Bad Request
         data['error'] = "Invalid topic"
 
-    #return HttpResponse(content = json.dumps(data), mimetype='application/json', status=status)
+    return HttpResponse(content = json.dumps(data), mimetype='text/html', status=status)
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
@@ -297,7 +302,7 @@ def frontpage(request):
     """ Front page demo"""
 
     clipper_url_form = None
-
+    
     if request.method == 'POST':
         if request.user.is_anonymous():
             # This scenario should be handled more gracefully in JavaScript
@@ -327,6 +332,7 @@ def frontpage(request):
 
             # See forms for simplification possibilities   
             comment.topics = [Topic.objects.get(title=topic)] 
+            comment.sources = [form.cleaned_data['sources']]
             comment.save()
             # successfully submitted, give them a new form
             form = CommentSubmitForm() 
@@ -343,6 +349,13 @@ def frontpage(request):
         form = CommentSubmitForm() 
         clipper_url_form = UrlSubmitForm()
 
+    if not request.user.is_anonymous():
+        # Logged in user
+        is_reporter = UserProfile.objects.get(user = request.user).is_reporter()
+    else:
+        is_reporter = False
+        
+        
     reply_form = CommentSubmitForm(initial = { \
         'in_reply_to' : Comment.objects.all()[0]})
     template_dict = {}
@@ -356,6 +369,8 @@ def frontpage(request):
     template_dict['comments'] = {}
     template_dict['clipper_url_form'] = clipper_url_form
     template_dict['fb_app_id']=settings.FB_API_ID
+    template_dict['is_reporter'] = is_reporter
+    print is_reporter
         
     template_dict.update(csrf(request)) # Required for csrf system
 

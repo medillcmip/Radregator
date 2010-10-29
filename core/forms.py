@@ -2,6 +2,7 @@ from django import forms
 from django.forms.widgets import Select, HiddenInput
 from radregator.core.models import Comment,CommentType,Topic
 from radregator.tagger.models import Tag
+from radregator.users.models import UserProfile
 from django.forms.widgets import CheckboxSelectMultiple
 
 class CommentDeleteForm(forms.Form):
@@ -31,7 +32,7 @@ class NewSummaryForm(forms.Form):
 class NewTopicForm(forms.ModelForm):
     # Comment to source from should default to null
     # Really just using the modelform to validate the title as new
-    summary_texty = forms.CharField(required = True, widget = forms.TextInput)
+    summary_text = forms.CharField(required = True )
     allcomments = Comment.objects.filter(is_deleted=False).filter(is_parent=True)
     source_comment = forms.ModelChoiceField(allcomments, required = False)
 
@@ -67,9 +68,10 @@ class CommentSubmitForm(forms.Form):
     text = forms.CharField(required=True, label = '', widget=forms.Textarea(attrs= {'class' : 'conquest', }))
     topic = forms.CharField(initial = Topic.objects.all()[0].title, widget=forms.widgets.HiddenInput(attrs = {'class' : 'topic'} ))
     in_reply_to = forms.ModelChoiceField(allcomments, widget = forms.HiddenInput, required=False)
+    sources = forms.ModelChoiceField(UserProfile.objects.all(), required = False)
 
     class Meta:
-        fields = ['comment_type_str', 'text', 'topic', 'in_reply_to']
+        fields = ['comment_type_str', 'text', 'topic', 'in_reply_to', 'sources']
         model = Comment 
     
 

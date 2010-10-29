@@ -49,6 +49,9 @@ urlpatterns = patterns('',
     (r'^api/(?P<output_format>json)/users/$',
      'radregator.users.views.api_users'),
 
+    (r'^api/(?P<output_format>json)/comments/$',
+     'radregator.core.views.api_commentsubmission'),
+
     (r'^api/(?P<output_format>json)/comments/submit',
      'radregator.core.views.api_commentsubmission'),
 
