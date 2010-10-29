@@ -334,7 +334,8 @@ def frontpage(request):
             in_reply_to = form.cleaned_data['in_reply_to']
 
             comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
-            comment.sources = [form.cleaned_data['sources']]
+            if form.cleaned_data['sources']:
+                comment.sources = [form.cleaned_data['sources']]
             comment.save()
             form = CommentSubmitForm() # successfully submitted, give them a new form
 
