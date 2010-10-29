@@ -157,8 +157,10 @@
                     <li class="comment comment-level{{indentlevel|add:"1"}} {{comment.comment_type.name|lower}} {{clip.user.is_reporter|yesno:"reportercomment,usercomment"}}" id="comment-{{comment.id}}-clip-{{clip.id}}">
                         <ul class="commentguts">
                             <li class="bbq"><blockquote> {{clip.user_comments}} </blockquote> </li>
-                            <li class="bbq"><p class='valign'>{{ clip.text }} __ </p></li>
-                            <li class="bbq"><p class='valign'><a href="{{ clip.article.url }}"> || link</a></p></li>
+                            <li class="bbq"><p class='valign'>"{{ clip.text }}"  </p>
+                            <p>
+                            <a href="{{ clip.article.url }}"> link</a></p>
+                            </li>
                             <li class="chef"><p class='valign'> Posted by: {{ clip.user}}</p></li>
                         </ul>
                     </li>

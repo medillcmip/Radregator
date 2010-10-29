@@ -311,7 +311,7 @@ def api_commentsubmission(request, output_format = 'json'):
 
 def frontpage(request):
     """ Front page demo"""
-    clipper_url_form = None
+    clipper_url_form = UrlSubmitForm()
     
     if request.method == 'POST':
         if request.user.is_anonymous():
@@ -346,7 +346,6 @@ def frontpage(request):
     
     else: 
         form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
-        clipper_url_form = UrlSubmitForm()
 
     if not request.user.is_anonymous():
         # Logged in user
