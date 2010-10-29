@@ -2,13 +2,13 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.core.paginator import Paginator
-from fbapi.facebook import *
+from radregator.fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from radregator.users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
-from models import Topic,CommentType, Comment, Summary, CommentRelation, \
+from radregator.core.models import Topic,CommentType, Comment, Summary, CommentRelation, \
                    CommentResponse
 from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, \
@@ -24,7 +24,7 @@ from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MaximumExceeded, UserOwnsItem
 from radregator.users.exceptions import UserNotAuthenticated, UserNotReporter
 from django.core import serializers
-import core.utils
+import radregator.core.utils
 from django.http import Http404
 
 import json

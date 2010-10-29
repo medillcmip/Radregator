@@ -9,13 +9,13 @@ from urllib2 import URLError
 from BeautifulSoup import BeautifulSoup, Tag
 import re
 import datetime
-import core.models
-import users.models
-import clipper.forms
-import clipper.models
-import core.utils
+import radregator.core.models
+import radregator.users.models
+import radregator.clipper.forms
+import radregator.clipper.models
+import radregator.core.utils
 
-logger = core.utils.get_logger()
+logger = radregator.core.utils.get_logger()
 
 relative_url_exp = re.compile("(src|href|action)\s*=\s*(\'|\"|(?!\"|\'))(?!(http:|ftp:|mailto:|https:|#))")
 #a quick survey of sites indicates that many news organizations use a format

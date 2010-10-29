@@ -1,8 +1,8 @@
 from django.contrib import admin
-from core.models import Summary,Topic,Comment,UserProfile,\
+from radregator.core.models import Summary,Topic,Comment,UserProfile,\
     CommentType,CommentRelation,CommentResponse
-from tagger.models import Tag
-from clipper.models import Article, NewsOrganization
+from radregator.tagger.models import Tag
+from radregator.clipper.models import Article, NewsOrganization
 from django.contrib.auth.models import User
 
 class SummaryAdmin(admin.ModelAdmin):
