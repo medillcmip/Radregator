@@ -60,7 +60,14 @@
 			<input type="submit" class="btn" value="Go!" />
 	    </form>
 	    <h3>Login using Facebook</h3>
-	    <fb:login-button autologoutlink="true"></fb:login-button>
+            <!--
+            <fb:login-button autologoutlink="true"></fb:login-button>
+            -->
+            {% if fb_user_detected %}
+            <a href="{{ auth_page }}" class="fb_button fb_button_medium"><span class="fb_button_text">Login</span></a>
+            {% else %}
+            <fb:login-button></fb:login-button>
+            {% endif %}
 	    <div id="fb-root"></div>
 	</div>
     
@@ -82,18 +89,22 @@
 <!-- Probably want to move this into it's own page at some point so and include all logout logic on one page -->
 <script src="http://connect.facebook.net/en_US/all.js"></script>
 <script>
+FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true, xfbml: true});
 
-  FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,xfbml: true});
-  FB.Event.subscribe('auth.sessionChange', function(response) {
-    if (response.session) {
+FB.Event.subscribe('auth.statusChange', function(response) {
+  console.debug('Facebook status change');
+
+  if (response.session) {
       // A user has logged in, and a new cookie has been saved
+
+      // Forward them to the auth page to log then into our app
       parent.location.href="/{{auth_page}}";
-      // AP.NTS: need to rewrite reglog div to show "you are logged in" context
- } else {
+
+  } else {
       // The user has logged out, and the cookie has been cleared
       // AP.NTS: need to rewrite reglog div to show "login" option
-    }
-  });
+  }
+});
 </script>
 
 	</body>
