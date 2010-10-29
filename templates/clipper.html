@@ -20,10 +20,9 @@
 </script>
   </head>
   <body>
-    <h1>radregator</h1>
+    <h1>Shit!  Something didn't work out like it should have.</h1>
 
 
-    <a href="javascript:toggleItem('clipper');" style="width:100%; text-align: middle; color: #FF0000; font-family: Arial;">Clip?</a>
 
 <div class="" id="clipper">
 
@@ -31,6 +30,7 @@
   <div id="urlEntry" style="border: 1px solid black;">
 
     <form name="form1" method='POST' action=''>
+{{errors}}
 {{form.as_p}}
 {% csrf_token %}
     <input type="submit" class="btn" value="Go!" />
@@ -39,11 +39,8 @@
 
   </div>
 
-  <div id="closebox">
 
-    <a href="javascript:toggleItem('clipper');" style="width:100%; text-align: middle; color: #FF0000; font-family: Arial;">x</a>
 
-  </div>
 
 </div>
   </body>

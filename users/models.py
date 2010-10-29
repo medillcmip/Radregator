@@ -13,7 +13,8 @@ class UserProfile(models.Model):
 
     user_type_choices = (
     (u'R', u'reporter'),
-    (u'S', u'source'))
+    (u'S', u'source'),
+    (u'A', u'author'))
     user = models.ForeignKey(User)
 
     def is_reporter(self):
