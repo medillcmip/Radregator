@@ -220,7 +220,6 @@ function handleReplySubmit(){
     var thistopic = $("ul.tabs a.current").html();
 	var parentid = $(this).closest("li.comment").attr("id");
     var this_sources = $('.replydiv form #id_sources').val();
-    alert(this_sources);
     $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
 
