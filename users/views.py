@@ -94,17 +94,18 @@ def auth(request):
 
         except UserProfile.DoesNotExist:
             #they're not, so we need to create them and move em along
-            graph = facebook.GraphAPI(fb_user['access_token'])
-            profile = graph.get_object("me")
-            username=profile['first_name']+profile['last_name']
-            password=profile['id']
-            baseuser = User.objects.create_user(username=username,\
-                password=password,email='na')
-            newuser = UserProfile(user=baseuser,\
-                facebook_user_id=profile['id'])
-            newuser.save()
+            fb_graph = facebook.GraphAPI(fb_user['access_token'])
+            fb_profile = fb_graph.get_object("me")
+            username = fb_profile['first_name']+profile['last_name']
+            password = fb_profile['id']
+            base_user = User.objects.create_user(username=username,\
+                                                 password=password, email='na')
+            new_user_profile = UserProfile(user=base_user,\
+                                           facebook_user_id=fb_profile['id'])
+            new_user.save()
 
-            return do_login(username,password,request)
+            return do_login(username, password, request)
+
     else:
        #no residual auth tokens found, move the user to login 
        return HttpResponseRedirect('login')
@@ -129,15 +130,21 @@ def weblogin(request):
             the auth method)
     """
 
+    logger = core.utils.get_logger()
+
     template_dict = {}
-    template_dict['fb_app_id']=settings.FB_API_ID
-    template_dict['auth_page']='authenticate'
-    fbuser = facebook.get_user_from_cookie(request.COOKIES, settings.FB_API_ID,\
-        settings.FB_SECRET_KEY )
-    if fbuser:
-        #the user hit this page again after using the FB signin link, 
-        #move em to auth
-        return HttpResponseRedirect('auth')
+    template_dict['fb_app_id'] = settings.FB_API_ID
+    template_dict['auth_page'] = 'authenticate'
+
+    fb_user = facebook.get_user_from_cookie(request.COOKIES, \
+                                            settings.FB_API_ID, \
+                                            settings.FB_SECRET_KEY)
+
+
+    if fb_user:
+        template_dict['fb_user_detected'] = True
+        logger.debug('got here');
+
     if request.method == 'POST':
         #the user has submitted the form 
         form = LoginForm(request.POST)
