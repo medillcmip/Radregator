@@ -99,3 +99,10 @@ def install_apache_config():
     with cd("%s/radregator" % (env.base_dir)):
         run("cp ./conf/httpd-%s.conf ../apache2/conf/httpd.conf" % \
             (env.instance))
+
+def restart():
+    require("hosts", provided_by=[staging])
+    require("base_dir", provided_by=[staging])
+    require("instance", provided_by=[staging])
+    with cd("%s" % (env.base_dir)):
+        run("./apache2/bin/restart")
