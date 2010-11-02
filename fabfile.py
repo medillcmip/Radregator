@@ -36,7 +36,7 @@ def install_packages():
     require("base_dir", provided_by=[staging])
     with cd("%s/radregator" % (env.base_dir)):
         run("workon %s; pip install --requirement=conf/requirements.txt" % \
-            (env.base_dir))
+            (env.instance))
 
 def git_clone():
     """
@@ -63,3 +63,8 @@ def git_pull(git_remote=None,git_branch=None):
         env.git_branch = git_branch
     run("cd %s/radregator; git pull %s %s" % \
         (env.base_dir, env.git_remote, env.git_branch))
+
+def localconfig_install():
+    require("hosts", provided_by=[staging])
+    require("instance", provided_by=[staging])
+
