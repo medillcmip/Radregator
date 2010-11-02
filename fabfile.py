@@ -45,10 +45,14 @@ def rmrepo():
     require("instance", provided_by=[staging])
     run("cd %s; rm -rf radregator" % (env.base_dir))
 
-def git_pull():
+def git_pull(git_remote=None,git_branch=None):
     require("hosts", provided_by=[staging])
     require("instance", provided_by=[staging])
     require("git_remote", provided_by=[staging])
     require("git_branch", provided_by=[staging])
+    if git_remote != None:
+        env.git_remote = git_remote
+    if git_branch != None:
+        env.git_branch = git_branch
     run("cd %s/radregator; git pull %s %s" % \
         (env.base_dir, env.git_remote, env.git_branch))
