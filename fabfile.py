@@ -92,6 +92,13 @@ def migrate():
         run("workon %s; ./manage.py migrate clipper --noinput" % (env.instance))
         run("workon %s; ./manage.py migrate users --noinput" % (env.instance))
 
+def loaddata():
+    require("hosts", provided_by=[staging])
+    require("base_dir", provided_by=[staging])
+    with cd("%s/radregator" % (env.base_dir)):
+        run("workon %s; ./manage.py loaddata ./fixtures/starting_data.json" % (env.instance))
+    
+
 def install_apache_config():
     require("hosts", provided_by=[staging])
     require("base_dir", provided_by=[staging])
