@@ -63,7 +63,7 @@ def auth(request):
      account won't be merged, thus we have two unique accounts with no
      bridge.  
     """
-    logger = core.utils.get_logger()
+    logger = radregator.core.utils.get_logger()
 
     if request.user.is_authenticated():    
         return HttpResponseRedirect('/')
@@ -130,7 +130,7 @@ def weblogin(request):
             the auth method)
     """
 
-    logger = core.utils.get_logger()
+    logger = radregator.core.utils.get_logger()
 
     template_dict = {}
     template_dict['fb_app_id'] = settings.FB_API_ID
