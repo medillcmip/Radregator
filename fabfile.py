@@ -31,6 +31,13 @@ def rmvirtualenv():
     require("instance", provided_by=[staging])
     run("rmvirtualenv %s" % (env.instance))
 
+def install_packages():
+    require("instance", provided_by=[staging])
+    require("base_dir", provided_by=[staging])
+    with cd("%s/radregator" % (env.base_dir)):
+        run("workon %s; pip install --requirement=conf/requirements.txt" % \
+            (env.base_dir))
+
 def git_clone():
     """
     Clone the repo for the project.
