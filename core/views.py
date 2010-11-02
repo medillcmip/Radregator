@@ -2,13 +2,13 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.core.paginator import Paginator
-from fbapi.facebook import *
+from radregator.fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from radregator.users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
-from models import Topic,CommentType, Comment, Summary, CommentRelation, \
+from radregator.core.models import Topic,CommentType, Comment, Summary, CommentRelation, \
                    CommentResponse
 from radregator.tagger.models import Tag
 from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, \
@@ -24,7 +24,7 @@ from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MaximumExceeded, UserOwnsItem
 from radregator.users.exceptions import UserNotAuthenticated, UserNotReporter
 from django.core import serializers
-import core.utils
+import radregator.core.utils
 from django.http import Http404
 
 import json
@@ -224,7 +224,7 @@ def newtopic_logic(form, userprofile):
     summary = Summary.objects.get_or_create(text=summary_text)[0] # get_or_create returns (obj, is_new)
     summary.save()
 
-    topic = Topic(title = title, slug = core.utils.slugify(title), summary = summary, is_deleted = False)
+    topic = Topic(title = title, slug = radregator.core.utils.slugify(title), summary = summary, is_deleted = False)
     topic.save()
     topic.curators = curators
     if source_comment:
@@ -301,7 +301,7 @@ def api_commentsubmission(request, output_format = 'json'):
 def frontpage(request):
     """ Front page demo"""
 
-    clipper_url_form = None
+    clipper_url_form = UrlSubmitForm()
     
     if request.method == 'POST':
         if request.user.is_anonymous():
@@ -330,9 +330,9 @@ def frontpage(request):
             topic = form.cleaned_data['topic']
             in_reply_to = form.cleaned_data['in_reply_to']
 
-            # See forms for simplification possibilities   
-            comment.topics = [Topic.objects.get(title=topic)] 
-            comment.sources = [form.cleaned_data['sources']]
+            comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
+            if form.cleaned_data['sources']:
+                comment.sources = [form.cleaned_data['sources']]
             comment.save()
             # successfully submitted, give them a new form
             form = CommentSubmitForm() 
@@ -344,10 +344,7 @@ def frontpage(request):
                 reply_relation.save()
 
     else: 
-        # Give them a new form if have either a valid submission, 
-        # or no submission
-        form = CommentSubmitForm() 
-        clipper_url_form = UrlSubmitForm()
+        form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
 
     if not request.user.is_anonymous():
         # Logged in user

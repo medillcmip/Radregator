@@ -44,7 +44,6 @@
 {% block body %}
 	<div id="introblurb">
 		<h3>Welcome</h3>
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ac elit nec lectus imperdiet tincidunt. Morbi neque nisl, tincidunt cursus molestie in, eleifend at dui. Fusce lorem diam, condimentum ac luctus at, tincidunt sit amet neque. Sed imperdiet mollis diam, et lobortis velit feugiat at.</p>
 	</div>	
 	
     {% if is_reporter %}
@@ -155,11 +154,14 @@
 				</li>
                     {% if comment.clips.all %}
                     {% for clip in comment.clips.all %}
-                    <li class="comment comment-level{{indentlevel|add:"1"}} {{comment.comment_type.name}}" id="comment-{{comment.id}}" style="border-style:solid;border-color:#ff0000 #0000ff;">
+                    <li class="comment comment-level{{indentlevel|add:"1"}} {{comment.comment_type.name|lower}} {{clip.user.is_reporter|yesno:"reportercomment,usercomment"}}" id="comment-{{comment.id}}-clip-{{clip.id}}">
                         <ul class="commentguts">
-                            <li class="bbq"><p class='valign'>{{ clip.text }} __ </p></li>
-                            <li class="bbq"><p class='valign'><a href="{{ clip.article.url }}"> || link</a></p></li>
-                            <li class="bbq"><p class='valign'> ... Posted by: {{ clip.user}}</p></li>
+                            <li class="bbq"><blockquote> {{clip.user_comments}} </blockquote> </li>
+                            <li class="bbq"><p class='valign'>"{{ clip.text }}"  </p>
+                            <p>
+                            <a href="{{ clip.article.url }}"> link</a></p>
+                            </li>
+                            <li class="chef"><p class='valign'> Posted by: {{ clip.user}}</p></li>
                         </ul>
                     </li>
                     {% endfor %}
