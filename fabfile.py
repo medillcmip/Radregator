@@ -69,8 +69,25 @@ def install_local_settings(db_password):
     require("base_dir", provided_by=[staging])
     require("instance", provided_by=[staging])
     with cd("%s/radregator" % (env.base_dir)):
-        sed("./conf/settings_local-%s.py" % \
-            (env.instance), 'FAB_REPL_DB_PASSWORD', \
+        sed("%s/radregator/conf/settings_local-%s.py" % \
+            (env.base_dir, env.instance), 'FAB_REPL_DB_PASSWORD', \
             db_password)
-        run("cp ./conf/settings_local-%s.py settings_local.py")
+        run("cp ./conf/settings_local-%s.py settings_local.py" % \
+            (env.instance))
 
+def syncdb():
+    require("hosts", provided_by=[staging])
+    require("base_dir", provided_by=[staging])
+    require("instance", provided_by=[staging])
+    with cd("%s/radregator" % (env.base_dir)):
+        run("workon %s; ./manage.py syncdb --noinput" % (env.instance))
+
+def migrate():
+    require("hosts", provided_by=[staging])
+    require("base_dir", provided_by=[staging])
+    require("instance", provided_by=[staging])
+    with cd("%s/radregator" % (env.base_dir)):
+        run("workon %s; ./manage.py migrate core --noinput" % (env.instance))
+        run("workon %s; ./manage.py migrate tagger --noinput" % (env.instance))
+        run("workon %s; ./manage.py migrate clipper --noinput" % (env.instance))
+        run("workon %s; ./manage.py migrate users --noinput" % (env.instance))
