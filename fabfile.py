@@ -91,3 +91,11 @@ def migrate():
         run("workon %s; ./manage.py migrate tagger --noinput" % (env.instance))
         run("workon %s; ./manage.py migrate clipper --noinput" % (env.instance))
         run("workon %s; ./manage.py migrate users --noinput" % (env.instance))
+
+def install_apache_config():
+    require("hosts", provided_by=[staging])
+    require("base_dir", provided_by=[staging])
+    require("instance", provided_by=[staging])
+    with cd("%s/radregator" % (env.base_dir)):
+        run("cp ./conf/httpd-%s.conf ../apache2/conf/httpd.conf" % \
+            (env.instance))
