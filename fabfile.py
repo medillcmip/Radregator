@@ -1,5 +1,5 @@
-from fabric.api import *
-from fabric.contrib.console import confirm
+from fabric.api import env, require, run, cd 
+from fabric.contrib.files import sed
 
 # Global configuration variables
 WEBFACTION_HOME = '/home/medill2010'
@@ -64,7 +64,13 @@ def git_pull(git_remote=None,git_branch=None):
     run("cd %s/radregator; git pull %s %s" % \
         (env.base_dir, env.git_remote, env.git_branch))
 
-def localconfig_install():
+def install_local_settings(db_password):
     require("hosts", provided_by=[staging])
+    require("base_dir", provided_by=[staging])
     require("instance", provided_by=[staging])
+    with cd("%s/radregator" % (env.base_dir)):
+        sed("./conf/settings_local-%s.py" % \
+            (env.instance), 'FAB_REPL_DB_PASSWORD', \
+            db_password)
+        run("cp ./conf/settings_local-%s.py settings_local.py")
 
