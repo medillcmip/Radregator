@@ -87,10 +87,7 @@ def migrate():
     require("base_dir", provided_by=[staging])
     require("instance", provided_by=[staging])
     with cd("%s/radregator" % (env.base_dir)):
-        run("workon %s; ./manage.py migrate core --noinput" % (env.instance))
-        run("workon %s; ./manage.py migrate tagger --noinput" % (env.instance))
-        run("workon %s; ./manage.py migrate clipper --noinput" % (env.instance))
-        run("workon %s; ./manage.py migrate users --noinput" % (env.instance))
+        run("workon %s; ./manage.py migrate" % (env.instance))
 
 def loaddata():
     require("hosts", provided_by=[staging])
