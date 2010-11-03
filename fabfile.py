@@ -64,7 +64,7 @@ def git_pull(git_remote=None,git_branch=None):
     run("cd %s/radregator; git pull %s %s" % \
         (env.base_dir, env.git_remote, env.git_branch))
 
-def install_local_settings(db_password):
+def install_local_settings(db_password, fb_api_id, fb_api_key, fb_secret_key):
     require("hosts", provided_by=[staging])
     require("base_dir", provided_by=[staging])
     require("instance", provided_by=[staging])
@@ -72,6 +72,15 @@ def install_local_settings(db_password):
         sed("%s/radregator/conf/settings_local-%s.py" % \
             (env.base_dir, env.instance), 'FAB_REPL_DB_PASSWORD', \
             db_password)
+        sed("%s/radregator/conf/settings_local-%s.py" % \
+            (env.base_dir, env.instance), 'FAB_REPL_FB_API_ID', \
+            fb_api_id)
+        sed("%s/radregator/conf/settings_local-%s.py" % \
+            (env.base_dir, env.instance), 'FAB_REPL_FB_API_KEY', \
+            fb_api_key)
+        sed("%s/radregator/conf/settings_local-%s.py" % \
+            (env.base_dir, env.instance), 'FAB_REPL_FB_SECRET_KEY', \
+            fb_secret_key)
         run("cp ./conf/settings_local-%s.py settings_local.py" % \
             (env.instance))
 
