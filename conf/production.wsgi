@@ -3,7 +3,7 @@ import site
 import sys
 
 # add the virtual environment path
-site.addsitedir('/home/medill2010/virtualenvs/staging/lib/python2.6/site-packages')
+site.addsitedir('/home/medill2010/virtualenvs/production/lib/python2.6/site-packages')
 
 # fix markdown.py (and potentially others) using stdout
 sys.stdout = sys.stderr
@@ -13,7 +13,7 @@ sys.stdout = sys.stderr
 #project = os.path.dirname(conf)
 #workspace = os.path.dirname(project) 
 #sys.path.append(workspace)
-sys.path.append('/home/medill2010/webapps/radregator_staging/radregator')
+sys.path.append('/home/medill2010/webapps/radregator_production/radregator')
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from django.core.handlers.wsgi import WSGIHandler
