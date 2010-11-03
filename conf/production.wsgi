@@ -15,6 +15,6 @@ sys.stdout = sys.stderr
 #sys.path.append(workspace)
 sys.path.append('/home/medill2010/webapps/radregator_production/radregator')
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'radregator.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from django.core.handlers.wsgi import WSGIHandler
 application = WSGIHandler()

@@ -9,10 +9,10 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
-from radregator.core.exceptions import MethodUnsupported, NonAjaxRequest
-from radregator.users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
+from core.exceptions import MethodUnsupported, NonAjaxRequest
+from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
                              UserUsernameExists, UserEmailExists
-import radregator.core.utils
+import core.utils
 
 def disabled_act(request):
     template_dict = {}

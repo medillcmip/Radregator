@@ -9,13 +9,13 @@ from urllib2 import URLError
 from BeautifulSoup import BeautifulSoup, Tag
 import re
 import datetime
-import radregator.core.models
-import radregator.users.models
-import radregator.clipper.forms
-import radregator.clipper.models
-import radregator.core.utils
+import core.models
+import users.models
+import clipper.forms
+import clipper.models
+import core.utils
 
-logger = radregator.core.utils.get_logger()
+logger = core.utils.get_logger()
 
 relative_url_exp = re.compile("(src|href|action)\s*=\s*(\'|\"|(?!\"|\'))(?!(http:|ftp:|mailto:|https:|#))")
 #a quick survey of sites indicates that many news organizations use a format
@@ -114,22 +114,22 @@ def create_author(name):
     baseuser = None
     ouruser = None
     try:
-        baseuser = radregator.users.models.User.objects.get(username=name)
-    except radregator.users.models.User.DoesNotExist:
+        baseuser = users.models.User.objects.get(username=name)
+    except users.models.User.DoesNotExist:
         first = ''
         last = ''
         first_n_last = name.split(' ')
         if len(first_n_last) > 1:
             first = first_n_last[0]
             last = first_n_last[1]
-        baseuser = radregator.users.models.User.objects.create_user(username=name, password='',email='na')
+        baseuser = users.models.User.objects.create_user(username=name, password='',email='na')
         baseuser.first_name = first
         baseuser.last_name = last
         baseuser.save()
     try:
-        ouruser =  radregator.users.models.UserProfile.objects.get(user=baseuser)
-    except radregator.users.models.UserProfile.DoesNotExist:
-        ouruser = radregator.users.models.UserProfile(user=baseuser, user_type='A')
+        ouruser =  users.models.UserProfile.objects.get(user=baseuser)
+    except users.models.UserProfile.DoesNotExist:
+        ouruser = users.models.UserProfile(user=baseuser, user_type='A')
         ouruser.save()
     return ouruser
 
@@ -137,7 +137,7 @@ def create_author(name):
 def clipper_submit_select(request):
     template_dict = {} 
     if request.method == 'POST':
-        form = radregator.clipper.forms.ClipTextForm(request.POST)
+        form = clipper.forms.ClipTextForm(request.POST)
         if form.is_valid():
             logger.debug('clipper_submit_selection(request): form is valid')
             url = form.cleaned_data['url_field']
@@ -146,25 +146,25 @@ def clipper_submit_select(request):
             title = form.cleaned_data['title']
             author_name = form.cleaned_data['author']
             date_published = form.cleaned_data['date_published']
-            user = radregator.users.models.UserProfile.objects.get(user=request.user)
+            user = users.models.UserProfile.objects.get(user=request.user)
             try:
-                comment = radregator.core.models.Comment.objects.get(id=form.cleaned_data['comment_id_field'])
-                the_article = radregator.clipper.models.Article.objects.get(url=url)
+                comment = core.models.Comment.objects.get(id=form.cleaned_data['comment_id_field'])
+                the_article = clipper.models.Article.objects.get(url=url)
                 author = create_author(author_name)
                 the_article.authors.add(author)
                 the_article.title = title
                 the_article.date_published = date_published
                 the_article.save()
-                the_clip = radregator.clipper.models.Clip(article=the_article, \
+                the_clip = clipper.models.Clip(article=the_article, \
                     text = selected_text, user=user, user_comments=comment_text)
                 the_clip.save()
                 comment.clips.add(the_clip)
                 comment.save()
                 return HttpResponseRedirect('/')
-            except radregator.clipper.models.Article.DoesNotExist, e:
+            except clipper.models.Article.DoesNotExist, e:
                 logger.debug('clipper_submit_selection(request): type='+\
                             str(type(e)) + ' ,REASON=' + str(e))
-            except radregator.core.models.Comment.DoesNotExist, e:
+            except core.models.Comment.DoesNotExist, e:
                 logger.debug('clipper_submit_selection(request): type='+\
                             str(type(e)) + ' ,REASON=' + str(e))
         else:
@@ -183,18 +183,18 @@ def create_article(url):
 
     url_o = urlparse.urlparse(url)
     try:
-        news_org = radregator.clipper.models.NewsOrganization.objects.get(name=url_o[1])
-    except radregator.clipper.models.NewsOrganization.DoesNotExist, e:
+        news_org = clipper.models.NewsOrganization.objects.get(name=url_o[1])
+    except clipper.models.NewsOrganization.DoesNotExist, e:
         logger.debug('create_article(url): type=' + str(type(e)) +\
                     ' ,REASON=' + str(e)+ ' ,URL='+url)
-        news_org = radregator.clipper.models.NewsOrganization(url=url,name=url_o[1])
+        news_org = clipper.models.NewsOrganization(url=url,name=url_o[1])
         news_org.save()
     try:
-        the_article = radregator.clipper.models.Article.objects.get(url=url)
-    except radregator.clipper.models.Article.DoesNotExist, e:
+        the_article = clipper.models.Article.objects.get(url=url)
+    except clipper.models.Article.DoesNotExist, e:
         logger.debug('create_article(url): type=' + str(type(e)) +\
                     ' ,REASON=' +str(e) + ' ,URL='+url)
-        the_article = radregator.clipper.models.Article(url=url, news_organization=news_org,\
+        the_article = clipper.models.Article(url=url, news_organization=news_org,\
             source=news_org)
         the_article.save()
 
@@ -209,7 +209,7 @@ def clipper_paste_url(request, comment_id):
     form = None
     return_page = 'clipper.html'
     if request.method == 'POST':
-        form = radregator.clipper.forms.UrlSubmitForm(request.POST)
+        form = clipper.forms.UrlSubmitForm(request.POST)
         if form.is_valid():
             #start parsing out the page and get ready to forward us onto 
             url = form.cleaned_data['url_field']
@@ -219,7 +219,7 @@ def clipper_paste_url(request, comment_id):
                 values = get_page(url)
                 template_dict['requested_page'] = values['page']
                 template_dict['url'] = url
-                form = radregator.clipper.forms.ClipTextForm(initial={'url_field': url,\
+                form = clipper.forms.ClipTextForm(initial={'url_field': url,\
                      'comment_id_field': comment_id, 'title': values['title'],\
                     'author': values['author']})
                 return_page = 'clipper_select_text.html'
@@ -232,7 +232,7 @@ def clipper_paste_url(request, comment_id):
                              ' ,REASON='+ str(ex) +',URL=' + url)
                 template_dict['errors'] = str(ex)
     else: #first time we hit the page
-        form = radregator.clipper.forms.UrlSubmitForm()
+        form = clipper.forms.UrlSubmitForm()
     template_dict['form'] = form
     return render_to_response(return_page,template_dict,\
         context_instance=RequestContext(request))
