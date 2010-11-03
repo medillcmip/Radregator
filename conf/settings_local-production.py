@@ -38,25 +38,25 @@ FB_SECRET_KEY = 'FAB_REPL_FB_SECRET_KEY'
 #)
 
 # Overwrite the installed apps
-#INSTALLED_APPS = (
-#    'django.contrib.auth',
-#    'django.contrib.contenttypes',
-#    'django.contrib.sessions',
-#    'django.contrib.sites',
-#    'django.contrib.messages',
-#    # Uncomment the next line to enable the admin:
-#    'django.contrib.admin',
-#    'core',
-#    'tagger',
-#    'clipper',
-#    'users',
-#
-#    # Uncomment the next line to enable admin documentation:
-#    'django.contrib.admindocs',
-#
-#    # Enable south for schema migration
-#    'south'
-#)
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    # Uncomment the next line to enable the admin:
+    'django.contrib.admin',
+    'core',
+    'tagger',
+    'clipper',
+    'users',
+
+    # Uncomment the next line to enable admin documentation:
+    'django.contrib.admindocs',
+
+    # Enable south for schema migration
+    'south'
+)
 
 # Enable/disable console logging to Firebug using Firepython
 # http://firelogger.binaryage.com 
