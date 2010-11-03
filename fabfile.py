@@ -28,8 +28,8 @@ def mkinstance(db_password, fb_api_id, fb_api_key, fb_secret_key):
     Create a deployment instance from scratch.
     """
     mkvirtualenv()
-    install_packages()
     git_clone()
+    install_packages()
     install_local_settings(db_password, fb_api_id, fb_api_key, fb_secret_key)
     syncdb()
     migrate()
@@ -74,7 +74,7 @@ def install_packages():
     require("instance", provided_by=[staging, production])
     require("base_dir", provided_by=[staging, production])
     with cd("%s/radregator" % (env.base_dir)):
-        run("workon %s; pip install --requirement=conf/requirements.txt" % \
+        run("workon %s; pip install --requirement=./conf/requirements.txt" % \
             (env.instance))
 
 def git_clone():
