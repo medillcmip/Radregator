@@ -21,7 +21,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
                                        MethodUnsupported, InvalidTopic, \
-                                       MaximumExceeded, UserOwnsItem
+                                       MaximumExceeded, UserOwnsItem, \
+                                       NotUserQuestionReply
+
 from users.exceptions import UserNotAuthenticated, UserNotReporter
 from django.core import serializers
 import core.utils
@@ -537,6 +539,31 @@ def api_comment_responses(request, comment_id, output_format='json',
                     raise MaximumExceeded("User has already made maximum " + \
                                           "number of responses")
         
+                # Check accept case
+
+                if response_type == 'accept':
+                    # This should only be allowed for replies to comments posed by the user
+
+                    # Is the comment a reply at all?
+                    try: 
+                        reply_relation = CommentRelation.objects.filter(left_comment = comment, relation_type = 'reply')
+                    except ObjectDoesNotExist:
+                        raise NotUserQuestionReply ("This is not a reply to a question")
+
+                    # It's a reply, but who posed the initial question?
+
+                    if not reply_relation.right_comment.user == user:
+                        raise NotUserQuestionReply ("This is a reply to a question posed by another user; user cannot accept it")
+
+
+
+
+
+
+
+                        
+
+
                 comment_response = CommentResponse(user=user, \
                                                    comment=comment, \
                                                    type=response_type) 
@@ -585,6 +612,9 @@ def api_comment_responses(request, comment_id, output_format='json',
         status = 403 # Forbidden
         data['error'] = "%s" % e
     except UserOwnsItem, e:
+        status = 403 # Forbidden
+        data['error'] = "%s" % e
+    except NotUserQuestionReply, e:
         status = 403 # Forbidden
         data['error'] = "%s" % e
 

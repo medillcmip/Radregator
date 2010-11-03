@@ -40,3 +40,8 @@ class UserOwnsItem(Exception):
     """Exception thrown when a user tries to vote on an item that she has 
        created"""
     pass
+
+class NotUserQuestionReply(Exception):
+    """Exception thrown when a user tries to accept a comment not a reply to 
+       her own question"""
+    pass
