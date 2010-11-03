@@ -93,6 +93,9 @@ def loaddata():
     require("hosts", provided_by=[staging])
     require("base_dir", provided_by=[staging])
     with cd("%s/radregator" % (env.base_dir)):
+        # HACK ALERT: South doesn't play well with the initial data.  
+        # Need to empty these tables first or you get an error.
+        run("workon %s; echo 'DELETE FROM auth_group_permissions; DELETE FROM auth_permission; DELETE FROM django_admin_log; DELETE FROM django_content_type;' |./manage.py dbshell" % (env.instance))
         run("workon %s; ./manage.py loaddata ./fixtures/starting_data.json" % (env.instance))
     
 
