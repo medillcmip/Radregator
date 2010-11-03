@@ -1,8 +1,8 @@
 from django import forms
 from django.forms.widgets import Select, HiddenInput
-from radregator.core.models import Comment,CommentType,Topic
-from radregator.tagger.models import Tag
-from radregator.users.models import UserProfile
+from core.models import Comment,CommentType,Topic
+from tagger.models import Tag
+from users.models import UserProfile
 from django.forms.widgets import CheckboxSelectMultiple
 
 class CommentDeleteForm(forms.Form):

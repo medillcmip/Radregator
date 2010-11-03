@@ -2,29 +2,31 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.core.paginator import Paginator
-from radregator.fbapi.facebook import *
+from fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from radregator.users.models import UserProfile,User
+from users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
 
-from radregator.core.models import Topic,CommentType, Comment, Summary, CommentRelation, \
+from core.models import Topic,CommentType, Comment, Summary, CommentRelation, \
                    CommentResponse
-from radregator.tagger.models import Tag
-from radregator.core.forms import CommentSubmitForm, CommentDeleteForm, \
+from tagger.models import Tag
+from core.forms import CommentSubmitForm, CommentDeleteForm, \
                                   TopicDeleteForm, NewTopicForm, \
                                   MergeCommentForm, NewSummaryForm
-from radregator.core.forms import CommentTopicForm
-from radregator.clipper.forms import UrlSubmitForm
+from core.forms import CommentTopicForm
+from clipper.forms import UrlSubmitForm
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
-from radregator.core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
+from core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
                                        MethodUnsupported, InvalidTopic, \
-                                       MaximumExceeded, UserOwnsItem
-from radregator.users.exceptions import UserNotAuthenticated, UserNotReporter
+                                       MaximumExceeded, UserOwnsItem, \
+                                       NotUserQuestionReply
+
+from users.exceptions import UserNotAuthenticated, UserNotReporter
 from django.core import serializers
-import radregator.core.utils
+import core.utils
 from django.http import Http404
 
 import json
@@ -224,7 +226,7 @@ def newtopic_logic(form, userprofile):
     summary = Summary.objects.get_or_create(text=summary_text)[0] # get_or_create returns (obj, is_new)
     summary.save()
 
-    topic = Topic(title = title, slug = radregator.core.utils.slugify(title), summary = summary, is_deleted = False)
+    topic = Topic(title = title, slug = core.utils.slugify(title), summary = summary, is_deleted = False)
     topic.save()
     topic.curators = curators
     if source_comment:
@@ -541,6 +543,31 @@ def api_comment_responses(request, comment_id, output_format='json',
                     raise MaximumExceeded("User has already made maximum " + \
                                           "number of responses")
         
+                # Check accept case
+
+                if response_type == 'accept':
+                    # This should only be allowed for replies to comments posed by the user
+
+                    # Is the comment a reply at all?
+                    try: 
+                        reply_relation = CommentRelation.objects.filter(left_comment = comment, relation_type = 'reply')
+                    except ObjectDoesNotExist:
+                        raise NotUserQuestionReply ("This is not a reply to a question")
+
+                    # It's a reply, but who posed the initial question?
+
+                    if not reply_relation.right_comment.user == user:
+                        raise NotUserQuestionReply ("This is a reply to a question posed by another user; user cannot accept it")
+
+
+
+
+
+
+
+                        
+
+
                 comment_response = CommentResponse(user=user, \
                                                    comment=comment, \
                                                    type=response_type) 
@@ -589,6 +616,9 @@ def api_comment_responses(request, comment_id, output_format='json',
         status = 403 # Forbidden
         data['error'] = "%s" % e
     except UserOwnsItem, e:
+        status = 403 # Forbidden
+        data['error'] = "%s" % e
+    except NotUserQuestionReply, e:
         status = 403 # Forbidden
         data['error'] = "%s" % e
 

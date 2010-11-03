@@ -1,10 +1,10 @@
 from django.db import models
 from utils import comment_cmp
 from django.contrib.sites.models import Site
-from radregator.clipper.models import Article
-from radregator.tagger.models import Tag
-from radregator.users.models import UserProfile
-from radregator.clipper.models import Clip
+from clipper.models import Article
+from tagger.models import Tag
+from users.models import UserProfile
+from clipper.models import Clip
 
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
@@ -147,6 +147,8 @@ class CommentResponse(models.Model):
         ('have', 'I have this question'),
         ('like', 'I like this'),
         ('concur', 'I concur'),
+        ('opinion', 'This answer is primarily opinion'),
+        ('accept', 'I accept this as the best answer'),
     )
 
     comment = models.ForeignKey(Comment)
