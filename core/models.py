@@ -147,6 +147,8 @@ class CommentResponse(models.Model):
         ('have', 'I have this question'),
         ('like', 'I like this'),
         ('concur', 'I concur'),
+        ('opinion', 'This answer is primarily opinion'),
+        ('accept', 'I accept this as the best answer'),
     )
 
     comment = models.ForeignKey(Comment)
