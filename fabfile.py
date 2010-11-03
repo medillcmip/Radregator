@@ -40,6 +40,7 @@ def rminstance():
     """
     Delete a deployment instance created with mkinstance.
     """
+    drop_tables()
     rmrepo()
     rmvirtualenv()
 
@@ -151,6 +152,13 @@ def loaddata():
         # Need to empty these tables first or you get an error.
         run("workon %s; echo 'DELETE FROM auth_group_permissions; DELETE FROM auth_permission; DELETE FROM django_admin_log; DELETE FROM django_content_type;' |./manage.py dbshell" % (env.instance))
         run("workon %s; ./manage.py loaddata ./fixtures/starting_data.json" % (env.instance))
+
+def drop_tables():
+    require("hosts", provided_by=[staging, production])
+    require("base_dir", provided_by=[staging, production])
+    with cd("%s/radregator" % (env.base_dir)):
+        run("workon %s; echo \"select 'DROP table ' || quote_ident(table_schema) || '.' || quote_ident(table_name) || ' CASCADE;' from information_schema.tables where table_type = 'BASE TABLE' and not table_schema ~ '^(information_schema|pg_.*)$'\" | ./manage.py dbshell | head --lines=-2 | ./manage.py dbshell " % (env.instance))
+
     
 
 def install_apache_config():
