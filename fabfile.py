@@ -15,6 +15,16 @@ def staging():
     env.git_remote = 'origin'
     env.git_branch = 'master'
 
+def production():
+    env.hosts = ['medill2010.webfactional.com']
+    env.user = 'medill2010'
+    env.base_dir = WEBFACTION_APPS + '/radregator_production'
+    env.instance = 'production'
+    env.database = 'medill2010_radregator_production'
+    env.git_repo = 'git@github.com:medillcmip/Radregator.git' 
+    env.git_remote = 'origin'
+    env.git_branch = 'master'
+
 def mkvirtualenv():
     """
     Create the virtualenv for the deployment.
