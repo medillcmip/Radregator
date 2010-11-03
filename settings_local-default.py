@@ -1,3 +1,10 @@
+""" 
+A good starting point for instance-specific settings for this project.
+Edit to suit your environment and then copy to settings_local.py in the 
+same directory as your settings.py file.
+
+"""
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
