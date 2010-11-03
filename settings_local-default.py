@@ -19,7 +19,13 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+if DEBUG:
+    # For development, we attach static content to the /static URL.  See urls.py
+    # for more details.
+    MEDIA_URL = '/static/'
+else:
+    MEDIA_URL = ''
+
 
 # Facebook Application settings for Facebook Connect
 FB_API_ID = ''
