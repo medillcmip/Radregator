@@ -6,3 +6,6 @@
 
 # Ignore the local settings
 settings_local.py
+
+# Ignore rope refactoring tool project directory
+.ropeproject
