@@ -90,6 +90,12 @@ def migrate():
         run("workon %s; ./manage.py migrate" % (env.instance))
 
 def loaddata():
+    """
+    Load fixture data.
+
+    Note: You need to create a ~/.pgpass file so ./manage.py dbshell doesn't
+    require entering a password.
+    """
     require("hosts", provided_by=[staging])
     require("base_dir", provided_by=[staging])
     with cd("%s/radregator" % (env.base_dir)):
