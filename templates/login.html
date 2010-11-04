@@ -38,7 +38,7 @@
 					    error: function (requestError, status, errorResponse) {
 							var errorNum = requestError.status;
 						
-                            errorMsg = jQuery.parseJSON(requestError.responseText).error;
+                            errorMsg = jQuery.parseJSON(requestError.responseText).error_html;
                             $(this).find(".errormsg").html(errorMsg);
                             $(this).find(".errormsg").css("display", "block");
 					    }
