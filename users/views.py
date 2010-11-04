@@ -141,10 +141,8 @@ def weblogin(request):
                                             settings.FB_API_ID, \
                                             settings.FB_SECRET_KEY)
 
-
     if fb_user:
         template_dict['fb_user_detected'] = True
-        logger.debug('got here');
 
     if request.method == 'POST':
         #the user has submitted the form 
@@ -393,16 +391,6 @@ def api_facebook_auth(request, output_format='json'):
             try:
                 user_profile =  UserProfile.objects.get(\
                     facebook_user_id=fb_user['uid'])
-                #we need to log the FB user in
-                #http://zcentric.com/2010/05/12/django-fix-for-user-object-has-no-attribute-backend/
-                #TODO: send message telling the user they have been logged in
-                # via FB
-                user_profile.user.backend = \
-                    'django.contrib.auth.backends.ModelBackend'
-
-                data['username'] = user_profile.user.username 
-                data['uri'] = '/api/%s/users/%s/' % (output_format, \
-                    user_profile.user.username)
 
             except UserProfile.DoesNotExist:
                 #they're not, so we need to create them and move em along
@@ -417,7 +405,16 @@ def api_facebook_auth(request, output_format='json'):
                 user_profile.save()
 
             finally:
+                # Log the user in without authenticating them
+                # See http://zcentric.com/2010/05/12/django-fix-for-user-object-has-no-attribute-backend/
+                user_profile.user.backend = \
+                    'django.contrib.auth.backends.ModelBackend'
                 login(request, user_profile.user)
+
+                # Set up our return data
+                data['username'] = user_profile.user.username 
+                data['uri'] = '/api/%s/users/%s/' % (output_format, \
+                    user_profile.user.username)
 
         else:
             raise NoFacebookUser
