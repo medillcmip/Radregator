@@ -5,6 +5,7 @@
     <title>radregator</title>
 	<link href="{{ MEDIA_URL }}css/colorbox.css" rel="stylesheet" type="text/css" /> 
 	<script src="{{ MEDIA_URL }}js/jquery.tools.min.js"></script>
+	<script src="{{ MEDIA_URL }}js/functions.js"></script>
 
 	<script type="text/javascript"> 
   		$(document).ready(function() {  			
@@ -64,7 +65,7 @@
             <fb:login-button autologoutlink="true"></fb:login-button>
             -->
             {% if fb_user_detected %}
-            <a href="{{ auth_page }}" class="fb_button fb_button_medium"><span class="fb_button_text">Login</span></a>
+            <a href="{{ auth_page }}" id="fb-site-login" class="fb_button fb_button_medium"><span class="fb_button_text">Login</span></a>
             {% else %}
             <fb:login-button></fb:login-button>
             {% endif %}

@@ -11,7 +11,8 @@ from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from core.exceptions import MethodUnsupported, NonAjaxRequest
 from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
-                             UserUsernameExists, UserEmailExists
+                             UserUsernameExists, UserEmailExists, \
+                             NoFacebookUser
 import core.utils
 
 def disabled_act(request):
@@ -277,7 +278,7 @@ def api_auth(request, uri_username, output_format='json'):
         data['error'] = "%s" % error
 
     except BadUsernameOrPassword, error:
-        status = 401 # Unauthorized
+        status = 401 # unauthorized
         data['error'] = "%s" % error
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
@@ -371,6 +372,32 @@ def api_users(request, output_format='json'):
     except (UserUsernameExists, UserEmailExists) as detail:
         status = 409 # Conflict
         data['error'] = "%s" % detail 
+
+    return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+
+
+def api_facebook_auth(request):
+    """Authenticate a user who is already logged into Facebook into the site."""
+    data = {} # Response data 
+    status = 200 # Ok
+
+    # Check to see if there's a cookie indicating that the user
+    # is logged in with Facebook.
+    fb_user = facebook.get_user_from_cookie(request.COOKIES, \
+                                            settings.FB_API_ID,\
+                                            settings.FB_SECRET_KEY)
+
+    try:
+        if fb_user:
+            pass
+            # TODO: do stuff
+        else:
+            raise NoFacebookUser
+
+    except NoFacebookUser as detail:
+        status = 401 # unauthorized
+        data['error'] = "%s" % error
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)

@@ -528,3 +528,28 @@ function handleLogoutLink() {
     // of our site too)
     return true; 
 }
+
+// Handler for Facebook site login button.  This is the "fake" Facebook 
+// login button that we show on the login page when a user is already
+// logged into Facebook.
+function handleFacebookSiteLoginButton() {
+    var posturl = "/api/json/users/facebooklogin'
+
+    $.ajax({
+        type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
+        success: function(data) {
+            var loggeduser = data.username;
+            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
+            parent.$.fn.colorbox.close();
+        },
+        error: function (requestError, status, errorResponse) {
+            var errorNum = requestError.status;
+						
+            errorMsg = jQuery.parseJSON(requestError.responseText).error;
+            $(this).find(".errormsg").html(errorMsg);
+            $(this).find(".errormsg").css("display", "block");
+        }
+    });
+
+    return false;
+}
