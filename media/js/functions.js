@@ -542,7 +542,7 @@ function handleFacebookSiteLoginButton() {
         success: function(data) {
             var loggeduser = data.username;
             console.debug(loggeduser + ' has been logged in using Facebook');
-            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Log out</a>?");
+            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Log out</a>");
             parent.$.fn.colorbox.close();
         },
         error: function (requestError, status, errorResponse) {

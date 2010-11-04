@@ -71,15 +71,6 @@
                      xfbml: true});
 
             console.debug('Facebook API initialized');
-
-            // Check if the user is logged into Facebook and change
-            // the logout link accordingly
-            FB.getLoginStatus(function(response) {
-              console.debug(response.status);
-              if (response.session) {
-                  $('a.logout').text('Log out of this site and Facebook');
-              }
-            });
         };
 
         (function() {
