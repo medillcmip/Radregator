@@ -11,13 +11,15 @@ from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from core.exceptions import MethodUnsupported, NonAjaxRequest
 from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
-                             UserUsernameExists, UserEmailExists
+                             UserUsernameExists, UserEmailExists, \
+                             NoFacebookUser
 import core.utils
 
 def disabled_act(request):
     template_dict = {}
     return render_to_response('disabled_user.html',\
         template_dict,context_instance=RequestContext(request))
+
 
 def do_login(username,password,request):
     user = authenticate(username=username, password=password)
@@ -62,34 +64,49 @@ def auth(request):
      account won't be merged, thus we have two unique accounts with no
      bridge.  
     """
+    logger = core.utils.get_logger()
+
     if request.user.is_authenticated():    
         return HttpResponseRedirect('/')
-    user = facebook.get_user_from_cookie(request.COOKIES, settings.FB_API_ID,\
-        settings.FB_SECRET_KEY )
-    if user:
+
+    # Check to see if there's a cookie indicating that the user
+    # is logged in with Facebook.
+    fb_user = facebook.get_user_from_cookie(request.COOKIES, \
+                                            settings.FB_API_ID,\
+                                            settings.FB_SECRET_KEY)
+
+    logger.debug(fb_user)
+
+    if fb_user:
         #user has a FB account and we need to see if they have been 
         #registered in our db
         try:
-            ouruser =  UserProfile.objects.get(facebook_user_id=user['uid'])
+            user_profile =  UserProfile.objects.get(\
+                facebook_user_id=fb_user['uid'])
             #we need to log the FB user in
             #http://zcentric.com/2010/05/12/django-fix-for-user-object-has-no-attribute-backend/
             #TODO: send message telling the user they have been logged in
             # via FB
-            ouruser.user.backend = 'django.contrib.auth.backends.ModelBackend'
-            login(request,ouruser.user)
+            user_profile.user.backend = \
+                'django.contrib.auth.backends.ModelBackend'
+            login(request, user_profile.user)
+
             return HttpResponseRedirect('/')
+
         except UserProfile.DoesNotExist:
             #they're not, so we need to create them and move em along
-            graph = facebook.GraphAPI(user['access_token'])
-            profile = graph.get_object("me")
-            username=profile['first_name']+profile['last_name']
-            password=profile['id']
-            baseuser = User.objects.create_user(username=username,\
-                password=password,email='na')
-            newuser = UserProfile(user=baseuser,\
-                facebook_user_id=profile['id'])
-            newuser.save()
-            return do_login(username,password,request)
+            fb_graph = facebook.GraphAPI(fb_user['access_token'])
+            fb_profile = fb_graph.get_object("me")
+            username = fb_profile['first_name'] + fb_profile['last_name']
+            password = fb_profile['id']
+            base_user = User.objects.create_user(username=username,\
+                                                 password=password, email='na')
+            new_user_profile = UserProfile(user=base_user,\
+                                           facebook_user_id=fb_profile['id'])
+            new_user_profile.save()
+
+            return do_login(username, password, request)
+
     else:
        #no residual auth tokens found, move the user to login 
        return HttpResponseRedirect('login')
@@ -97,13 +114,8 @@ def auth(request):
 
 def weblogout(request):
     """
-    log a django user out... if they
-    logged in with Facebook we only 
-    deauthorize their django user so when
-    they return, if their fb cookie didn't
-    expire then they will be logged back in
-    w/o going to the login page (auth will
-    catch them)
+    log a django user out... 
+    Facebook logout is handled via Javascript.
     """
     logout(request)
     return HttpResponseRedirect('/')
@@ -119,15 +131,19 @@ def weblogin(request):
             the auth method)
     """
 
+    logger = core.utils.get_logger()
+
     template_dict = {}
-    template_dict['fb_app_id']=settings.FB_API_ID
-    template_dict['auth_page']='authenticate'
-    fbuser = facebook.get_user_from_cookie(request.COOKIES, settings.FB_API_ID,\
-        settings.FB_SECRET_KEY )
-    if fbuser:
-        #the user hit this page again after using the FB signin link, 
-        #move em to auth
-        return HttpResponseRedirect('auth')
+    template_dict['fb_app_id'] = settings.FB_API_ID
+    template_dict['auth_page'] = 'authenticate'
+
+    fb_user = facebook.get_user_from_cookie(request.COOKIES, \
+                                            settings.FB_API_ID, \
+                                            settings.FB_SECRET_KEY)
+
+    if fb_user:
+        template_dict['fb_user_detected'] = True
+
     if request.method == 'POST':
         #the user has submitted the form 
         form = LoginForm(request.POST)
@@ -194,6 +210,7 @@ def register(request):
         return render_to_response('register.html', template_dict,\
             context_instance=RequestContext(request))
 
+
 def api_auth(request, uri_username, output_format='json'):
     """Like auth() but through AJAX"""
 
@@ -259,11 +276,12 @@ def api_auth(request, uri_username, output_format='json'):
         data['error'] = "%s" % error
 
     except BadUsernameOrPassword, error:
-        status = 401 # Unauthorized
+        status = 401 # unauthorized
         data['error'] = "%s" % error
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
+
 
 def api_users(request, output_format='json'):
     """Catch-all view for user api calls."""
@@ -306,7 +324,8 @@ def api_users(request, output_format='json'):
                     if not f_dont_log_user_in:
 
                         # Create user
-                        user = authenticate(username=f_username, password=f_password)
+                        user = authenticate(username=f_username, \
+                                            password=f_password)
                         login(request, user)
 
                     # Set our response codes and data
@@ -323,7 +342,8 @@ def api_users(request, output_format='json'):
                     # We'll detect this and try to return a more reasonable 
                     # error message.
                     if 'username' in form.errors.keys():
-                        if form.errors['username'] == [form.USERNAME_EXISTS_MSG]:
+                        if form.errors['username'] == \
+                           [form.USERNAME_EXISTS_MSG]:
                             raise UserUsernameExists(form.USERNAME_EXISTS_MSG) 
 
                     if 'email' in form.errors.keys():
@@ -351,6 +371,57 @@ def api_users(request, output_format='json'):
         status = 409 # Conflict
         data['error'] = "%s" % detail 
 
+    return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+
+
+def api_facebook_auth(request, output_format='json'):
+    """Authenticate a user who is already logged into Facebook into the site."""
+    data = {} # Response data 
+    status = 200 # Ok
+
+    # Check to see if there's a cookie indicating that the user
+    # is logged in with Facebook.
+    fb_user = facebook.get_user_from_cookie(request.COOKIES, \
+                                            settings.FB_API_ID,\
+                                            settings.FB_SECRET_KEY)
+
+    try:
+        if fb_user:
+            try:
+                user_profile =  UserProfile.objects.get(\
+                    facebook_user_id=fb_user['uid'])
+
+            except UserProfile.DoesNotExist:
+                #they're not, so we need to create them and move em along
+                fb_graph = facebook.GraphAPI(fb_user['access_token'])
+                fb_profile = fb_graph.get_object("me")
+                username = fb_profile['first_name'] + fb_profile['last_name']
+                password = fb_profile['id']
+                base_user = User.objects.create_user(username=username,\
+                                                     password=password, email='na')
+                user_profile = UserProfile(user=base_user,\
+                                               facebook_user_id=fb_profile['id'])
+                user_profile.save()
+
+            finally:
+                # Log the user in without authenticating them
+                # See http://zcentric.com/2010/05/12/django-fix-for-user-object-has-no-attribute-backend/
+                user_profile.user.backend = \
+                    'django.contrib.auth.backends.ModelBackend'
+                login(request, user_profile.user)
+
+                # Set up our return data
+                data['username'] = user_profile.user.username 
+                data['uri'] = '/api/%s/users/%s/' % (output_format, \
+                    user_profile.user.username)
+
+        else:
+            raise NoFacebookUser
+
+    except NoFacebookUser as detail:
+        status = 401 # unauthorized
+        data['error'] = "%s" % error
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)

@@ -1,4 +1,4 @@
-from fabric.api import env, require, run, cd 
+from fabric.api import env, require, run, cd, local 
 from fabric.contrib.files import sed
 
 # Global configuration variables
@@ -152,6 +152,13 @@ def loaddata():
         # Need to empty these tables first or you get an error.
         run("workon %s; echo 'DELETE FROM auth_group_permissions; DELETE FROM auth_permission; DELETE FROM django_admin_log; DELETE FROM django_content_type;' |./manage.py dbshell" % (env.instance))
         run("workon %s; ./manage.py loaddata ./fixtures/starting_data.json" % (env.instance))
+
+def dev_loaddata():
+    """
+    Load fixture data into a local development instance.
+    """
+    local("echo 'DELETE FROM auth_group_permissions; DELETE FROM auth_permission; DELETE FROM django_admin_log; DELETE FROM django_content_type;' | ./manage.py dbshell")
+    local("./manage.py loaddata ./fixtures/starting_data.json")
 
 def drop_tables():
     require("hosts", provided_by=[staging, production])

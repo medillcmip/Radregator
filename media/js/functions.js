@@ -515,3 +515,38 @@ function handleResponseLink() {
 
     return false;
 }
+
+// Handler for logout (.logout) links
+function handleLogoutLink() {
+    FB.logout(function(response) {
+    }); // Log the user out of Facebook
+
+    // Return true so the browser follows the link (and logs the user out
+    // of our site too)
+    return true; 
+}
+
+// Handler for Facebook site login button.  This is the "fake" Facebook 
+// login button that we show on the login page when a user is already
+// logged into Facebook.
+function handleFacebookSiteLoginButton() {
+    var posturl = "/api/json/users/facebooklogin/";
+
+    $.ajax({
+        type: "post", context: $(this), url: posturl, data: {},
+        success: function(data) {
+            var loggeduser = data.username;
+            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Log out</a>");
+            parent.$.fn.colorbox.close();
+        },
+        error: function (requestError, status, errorResponse) {
+            var errorNum = requestError.status;
+						
+            errorMsg = jQuery.parseJSON(requestError.responseText).error;
+            $(this).find(".errormsg").html(errorMsg);
+            $(this).find(".errormsg").css("display", "block");
+        }
+    });
+
+    return false;
+}

@@ -50,6 +50,9 @@
 
             // VARIABLE VERTICAL ALIGNMENT
 			$('.valign').valign();
+
+            // Handle logout link
+			$('a.logout').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
 			
   		});
   		
@@ -61,15 +64,31 @@
 </head> 
 
    <body>
+        <div id="fb-root"></div>
+        <script type="text/javascript">
+        window.fbAsyncInit = function() {
+            FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,
+                     xfbml: true});
+        };
+
+        (function() {
+          var e = document.createElement('script'); e.async = true;
+          e.src = document.location.protocol +
+             '//connect.facebook.net/en_US/all.js';
+          document.getElementById('fb-root').appendChild(e);
+        }());
+
+       </script>
        <div id="messages"></div> 
 	   <div id="pagewrap">
 		   <div id="header">
 		<div class="reglog">
             {% if user.is_authenticated %}
-            Hello {{ user.username }}. <a href='/logout'>Not you?</a>
+            Hello {{ user.username }}. <a href='/logout' class="logout">Log out</a>
             {% else %}
-			<a class="cbox" href="/authenticate">Login or register</a>
+			<a class="cbox" href="/login">Login or register</a>
             {% endif %}
+
 		</div>
 				
 				<h1><a href="#" id="logo">Logo</a></h1>
@@ -80,6 +99,9 @@
 		   {% endblock body %}
 		   
 	   </div>
-   </body>
+
+
+
+    </body>
 
 </html>
