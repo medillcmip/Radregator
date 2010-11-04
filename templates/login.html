@@ -96,7 +96,7 @@
 <script>
 FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true, xfbml: true});
 
-FB.Event.subscribe('auth.statusChange', function(response) {
+FB.Event.subscribe('auth.sessionChange', function(response) {
   console.debug('Facebook status change');
 
   if (response.session) {
