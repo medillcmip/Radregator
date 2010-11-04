@@ -45,6 +45,10 @@
 					});
 				return false;
 			});
+
+            // Handle Facebook site login link 
+			$('a#fb-site-login').unbind('click', handleFacebookSiteLoginButton).bind('click', handleFacebookSiteLoginButton); 
+
   		});
 	
 	</script>

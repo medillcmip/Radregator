@@ -533,13 +533,16 @@ function handleLogoutLink() {
 // login button that we show on the login page when a user is already
 // logged into Facebook.
 function handleFacebookSiteLoginButton() {
-    var posturl = "/api/json/users/facebooklogin'
+    var posturl = "/api/json/users/facebooklogin/";
+
+    console.debug('Entering handleFacebookSiteLoginButton()');
 
     $.ajax({
-        type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
+        type: "post", context: $(this), url: posturl, data: {},
         success: function(data) {
             var loggeduser = data.username;
-            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
+            console.debug(loggeduser + ' has been logged in using Facebook');
+            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Log out</a>?");
             parent.$.fn.colorbox.close();
         },
         error: function (requestError, status, errorResponse) {

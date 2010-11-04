@@ -377,7 +377,7 @@ def api_users(request, output_format='json'):
                         status=status)
 
 
-def api_facebook_auth(request):
+def api_facebook_auth(request, output_format='json'):
     """Authenticate a user who is already logged into Facebook into the site."""
     data = {} # Response data 
     status = 200 # Ok
@@ -390,8 +390,35 @@ def api_facebook_auth(request):
 
     try:
         if fb_user:
-            pass
-            # TODO: do stuff
+            try:
+                user_profile =  UserProfile.objects.get(\
+                    facebook_user_id=fb_user['uid'])
+                #we need to log the FB user in
+                #http://zcentric.com/2010/05/12/django-fix-for-user-object-has-no-attribute-backend/
+                #TODO: send message telling the user they have been logged in
+                # via FB
+                user_profile.user.backend = \
+                    'django.contrib.auth.backends.ModelBackend'
+
+                data['username'] = user_profile.user.username 
+                data['uri'] = '/api/%s/users/%s/' % (output_format, \
+                    user_profile.user.username)
+
+            except UserProfile.DoesNotExist:
+                #they're not, so we need to create them and move em along
+                fb_graph = facebook.GraphAPI(fb_user['access_token'])
+                fb_profile = fb_graph.get_object("me")
+                username = fb_profile['first_name'] + fb_profile['last_name']
+                password = fb_profile['id']
+                base_user = User.objects.create_user(username=username,\
+                                                     password=password, email='na')
+                user_profile = UserProfile(user=base_user,\
+                                               facebook_user_id=fb_profile['id'])
+                user_profile.save()
+
+            finally:
+                login(request, user_profile.user)
+
         else:
             raise NoFacebookUser
 
