@@ -518,10 +518,7 @@ function handleResponseLink() {
 
 // Handler for logout (.logout) links
 function handleLogoutLink() {
-    console.debug('Entering handleLogoutLink()');
-
     FB.logout(function(response) {
-        console.debug('User logged out of Facebook');
     }); // Log the user out of Facebook
 
     // Return true so the browser follows the link (and logs the user out
@@ -535,13 +532,10 @@ function handleLogoutLink() {
 function handleFacebookSiteLoginButton() {
     var posturl = "/api/json/users/facebooklogin/";
 
-    console.debug('Entering handleFacebookSiteLoginButton()');
-
     $.ajax({
         type: "post", context: $(this), url: posturl, data: {},
         success: function(data) {
             var loggeduser = data.username;
-            console.debug(loggeduser + ' has been logged in using Facebook');
             parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Log out</a>");
             parent.$.fn.colorbox.close();
         },
