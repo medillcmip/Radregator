@@ -41,6 +41,7 @@ class RegisterForm(forms.Form):
     # Error message constants
     USERNAME_EXISTS_MSG = 'The username is taken, please try another'
     EMAIL_EXISTS_MSG = 'This email already exists, please try another'
+    USERNAME_MUST_BE_ALNUM_MSG = 'Usernames must be alphanumeric (i.e., A-Z,0-9)'
 
     username = forms.CharField(max_length=30)
     password = forms.CharField(max_length=30)
@@ -76,7 +77,11 @@ class RegisterForm(forms.Form):
         """
         data = self.cleaned_data['username']
         usrs = User.objects.filter(username=data)
+        if not data.isalnum():
+            raise forms.ValidationError(self.USERNAME_MUST_BE_ALNUM_MSG)
         if len(usrs) > 0:
             raise forms.ValidationError(self.USERNAME_EXISTS_MSG)
         else:
             return data
+
+        
