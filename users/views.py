@@ -96,13 +96,13 @@ def auth(request):
             #they're not, so we need to create them and move em along
             fb_graph = facebook.GraphAPI(fb_user['access_token'])
             fb_profile = fb_graph.get_object("me")
-            username = fb_profile['first_name']+profile['last_name']
+            username = fb_profile['first_name'] + fb_profile['last_name']
             password = fb_profile['id']
             base_user = User.objects.create_user(username=username,\
                                                  password=password, email='na')
             new_user_profile = UserProfile(user=base_user,\
                                            facebook_user_id=fb_profile['id'])
-            new_user.save()
+            new_user_profile.save()
 
             return do_login(username, password, request)
 
