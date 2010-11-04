@@ -257,6 +257,7 @@ def api_auth(request, uri_username, output_format='json'):
                     status = 400 # Bad Request
                     data['error'] = "Some required fields are missing"
                     data['field_errors'] = form.errors
+                    data['error_html'] = core.utils.build_readable_errors(form.errors)
 
             else:
                 # Method not POST
@@ -351,8 +352,9 @@ def api_users(request, output_format='json'):
                             raise UserEmailExists(form.EMAIL_EXISTS_MSG) 
 
                     status = 400 # Bad Request
-                    data['error'] = "Some required fields are missing"
+                    data['error'] = "Some required fields are missing or invalid"
                     data['field_errors'] = form.errors
+                    data['error_html'] = core.utils.build_readable_errors(form.errors)
 
             else:
                 # Method not POST

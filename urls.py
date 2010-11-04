@@ -46,7 +46,7 @@ urlpatterns = patterns('',
     (r'^api/(?P<output_format>json)/users/facebooklogin/$',
      'users.views.api_facebook_auth'),
 
-    (r'^api/(?P<output_format>json)/users/(?P<uri_username>[a-zA-Z]\w+)/login/$',
+    (r'^api/(?P<output_format>json)/users/(?P<uri_username>\w*)/login/$',
      'users.views.api_auth'),
 
     (r'^api/(?P<output_format>json)/users/$',
