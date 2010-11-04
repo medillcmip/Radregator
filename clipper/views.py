@@ -104,7 +104,11 @@ def get_page(url):
             ele[match[1]] = new_str
         else:
             pass
-    ret_val['page'] = page.prettify()
+
+    #lets kill the tags we no longer need
+    
+    ret_val['page_body'] = page.html.body.renderContents()
+    ret_val['page_head'] = page.html.head.renderContents()
     return ret_val
 
 def create_author(name):
@@ -217,7 +221,8 @@ def clipper_paste_url(request, comment_id):
             #html to output on the next page
             try:
                 values = get_page(url)
-                template_dict['requested_page'] = values['page']
+                template_dict['requested_page_body'] = values['page_body']
+                template_dict['requested_page_head'] = values['page_head']
                 template_dict['url'] = url
                 form = clipper.forms.ClipTextForm(initial={'url_field': url,\
                      'comment_id_field': comment_id, 'title': values['title'],\

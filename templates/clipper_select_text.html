@@ -1,14 +1,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:fb="http://www.facebook.com/2008/fbml">
   <head>
+    {% autoescape off%}
+    {{requested_page_head}}
+    {% endautoescape%}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>radregator</title>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/demo.css">
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui-1.8.5.custom.css">
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui-1.8.6.custom.css">
     <script src="{{ MEDIA_URL }}js/jquery.tools.min.js"></script>
     <script src="{{ MEDIA_URL }}js/jquery.colorbox-min.js"></script>
-    <script src="{{ MEDIA_URL }}js/jquery-ui-1.8.5.custom.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/jquery-ui-1.8.6.custom.min.js"></script>
 <style type="text/css">
+.clipper_i_am{
+}
 .clipper_form{
 }
 .clipper_text_field{
@@ -85,17 +90,29 @@ font-size:30px;
     $(document).ready(function(){
         $(document).bind("mouseup", radregator.select.mouseup);
         $(document).bind("submit", radregator.select.checkSelectionForm);
+        $("#clipper_i_am").hide();
     });
+
+    function toggleForms(){
+      if($("#clipper_i_am").is(":visible")){
+        $('#clipper_i_am').hide();
+        $('a#expand_link').text("SHOW FORMS");
+      }
+      else{
+        $("#clipper_i_am").show('drop')
+        $('a#expand_link').text("HIDE FORMS");
+      }
+    }
 </script>
 
 </head>
   <body>
-  <div id="clipper_header">
+  <div id="clipper_header" style="background:white;font-family:arial;font-size:12px;color:black";>
     <h1>So, you want to attach an article?</h1>
   <br>
   <b>The page should appear just a little bit below all of these confusing forms.  We'd like to attribute everything to a source and a reporter, so we tried to identify that stuff but I'm not totally confident it worked.  First, highlight text in this article that you think is most pertinent and relates to a question or a comment.  Then, if you have time, check over the other fields and fix what we got wrong.  Gracias.</b>
   </div>
-  <div id="select_feedback" style="border: 1px solid black;">
+  <div id="clipper_i_am" style="background:white;font-family:arial;font-size:12px;color:black;position:fixed;width:55%;float:left;z-index:1000;">
     <form name="form1" class='clipper_form' method='POST' action='/clipper_select'>
     <div id='textarea1' class='textarea1'>
     {{form.selected_text.errors}}
@@ -128,11 +145,12 @@ font-size:30px;
     </form>
 
   </div>
+  <div id="clipper_expand" style="border:1px solid black;background:white;font-family:arial;font-size:12px;color:black;"><a id='expand_link' href="javascript:toggleForms()">SHOW FORMS</a></div>
 <BR> 
 
-<div class="" id="requested_page" style="border: 1px solid black;">
+<div class="" id="requested_page" >
 {% autoescape off %}
-{{requested_page}}
+{{requested_page_body}}
 {% endautoescape %}
 
 
