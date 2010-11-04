@@ -4,6 +4,14 @@ import re
 import logging
 from django.conf import settings
 
+def build_readable_errors(errordict):
+    """ Translate an error dictionary into HTML, to return to Ajax code """
+    retstr = ''
+    for field, errors in errordict.iteritems():
+        retstr += '<p>%s: %s </p>' % (field, ';'.join(errors))
+
+    return retstr
+        
 
 def comment_cmp(comm1, comm2):
     

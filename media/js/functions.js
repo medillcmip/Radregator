@@ -150,9 +150,10 @@ function handleNewSourceForm() {
             var response_data = $.parseJSON(response_text);
             var errorNum = requestError.status;
 
-            var errorMsg = response_data['error'];
+            var errorMsg = response_data['error'];// + response_data['error_html'];
+            errorMsg += response_data['error_html'];
             $('#addsource').append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-            error_message = $('#addtopic').children('.error-message');
+            error_message = $('#addsource').children('.error-message');
             error_message.css('display','block');
 
             $('.error-message').click(function() {
