@@ -107,6 +107,7 @@ def reporter_api(request, formconstructor, logic):
                status = 400 # Caught in a bad request
                data['error'] = "Some required fields are missing or invalid"
                data['field_errors'] = form.errors
+               data['error_html'] = core.utils.build_readable_errors(form.errors)
            else:
                # Form is good 
                logic(form, userprofile)
@@ -253,6 +254,7 @@ def api_commentsubmission(request, output_format = 'json'):
                 status = 401 # Unauthorized
                 data['error'] = "You need to log in"
                 data['field_errors'] = form.errors
+                data['error_html'] = core.utils.build_readable_errors(form.errors)
 
             userprofile = UserProfile.objects.get(user=request.user)
 
@@ -262,6 +264,7 @@ def api_commentsubmission(request, output_format = 'json'):
                 status = 400 # Bad request
                 data['error'] = "Some required fields are missing or invalid."
                 data['field_errors'] = form.errors
+                data['error_html'] = core.utils.build_readable_errors(form.errors)
 
 
             else:
@@ -300,19 +303,9 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
-
-            
-
-
-
-
-
-
-
-    
-
 def frontpage(request):
     """ Front page demo"""
+
     clipper_url_form = UrlSubmitForm()
     
     if request.method == 'POST':
@@ -323,14 +316,21 @@ def frontpage(request):
         # If someone just submitted a comment, load the form
         form = CommentSubmitForm(request.POST)
         
-        
         if form.is_valid():
             # Validate the form
-            comment_type = form.cleaned_data['comment_type_str'] # look up comment by name
-            userprofile = UserProfile.objects.get(user = request.user) # Assumes consistency between users, UserProfiles
-            comment = Comment(text = form.cleaned_data['text'], user = userprofile)
+
+            # look up comment by name
+            comment_type = form.cleaned_data['comment_type_str'] 
+
+            # Assumes consistency between users, UserProfiles
+            userprofile = UserProfile.objects.get(user = request.user) 
+
+            comment = Comment(text = form.cleaned_data['text'], \
+                              user = userprofile)
             comment.comment_type = comment_type
-            comment.save() # We have to save the comment object so it has a primary key, before we can link tags to it.
+            # We have to save the comment object so it has a primary key, 
+            # before we can link tags to it.
+            comment.save() 
 
             topic = form.cleaned_data['topic']
             in_reply_to = form.cleaned_data['in_reply_to']
@@ -339,13 +339,15 @@ def frontpage(request):
             if form.cleaned_data['sources']:
                 comment.sources = [form.cleaned_data['sources']]
             comment.save()
-            form = CommentSubmitForm() # successfully submitted, give them a new form
+            # successfully submitted, give them a new form
+            form = CommentSubmitForm() 
 
             if in_reply_to: # Comment is in reply to another comment
-                reply_relation = CommentRelation(left_comment = comment, right_comment = in_reply_to, relation_type = 'reply')
+                reply_relation = CommentRelation(left_comment = comment, \
+                                                 right_comment = in_reply_to, \
+                                                 relation_type = 'reply')
                 reply_relation.save()
 
-    
     else: 
         form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
 
@@ -356,21 +358,26 @@ def frontpage(request):
         is_reporter = False
         
         
-    reply_form = CommentSubmitForm(initial = {'in_reply_to' : Comment.objects.all()[0]})
+    reply_form = CommentSubmitForm(initial = { \
+        'in_reply_to' : Comment.objects.all()[0]})
     template_dict = {}
 
-    topics = Topic.objects.filter(is_deleted=False)[:5] # Will want to filter, order in later versions
+    # Will want to filter, order in later versions
+    topics = Topic.objects.filter(is_deleted=False)[:5] 
 
     template_dict['topics'] = topics
     template_dict['comment_form'] = form
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
     template_dict['clipper_url_form'] = clipper_url_form
+    template_dict['fb_app_id']=settings.FB_API_ID
     template_dict['is_reporter'] = is_reporter
     print is_reporter
         
     template_dict.update(csrf(request)) # Required for csrf system
-    return render_to_response('frontpage.html', template_dict,context_instance=RequestContext(request))
+
+    return render_to_response('frontpage.html', template_dict, \
+                              context_instance=RequestContext(request))
    
 def index(request):
     """Really basic default view."""

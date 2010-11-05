@@ -42,3 +42,10 @@ class UserNotReporter(Exception):
     def __str__(self):
         return self.msg
 
+
+class NoFacebookUser(Exception):
+    def __init__(self, msg='No Facebook user detected.'):
+        self.msg = msg
+    
+    def __str__(self):
+        return self.msg

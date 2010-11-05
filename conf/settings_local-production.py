@@ -21,6 +21,11 @@ MEDIA_ROOT = ''
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = 'http://production.medill2010.webfactional.com/static/'
 
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = 'http://production.medill2010.webfactional.com/static/admin/'
+
 # Facebook Application settings for Facebook Connect
 FB_API_ID = 'FAB_REPL_FB_API_ID'
 FB_API_KEY = 'FAB_REPL_FB_API_KEY'
