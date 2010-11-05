@@ -31,6 +31,10 @@ urlpatterns = patterns('',
     
     (r'^clipper/(?P<comment_id>\d+)/', 'clipper.views.clipper_paste_url'),
 
+
+    (r'^api/(?P<output_format>json)/clipper_select/',
+     'clipper.views.api_clipper_submit'),
+
     (r'^deletecomments', 'core.views.deletecomments'),
     (r'^deletetopics', 'core.views.deletetopics'),
     (r'^mergecomments', 'core.views.mergecomments'),
