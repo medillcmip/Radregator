@@ -14,6 +14,7 @@ import users.models
 import clipper.forms
 import clipper.models
 import core.utils
+import json 
 
 logger = core.utils.get_logger()
 
@@ -104,7 +105,11 @@ def get_page(url):
             ele[match[1]] = new_str
         else:
             pass
-    ret_val['page'] = page.prettify()
+
+    #lets kill the tags we no longer need
+    
+    ret_val['page_body'] = page.html.body.renderContents()
+    ret_val['page_head'] = page.html.head.renderContents()
     return ret_val
 
 def create_author(name):
@@ -217,7 +222,8 @@ def clipper_paste_url(request, comment_id):
             #html to output on the next page
             try:
                 values = get_page(url)
-                template_dict['requested_page'] = values['page']
+                template_dict['requested_page_body'] = values['page_body']
+                template_dict['requested_page_head'] = values['page_head']
                 template_dict['url'] = url
                 form = clipper.forms.ClipTextForm(initial={'url_field': url,\
                      'comment_id_field': comment_id, 'title': values['title'],\
@@ -236,3 +242,79 @@ def clipper_paste_url(request, comment_id):
     template_dict['form'] = form
     return render_to_response(return_page,template_dict,\
         context_instance=RequestContext(request))
+
+
+@login_required()
+def api_clipper_submit(request, output_format='json'):
+    """Like clipper_submit_select but through AJAX"""
+    data = {} # Response data 
+    status = 200 # Ok
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                form = clipper.forms.ClipTextForm(request.POST)
+                print form
+                if form.is_valid():
+                    logger.debug('clipper_submit_selection(request): form is valid')
+                    url = form.cleaned_data['url_field']
+                    selected_text = form.cleaned_data['selected_text']
+                    comment_text = form.cleaned_data['user_comments']
+                    title = form.cleaned_data['title']
+                    author_name = form.cleaned_data['author']
+                    date_published = form.cleaned_data['date_published']
+                    user = users.models.UserProfile.objects.get(user=request.user)
+                    try:
+                        comment = core.models.Comment.objects.get(id=form.cleaned_data['comment_id_field'])
+                        the_article = clipper.models.Article.objects.get(url=url)
+                        author = create_author(author_name)
+                        the_article.authors.add(author)
+                        the_article.title = title
+                        the_article.date_published = date_published
+                        the_article.save()
+                        the_clip = clipper.models.Clip(article=the_article, \
+                            text = selected_text, user=user, user_comments=comment_text)
+                        the_clip.save()
+                        comment.clips.add(the_clip)
+                        comment.save()
+
+                    except clipper.models.Article.DoesNotExist, e:
+                        logger.debug('clipper_submit_selection(request): type='+\
+                                    str(type(e)) + ' ,REASON=' + str(e))
+                        data['error'] = "%s" % e
+                    except core.models.Comment.DoesNotExist, e:
+                        logger.debug('clipper_submit_selection(request): type='+\
+                                    str(type(e)) + ' ,REASON=' + str(e))
+                        data['error'] = "%s" % e
+                else:
+                    # Form didn't validate
+                    #template_dict['form'] = form
+                    #return render_to_response('clipper_select_text.html',template_dict,\
+                    #   context_instance=RequestContext(request))
+                    print form.errors.keys()
+        
+                    status = 400 # Bad Request
+                    data['error'] = "Some required fields are missing"
+                    data['field_errors'] = form.errors
+                    data['error_html'] = core.utils.build_readable_errors(form.errors)
+
+            else:
+                # Method not POST
+                raise MethodUnsupported("This endpoint only accepts POSTs.")
+        else:
+            # Non-AJAX request.  Disallow for now.
+            raise NonAjaxRequest( \
+                "Remote API calls aren't allowed right now. " + \
+                "This might change some day.")
+
+    except NonAjaxRequest, e:
+        status = 403 # Forbidden
+        data['error'] = "%s" % e
+
+    except MethodUnsupported, error:
+        status = 405 # Method not allowed
+        data['error'] = "%s" % error
+
+
+    return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+

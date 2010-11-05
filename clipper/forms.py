@@ -23,7 +23,7 @@ class ClipTextForm(forms.Form):
         label="Is this the person who wrote the article?  " +\
         "No?  Mind putting the right name here?")
     date_published = forms.DateField(required=False, \
-        widget=forms.DateTimeInput(format='%m/%d/%Y',attrs={'class':'clipper_text_field'}),
+        widget=forms.DateTimeInput(format='%m/%d/%Y',attrs={'class':'required date'}),
         label="Does this date look date that this article was " +\
         "published under? If not, could you fix it?")
     url_field = forms.URLField(required=True, widget=forms.HiddenInput)
