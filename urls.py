@@ -13,8 +13,10 @@ urlpatterns = patterns('',
     (r'^reporterview', 'core.views.reporterview'),
 
     (r'^loginstatus', 'core.views.login_status'),
-    (r'^login', 'users.views.weblogin'),
+    (r'^login', 'users.views.api_login'),
 
+    (r'^static_login', 'users.views.weblogin'),
+    (r'^static_register', 'users.views.register'),
     (r'^logout', 'users.views.weblogout'),
 
     (r'^register', 'users.views.register'),
@@ -28,6 +30,10 @@ urlpatterns = patterns('',
     (r'^clipper_select', 'clipper.views.clipper_submit_select'),
     
     (r'^clipper/(?P<comment_id>\d+)/', 'clipper.views.clipper_paste_url'),
+
+
+    (r'^api/(?P<output_format>json)/clipper_select/',
+     'clipper.views.api_clipper_submit'),
 
     (r'^deletecomments', 'core.views.deletecomments'),
     (r'^deletetopics', 'core.views.deletetopics'),
@@ -46,7 +52,7 @@ urlpatterns = patterns('',
     (r'^api/(?P<output_format>json)/users/facebooklogin/$',
      'users.views.api_facebook_auth'),
 
-    (r'^api/(?P<output_format>json)/users/(?P<uri_username>[a-zA-Z]\w+)/login/$',
+    (r'^api/(?P<output_format>json)/users/(?P<uri_username>\w*)/login/$',
      'users.views.api_auth'),
 
     (r'^api/(?P<output_format>json)/users/$',

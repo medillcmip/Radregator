@@ -107,6 +107,7 @@ def reporter_api(request, formconstructor, logic):
                status = 400 # Caught in a bad request
                data['error'] = "Some required fields are missing or invalid"
                data['field_errors'] = form.errors
+               data['error_html'] = core.utils.build_readable_errors(form.errors)
            else:
                # Form is good 
                logic(form, userprofile)
@@ -253,6 +254,7 @@ def api_commentsubmission(request, output_format = 'json'):
                 status = 401 # Unauthorized
                 data['error'] = "You need to log in"
                 data['field_errors'] = form.errors
+                data['error_html'] = core.utils.build_readable_errors(form.errors)
 
             userprofile = UserProfile.objects.get(user=request.user)
 
@@ -262,6 +264,7 @@ def api_commentsubmission(request, output_format = 'json'):
                 status = 400 # Bad request
                 data['error'] = "Some required fields are missing or invalid."
                 data['field_errors'] = form.errors
+                data['error_html'] = core.utils.build_readable_errors(form.errors)
 
 
             else:

@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>radregator</title>
+	<link href="{{ MEDIA_URL }}css/colorbox.css" rel="stylesheet" type="text/css" /> 
+	<script src="{{ MEDIA_URL }}js/jquery.tools.min.js"></script>
+
+	<script type="text/javascript"> 
+	</script>
+	</head>
+	<body class="loginreg">
+  <div style="width:700px;margin:auto;">
+	<h1>Register or Login</h1>
+  	<div id="loginwrap" class="reglog-overlay">
+	    <h3>Login</h3>
+	    <form method="POST" action="/static_login" class="login">
+			{{ form.as_p }}
+			{% csrf_token %}
+			<p class="errormsg" style="display:none;"></p>
+			<input type="submit" class="btn" value="Go!" />
+	    </form>
+	    <h3>Login using Facebook</h3>
+	    <fb:login-button autologoutlink="true"></fb:login-button>
+	    <div id="fb-root"></div>
+	</div>
+    
+    
+    
+    <div id="regwrap" class="reglog-overlay">
+    
+        <h3>New here? Get registered</h3>
+		<form method="POST" action="/static_register" class="register">
+			{{form.as_p}} 
+			{% csrf_token %}
+			<p class="errormsg" style="display:none;"></p>
+			<input type="submit" class="btn" value="Go!" />
+		</form>
+    </div>
+    
+    </div>
+<!-- fb scripts need to appear after fb-root div so it exists before this block is executed FYI -->
+<!-- Probably want to move this into it's own page at some point so and include all logout logic on one page -->
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+<script>
+
+  FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,xfbml: true});
+  FB.Event.subscribe('auth.sessionChange', function(response) {
+    if (response.session) {
+      // A user has logged in, and a new cookie has been saved
+      parent.location.href="/{{auth_page}}";
+      // AP.NTS: need to rewrite reglog div to show "you are logged in" context
+ } else {
+      // The user has logged out, and the cookie has been cleared
+      // AP.NTS: need to rewrite reglog div to show "login" option
+    }
+  });
+</script>
+
+	</body>
+</html>
+

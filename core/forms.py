@@ -65,7 +65,7 @@ class CommentSubmitForm(forms.Form):
     comment_types = CommentType.objects.all()
 
     comment_type_str = forms.ModelChoiceField(comment_types,label = 'I have a', widget = forms.Select(attrs = {'class' : 'questorcon'}), empty_label = None)
-    text = forms.CharField(required=True, label = '', widget=forms.Textarea(attrs= {'class' : 'conquest', }))
+    text = forms.CharField(required=True, label = '', widget=forms.Textarea(attrs= {'class' : 'conquest', }), max_length=300)
     topic = forms.CharField(initial = Topic.objects.all()[0].title, widget=forms.widgets.HiddenInput(attrs = {'class' : 'topic'} ))
     in_reply_to = forms.ModelChoiceField(allcomments, widget = forms.HiddenInput, required=False)
     sources = forms.ModelChoiceField(UserProfile.objects.all(), required = False)

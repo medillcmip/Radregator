@@ -121,6 +121,20 @@ def weblogout(request):
     return HttpResponseRedirect('/')
 
 
+def api_login(request):
+    """
+    only need to return the page for the colorbox to display the page and
+    the logic inside the login.html page takes care of the rest 
+    """
+
+    template_dict = {}
+    template_dict['fb_app_id'] = settings.FB_API_ID
+    template_dict['auth_page'] = 'authenticate'
+    template_dict['form'] = LoginForm()
+    return render_to_response('login.html',template_dict,\
+        context_instance=RequestContext(request))
+
+
 def weblogin(request):
     """
     on the login page we can accept django username/password or they can use
@@ -130,7 +144,8 @@ def weblogin(request):
             we use Facebooks external authorization flow (which we verify in
             the auth method)
     """
-
+    print 'in weblogin'
+    print request
     logger = core.utils.get_logger()
 
     template_dict = {}
@@ -155,14 +170,14 @@ def weblogin(request):
         else:
             #user done messed up, let em know
             template_dict['form'] = form
-            return render_to_response('login.html',template_dict,\
+            return render_to_response('static_login.html',template_dict,\
                 context_instance=RequestContext(request))
     else:
         #the user is either coming to the login page from another page
         #or they had some issues submitting input correctly
         form = LoginForm()
         template_dict['form'] = form
-    return render_to_response('login.html',template_dict,\
+    return render_to_response('static_login.html',template_dict,\
         context_instance=RequestContext(request))
 
 
@@ -216,7 +231,7 @@ def api_auth(request, uri_username, output_format='json'):
 
     data = {} # Response data 
     status = 200 # Ok
-
+    print 'in api_auth'
     try:
         if request.is_ajax():
             if request.method == 'POST':
@@ -257,6 +272,7 @@ def api_auth(request, uri_username, output_format='json'):
                     status = 400 # Bad Request
                     data['error'] = "Some required fields are missing"
                     data['field_errors'] = form.errors
+                    data['error_html'] = core.utils.build_readable_errors(form.errors)
 
             else:
                 # Method not POST
@@ -351,8 +367,9 @@ def api_users(request, output_format='json'):
                             raise UserEmailExists(form.EMAIL_EXISTS_MSG) 
 
                     status = 400 # Bad Request
-                    data['error'] = "Some required fields are missing"
+                    data['error'] = "Some required fields are missing or invalid"
                     data['field_errors'] = form.errors
+                    data['error_html'] = core.utils.build_readable_errors(form.errors)
 
             else:
                 # Method not POST
