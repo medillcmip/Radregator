@@ -4,8 +4,8 @@ TEMPLATE_DEBUG = DEBUG
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'medill2010_radt1', # Or path to database file if using sqlite3.
-        'USER': 'medill2010_radt1', # Not used with sqlite3.
+        'NAME': 'medill2010_radt2', # Or path to database file if using sqlite3.
+        'USER': 'medill2010_radt2', # Not used with sqlite3.
         'PASSWORD': 'FAB_REPL_DB_PASSWORD',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
@@ -19,12 +19,12 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://testing1.medill2010.webfactional.com/static/'
+MEDIA_URL = 'http://testing2.medill2010.webfactional.com/static/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = 'http://testing1.medill2010.webfactional.com/static/admin/'
+ADMIN_MEDIA_PREFIX = 'http://testing2.medill2010.webfactional.com/static/admin/'
 
 # Facebook Application settings for Facebook Connect
 FB_API_ID = 'FAB_REPL_FB_API_ID'
