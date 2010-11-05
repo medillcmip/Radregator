@@ -69,6 +69,8 @@ class CommentSubmitForm(forms.Form):
     topic = forms.CharField(initial = Topic.objects.all()[0].title, widget=forms.widgets.HiddenInput(attrs = {'class' : 'topic'} ))
     in_reply_to = forms.ModelChoiceField(allcomments, widget = forms.HiddenInput, required=False)
     sources = forms.ModelChoiceField(UserProfile.objects.all(), required = False)
+    
+    is_anonymous = forms.BooleanField(required = True)
 
     class Meta:
         fields = ['comment_type_str', 'text', 'topic', 'in_reply_to', 'sources']

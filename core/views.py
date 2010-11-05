@@ -278,6 +278,7 @@ def api_commentsubmission(request, output_format = 'json'):
 
                 comment = Comment(text = form.cleaned_data['text'], user = userprofile)
                 comment.comment_type = f_comment_type
+                comment.is_anonymous = form.cleaned_data['is_anonymous']
                 comment.save()
                 comment.topics = [f_topic]
                 if f_sources:
@@ -325,6 +326,7 @@ def frontpage(request):
             comment = Comment(text = form.cleaned_data['text'], \
                               user = userprofile)
             comment.comment_type = comment_type
+            comment.is_anonymous = form.cleaned_data['is_anonymous']
             # We have to save the comment object so it has a primary key, 
             # before we can link tags to it.
             comment.save() 

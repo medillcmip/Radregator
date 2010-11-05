@@ -106,6 +106,8 @@ class Comment(models.Model):
     is_deleted = models.BooleanField(default = False)
     date_created = models.DateTimeField(auto_now_add=True)
 
+    is_anonymous = models.BooleanField(default = False)
+
     clips = models.ManyToManyField(Clip, blank=True, null=True)
     def __unicode__(self):
         return self.text[:80]
