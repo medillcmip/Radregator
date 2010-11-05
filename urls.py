@@ -13,8 +13,10 @@ urlpatterns = patterns('',
     (r'^reporterview', 'core.views.reporterview'),
 
     (r'^loginstatus', 'core.views.login_status'),
-    (r'^login', 'users.views.weblogin'),
+    (r'^login', 'users.views.api_login'),
 
+    (r'^static_login', 'users.views.weblogin'),
+    (r'^static_register', 'users.views.register'),
     (r'^logout', 'users.views.weblogout'),
 
     (r'^register', 'users.views.register'),
