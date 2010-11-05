@@ -37,7 +37,7 @@
 	<div id="wrapper" class="container_12">
 		<div id="headerwrap">
 		<!--THIS IS HEADER "LOGGED IN"-->
-			<div id="header" class="loggedin" style="display:none;">
+		<!--	<div id="header" class="loggedin">
 				
 				<ul id="usercontrols" class="grid_5">
 					<li class="button darkback"><a href="#">Ask a Question <span class="downarrow"></span></a></li>
@@ -48,22 +48,23 @@
 				<h1 class="logo">Querity</h1>
 				<p id="greetuser">Hello, Username. <a href="#">Log out</a>?</p>
 								
-			</div>
+			</div> -->
 		<!--CLOSE HEADER "LOGGED IN"-->
 			
 		<!--THIS IS HEADER "LOGGED OUT"-->
 		<div id="header" class="loggedout">
 				
-				<form id="usersignin">
-					<label>Login:</label>
-					<input type="text" val="username" name="username" />
-					<input type="password" val="password" name="password" />
-					<input type="submit" val="submit" name="submit" />
-				</form>
 				<div id="facebooklogin">
 					<p>or</p>
 					<a href="#" id="fbloginbut">Login with Facebook</a>
 				</div>
+				<form id="usersignin">
+					<label>Login:</label>
+					<input type="text" value="username" name="username" class="textinput" />
+					<input type="text" value="password" name="password" class="textinput" />
+					<input type="submit" value="submit" name="submit" class="submit" />
+				</form>
+				
 				
 				<h1 class="logo">Querity</h1>
 				<a href="#" id="greetsignup">Signup</a>
@@ -103,20 +104,30 @@
 			<div id="qas">
 				
 				<div class="qaoptions gotabscollapse">
-					<ul class="tabs">
-						<li class="nullpane" style="display:none;"><a href="#"></a></li>
-						<li class="lightback"><a href="#askquestion">Ask a question about this topic <span class="downarrow"></span></a></li>
-						<li class="lightback"><a href="#filterqas">Filter Q&As <span class="downarrow"></span></a></li>
-					</ul>
-						
-					<p>Viewing by: <span>Popularity</span></p>
+					<div id="optselect">
+						<ul class="tabs">
+							<li class="nullpane" style="display:none;"><a href="#"></a></li>
+							<li class="lightback"><a href="#askquestion">Ask a question about this topic <span class="downarrow"></span></a></li>
+							<li class="lightback"><a href="#filterqas">Filter Q&As <span class="downarrow"></span></a></li>
+						</ul>
+							
+						<p class="viewby">Viewing by: <label>Popularity</label></p>
+					</div>
 					
-					<div id="askquestion">
-						QUESTION INPUT
+					<div id="askquestion" class="optionsdrop">
+					
+						<!--START QUESTION FORM-->
+						<form action="" method="post" class="questionform" id="<!--UniqueID-->">
+							<h4>Enter your question about TOPIC NAME</h4>
+							<textarea id="id_text" rows="10" cols="40" name="text" class="qainput"></textarea>
+							<input type="submit" name="submit" class="submit" value="Submit" />
+						</form>
+						<!--END QUESTION FORM-->
+						
 					</div>
 					
 					
-					<div id="filterqas">
+					<div id="filterqas" class="optionsdrop">
 						FILTER OPTIONS (by recency/popularity/default view & answered/unanswered/filter out opinion)
 					</div>
 					
@@ -125,116 +136,120 @@
 				<!-- START ACTUAL Q&As -->
 				<ul class="masterlist">
 					<li>
-						<div class="votebox burningq">
-							<p class="count">16</p>
-							<p class="countsub">thumbs up</p>
-							<a href="#" class="thumbsup">
-								<img src="thumbsup.png" />
-								<span>thumbs up!</span>
-							</a>
-						</div>
-					
-						<p class="qa">You talking' to me?</p>
-						<p class="userinfo"><span class="username">TravisBickle76</span> on <span class="date">February 17, 2010</span> @ <span class="time">2:30pm</span></p>
+						<div class="question">
+							<div class="votebox burningq">
+								<p class="count">16</p>
+								<p class="countsub">thumbs up</p>
+								<a href="#" class="thumbsup">
+									<img src="img/icns/thumbsup.png" />
+									<span>thumbs up!</span>
+								</a>
+							</div>
 						
-						<a href="#" class="answerthis">Answer this</a>
+							<div class="qabox">
+								<p class="qa">You talking' to me?</p>
+								<p class="userinfo"><span class="username">TravisBickle76</span> on <span class="date">February 17, 2010</span> @ <span class="time">2:30pm</span><a href="#" class="answerthis">Answer this</a></p>
+							
+								
+							</div>
+						</div>
 					</li>
 					
 					
 					
 					<li>
-						<div class="votebox answeredq">
-							<p class="count">12</p>
-							<p class="countsub">thumbs up</p>
-							<a href="#" class="thumbsup">
-								<img src="thumbsup.png" />
-								<span>thumbs up!</span>
-							</a>
-						</div>
-					
-						<p class="qa">What does Rahm think about the public school situation?</p>
-						<p class="userinfo"><span class="username">ConcernedDude</span> on <span class="date">February 20, 2010</span> @ <span class="time">2:30pm</span></p>
-						
-						<a href="#" class="answerthis">Answer this</a>
-						<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>
-
-		
+						<div class="question">
+							<div class="votebox answeredq">
+								<p class="count">12</p>
+								<p class="countsub">thumbs up</p>
+								<a href="#" class="thumbsup">
+									<img src="img/icns/thumbsup.png" />
+									<span>thumbs up!</span>
+								</a>
+							</div>
+							<div class="qabox">
+								<p class="qa">What does Rahm think about the public school situation?</p>
+								<p class="userinfo"><span class="username">ConcernedDude</span> on <span class="date">February 20, 2010</span> @ <span class="time">2:30pm</span><a href="#" class="answerthis">Answer this</a></p>
+								
+								<a class="expanderbut lightback" href="#">less <span class="uparrow"></span></a>
+							</div>
+						</div>		
 						<!-- START ANSWERS -->
 						<ul class="answers">
 							<li>
-								<div class="earmark accepted olvl0"></div>
-								<div class="votebox">
-									<p class="count">3</p>
-									<p class="countsub">thumbs up</p>
-									<a href="#" class="thumbsup">
-										<img src="thumbsup.png" />
-										<span>thumbs up!</span>
-									</a>
+								<div class="answer">
+									<div class="earmark accepted olvl0"></div>
+									<div class="votebox">
+										<p class="count">3</p>
+										<p class="countsub">thumbs up</p>
+										<a href="#" class="thumbsup">
+											<img src="img/icns/thumbsup.png" />
+											<span>thumbs up!</span>
+										</a>
+									</div>
+																		
+									<div class="qabox">
+										<p class="qa">He considers it to be bad news bears.</p>
+										<div class="answerclip">
+											<p class="cliptext">Cras malesuada c ursus massa vel ultricies. In hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim. On hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>											<p class="clipcitation">Citation: "<a href="#" class="articlelink">This is an article name</a>" on 9/12/09 at <a href="#" class="publink">WSJ.com</a></p>
+										</div>
+									<p class="userinfo"><span class="username">WellReadDudette</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
+									
+									<!--<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>-->
+									</div>
 								</div>
-								<a href="#" class="flagasopinion">Flag this citation as opinion</a>
-								
-							
-								<p class="qa">He considers it to be bad news bears.</p>
-								<div class="answerclip">
-									<p class="cliptext">Cras malesuada c ursus massa vel ultricies. In hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim. On hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>									<p class="clipcitation">Citation: "<a href="#" class="articlelink">This is an article name</a>" on 9/12/09 at <a href="#" class="publink">WSJ.com</a></p>
-								</div>
-								
-								<p class="userinfo"><span class="username">WellReadDudette</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span></p>
-								
-								<a href="#" class="answerthis">Reply</a>
-								<!--<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>-->
 							</li>
 							
 							
 							
 							<li>
-								<div class="earmark moderator olvl0"></div>
-								<div class="votebox">
-									<p class="count">2</p>
-									<p class="countsub">thumbs up</p>
-									<a href="#" class="thumbsup">
-										<img src="thumbsup.png" />
-										<span>thumbs up!</span>
-									</a>
+								<div class="answer">
+									<div class="earmark moderator olvl0"></div>
+									<div class="votebox">
+										<p class="count">2</p>
+										<p class="countsub">thumbs up</p>
+										<a href="#" class="thumbsup">
+											<img src="img/icns/thumbsup.png" />
+											<span>thumbs up!</span>
+										</a>
+									</div>
+									
+									<div class="qabox">
+										<p class="qa">Another point to consider:</p>
+										<div class="answerclip">
+											<p class="cliptext">Proin a sapien in sem tristique dignissim. On hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>											<p class="clipcitation">Citation: According to the Emanuel campaign on 11/20/10.</p>
+										</div>
+										
+										<p class="userinfo"><span class="username">WellReadDudette</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
+										
+									</div>
 								</div>
-								<a href="#" class="flagasopinion">Flag this citation as opinion</a>
-								
-							
-								<p class="qa">Another point to consider:</p>
-								<div class="answerclip">
-									<p class="cliptext">Proin a sapien in sem tristique dignissim. On hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>									<p class="clipcitation">Citation: According to the Emanuel campaign on 11/20/10.</p>
-								</div>
-								
-								<p class="userinfo"><span class="username">WellReadDudette</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span></p>
-								
-								<a href="#" class="answerthis">Reply</a>
-								<!--<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>-->
 							</li>
 							
 							
 							
 							<li>
-								<div class="earmark olvl12"></div>
-								<div class="votebox">
-									<p class="count">2</p>
-									<p class="countsub">thumbs up</p>
-									<a href="#" class="thumbsup">
-										<img src="thumbsup.png" />
-										<span>thumbs up!</span>
-									</a>
+								<div class="answer">
+									<div class="earmark olvl12"></div>
+									<div class="votebox">
+										<p class="count">2</p>
+										<p class="countsub">thumbs up</p>
+										<a href="#" class="thumbsup">
+											<img src="img/icns/thumbsup.png" />
+											<span>thumbs up!</span>
+										</a>
+									</div>
+									
+									<div class="qabox">
+										<p class="qa">Rahm doesn't care about kids!!  Read this, it's important!!</p>
+										<div class="answerclip">
+											<p class="cliptext">Proin hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>											<p class="clipcitation">Citation: "<a href="#" class="articlelink">This is an article name</a>" on 9/12/09 at <a href="#" class="publink">UntrustworthyBlog.com</a></p>
+										</div>
+										
+										<p class="userinfo"><span class="username">Opinionation</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
+										
+									</div>
 								</div>
-								<a href="#" class="flagasopinion">Flag this citation as opinion</a>
-								
-							
-								<p class="qa">Rahm doesn't care about kids!!  Read this, it's important!!</p>
-								<div class="answerclip">
-									<p class="cliptext">Proin hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>									<p class="clipcitation">Citation: "<a href="#" class="articlelink">This is an article name</a>" on 9/12/09 at <a href="#" class="publink">UntrustworthyBlog.com</a></p>
-								</div>
-								
-								<p class="userinfo"><span class="username">Opinionation</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span></p>
-								
-								<a href="#" class="answerthis">Reply</a>
-								<!--<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>-->
 							</li>
 							
 						</ul>
