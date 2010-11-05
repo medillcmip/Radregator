@@ -28,6 +28,21 @@
 			$( ".gotabs" ).tabs();
 	
 			$( ".gotabscollapse" ).tabs({collapsible: true,});			
+
+            $('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
+            $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
+            $('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
+
+            // TK - placeholders, we may rebind these 
+            //$('#addtopicform').unbind('submit', handleNewTopicForm).bind('submit', handleNewTopicForm);
+            //$('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
+           // $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
+            //$('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
+            //$('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
+            //$('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
+            //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
+            //$('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
+
 		});
 		
 	</script>
