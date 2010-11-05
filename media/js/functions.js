@@ -272,6 +272,7 @@ function handleReplySubmit(){
     var thisin_reply_to = $(".replydiv form #id_in_reply_to").val();
     var thistext = $('.replydiv form #id_text').val();
     var thiscomment_type = "3"; // Reply
+    var is_anon = $(".replydiv form #id_is_anonymous").val();
     var thistopic = $("ul.tabs a.current").html();
 	var parentid = $(this).closest("li.comment").attr("id");
     var this_sources = $('.replydiv form #id_sources').val();
@@ -284,6 +285,7 @@ function handleReplySubmit(){
         data: { in_reply_to : thisin_reply_to,
         topic: thistopic,
         comment_type_str : thiscomment_type,
+        is_anonymous : is_anon,
         text : thistext,
         in_reply_to: thisin_reply_to,
         sources : this_sources,

@@ -182,7 +182,8 @@
 			    <form action = "/api/json/comments/submit/" method="post" class="authcheck">
 			   <!-- {{ reply_form.as_p }} -->
 			    <label>Reply: </label>
-				{{comment_form.text}}
+				{{comment_form.text}}<br>
+                <label>Post anonymously?</label>{{comment_form.is_anonymous}}
 				<input type="hidden" value="3" name="comment_type_str">
 				<input type="hidden" value="3" name="in_reply_to" id="id_in_reply_to">
 				<input type="hidden" value="" name="topic" class="topic">
