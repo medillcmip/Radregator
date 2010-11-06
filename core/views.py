@@ -369,6 +369,7 @@ def frontpage(request):
     topics = Topic.objects.filter(is_deleted=False)[:5] 
 
     template_dict['topics'] = topics
+    template_dict['topic'] = topics[0]
     template_dict['comment_form'] = form
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
@@ -379,7 +380,7 @@ def frontpage(request):
         
     template_dict.update(csrf(request)) # Required for csrf system
 
-    return render_to_response('frontpage.html', template_dict, \
+    return render_to_response('template.html', template_dict, \
                               context_instance=RequestContext(request))
    
 def index(request):

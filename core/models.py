@@ -49,9 +49,9 @@ class Topic(models.Model):
 
     def recursive_traverse(self, comment, level = 1):
         # Pass through comment replies, showing
-        retlist = [(comment, level)]
+        retlist = [comment]
         for child in sorted(comment.comment_set.filter(is_deleted=False, is_parent=True, topics=self), cmp=comment_cmp):
-            retlist += self.recursive_traverse(child, level+1)
+            retlist += [self.recursive_traverse(child, level+1)]
         return retlist
 
     def comments_to_show(self):
@@ -65,7 +65,7 @@ class Topic(models.Model):
         indentlist = []
 
         for comment in rootset:
-            indentlist += self.recursive_traverse(comment)
+            indentlist += [self.recursive_traverse(comment)]
 
         return indentlist
     
@@ -109,6 +109,11 @@ class Comment(models.Model):
     clips = models.ManyToManyField(Clip, blank=True, null=True)
     def __unicode__(self):
         return self.text[:80]
+
+    def num_upvotes(self):
+        return CommentResponse.objects.filter(comment=self,type="concur").count()
+
+        
 
 class CommentTypeManager(models.Manager):
     def get_by_natural_key(self, name):

@@ -215,6 +215,7 @@ function handleCommentSubmit(){
     var thistext = $('#questionform #id_text').val();
     var thistopic = $('#questionform #id_topic').val();
     var thissources = $('#questionform #id_sources').val();
+    alert(thiscomment_type);
     var thisin_reply_to = '';
 
     $.ajax({
