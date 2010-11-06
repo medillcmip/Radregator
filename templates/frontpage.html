@@ -178,6 +178,7 @@
 		</div>-->
 	
 		<div class="formcache">
+            {% if reply_form %}
 		    <div id="replyform" class="replyform">
 			    <form action = "/api/json/comments/submit/" method="post" class="authcheck">
 			   <!-- {{ reply_form.as_p }} -->
@@ -193,6 +194,7 @@
 				<input type="submit" name="submit" class="replysubmit" value="Submit" />
 			    </form>
 		    </div>
+            {% endif %} 
 		    
 		    <div id="attachform">
 				<form action = "/clipper/" method="post" class="authcheck">

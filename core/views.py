@@ -356,10 +356,13 @@ def frontpage(request):
         is_reporter = UserProfile.objects.get(user = request.user).is_reporter()
     else:
         is_reporter = False
-        
-        
-    reply_form = CommentSubmitForm(initial = { \
-        'in_reply_to' : Comment.objects.all()[0]})
+    
+    if Comment.objects.count() > 0:
+        reply_form = CommentSubmitForm(initial = { \
+            'in_reply_to' : Comment.objects.all()[0]})
+    else:
+        reply_form = None
+
     template_dict = {}
 
     # Will want to filter, order in later versions

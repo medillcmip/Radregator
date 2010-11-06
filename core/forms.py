@@ -50,14 +50,22 @@ class MergeCommentForm(forms.Form):
     parent = forms.ModelChoiceField(allcomments, empty_label = None)
 
 
+def initial_topic_title():
+    if Topic.objects.count() > 0:
+        title = Topic.objects.all()[0].title
+    else:
+        title = ''
+
+    return title 
+
+
 class CommentSubmitForm(forms.Form):
     """
-    Form to let a user submit a comment tied to a particular topic. Note that 
-    the topic code requires that at least one topic exist. Using the names
-    since those already get accessed in the template; the alternative would 
-    be to use a ModelChoiceField with a HiddenInput widget, and make jQuery
-    handle changing the topic based on clicking on tabs. It will be possible to
-    simplify this if the UI changes to allow the user to explicitly 
+    Form to let a user submit a comment tied to a particular topic.  Using 
+    the names since those already get accessed in the template; the alternative 
+    would be to use a ModelChoiceField with a HiddenInput widget, and make 
+    jQuery handle changing the topic based on clicking on tabs. It will be 
+    possible to simplify this if the UI changes to allow the user to explicitly 
     select a topic or topics (presumably using a ModelMultipleChoiceField).
 
     Could switch comment_type_str to use a ModelChoiceField on 
@@ -77,7 +85,7 @@ class CommentSubmitForm(forms.Form):
         empty_label = None)
     text = forms.CharField(required=True, label = '', \
         widget=forms.Textarea(attrs= {'class' : 'conquest', }), max_length=300)
-    topic = forms.CharField(initial = Topic.objects.all()[0].title, \
+    topic = forms.CharField(initial = initial_topic_title, \
         widget=forms.widgets.HiddenInput(attrs = {'class' : 'topic'} ))
     in_reply_to = forms.ModelChoiceField(allcomments, \
         widget = forms.HiddenInput, required=False)
