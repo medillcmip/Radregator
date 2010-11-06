@@ -51,6 +51,13 @@ class MergeCommentForm(forms.Form):
 
 
 def initial_topic_title():
+    """ 
+    Workaround to set initial value for topic field of CommentSubmitForm
+
+    This handles the case when there are no topics.   
+
+    """
+    
     if Topic.objects.count() > 0:
         title = Topic.objects.all()[0].title
     else:
