@@ -52,33 +52,10 @@
 	</div>	
 	
     {% if is_reporter %}
-    <a href="#" id="addatopic">Add a topic</a>
-    <div id= "addtopic">
-    <form action="#" method="post" id="addtopicform">
-        Topic name: <input type = "text" id = "addtopictitle" name="title" /> <br />
-    Summary:<br /> <textarea id = "addtopicsummary" name="summary"></textarea>
-    <br>
-    <input type = "submit" name="submit" value="submit" />
-    </form>
-    <br>
-    </div>
-    <br />
-    <a href="#" id="addasource">Add a source</a>
-    <div id= "addsource">
-    <form action="#" method="post" id="addsourceform">
-        First name: <input type = "text" id ="sourcefirstname" name="firstname" /> <br />
-        Last name: <input type = "text" id = "sourcelastname" name = "lastname" /> <br />
-        Email: <input type = "text" id = "sourceemail" name = "sourceemail" /> <br />
-        Phone: <input type = "text" id = "sourcephone" name = "sourcephone" /> <br />
+        {% include "core-frontpage-addtopic.html" %}
 
-
-    <br>
-    <input type = "submit" name="submit" value="submit" />
-    </form>
-    <br>
-    </div>
-    
-    {% endif%}
+        {% include "core-frontpage-addsource.html" %}
+    {% endif %}
 
 	<ul class="tabs">
 		{% for topic in topics.all %}
