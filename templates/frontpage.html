@@ -9,6 +9,10 @@
 {% endblock %}
 
 {% block addscripts %}
+{% if is_reporter %}
+<!-- Add editor Javascript -->
+<script type="text/javascript" src="{{ MEDIA_URL}}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
+{% endif %}
 <script type="text/javascript">
 	
 		$(document).ready(function() {
