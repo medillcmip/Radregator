@@ -7,6 +7,9 @@
             return false;
         });
         $('#addsource').hide();
+        $('#addsource .cancel').click(function () {
+            $('#addsource').hide();
+        });
     });
 </script>
 
@@ -20,7 +23,9 @@
         <label for="sourcephone">Phone:</label> <input type = "text" id = "sourcephone" name = "sourcephone" /> <br />
 
         <br />
-        <input type = "submit" name="submit" value="submit" />
+        <input type="submit" name="submit" value="submit" />
+        <button type="button" class="cancel">Cancel</button>
+
     </form>
     <br />
 </div>

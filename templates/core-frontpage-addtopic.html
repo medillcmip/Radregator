@@ -15,17 +15,21 @@
             return false;
         });
         $('#addtopic').hide();
+        $('#addtopic .cancel').click(function () {
+            $('#addtopic').hide();
+        });
     });
 </script>
 
 <a href="#" id="addatopic">Add a topic</a>
 
-<div id= "addtopic">
+<div id="addtopic">
     <form action="#" method="post" id="addtopicform">
         <label for="title">Topic name:</label> <input type="text" id="addtopictitle" name="title" /> <br />
         <label for="summary">Summary:</label><br /> <textarea id="addtopicsummary" name="summary" class="tinymce"></textarea>
         <br>
         <input type = "submit" name="submit" value="submit" />
+        <button type="button" class="cancel">Cancel</button>
     </form>
     <br>
 </div>
