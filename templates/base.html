@@ -16,7 +16,9 @@
 	
 	<link href="{{ MEDIA_URL }}css/style.css" rel="stylesheet" type="text/css" /> 
 	<link href="{{ MEDIA_URL }}css/colorbox.css" rel="stylesheet" type="text/css" /> 
-	
+
+	{% block addstyles %}
+    {% endblock %}
 	
 	<script src="{{ MEDIA_URL }}js/jquery.tools.min.js"></script>
 	<script src="{{ MEDIA_URL }}js/functions.js"></script>

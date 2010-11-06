@@ -1,0 +1,19 @@
+/* 
+ * Styles for administrative elements such as adding a topic or deleting a 
+ * comment.  
+ 
+ * These are NOT styles for Django's built-in administration pages.
+ * I broke these styles out so as not to conflict with changes to the main
+ * stylesheet as we merged in Andrew's new theme.
+ *
+ * -Geoffrey Hing <geoffhing@gmail.com> 2010-11-06
+ */
+
+#addtopic {
+    width: 50%;
+}
+
+#addtopic textarea#addtopicsummary {
+    width: 100%; 
+    height: 200px;
+}
