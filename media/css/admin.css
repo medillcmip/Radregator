@@ -7,4 +7,18 @@
  * stylesheet as we merged in Andrew's new theme.
  *
  * -Geoffrey Hing <geoffhing@gmail.com> 2010-11-06
+ *
  */
+
+ul.topic-tools {
+    display: inline;
+    margin-left: 10px;
+}
+
+ul.topic-tools li {
+    display: inline;
+}
+
+ul.topic-tools li a {
+    font-size: 0.6em;
+}
