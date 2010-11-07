@@ -443,6 +443,40 @@ def api_topic(request, topic_slug_or_id=None, output_format="json"):
         
     return response
 
+
+def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
+    data = {} # Data we'll eventually return as JSON
+    status = 200 # HTTP response status.  Be optimistic
+    response = None
+
+    try:
+        if request.method == 'POST':
+            new_summary_text = request.POST['summary']
+            topic = topic_from_slug_or_id(topic_slug_or_id) 
+            new_summary = Summary(text=new_summary_text)
+            new_summary.save()
+            topic.summary = new_summary 
+            topic.save()
+
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." %\
+                request.method)
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = "Topic with slug or id %s does not exist" % \
+            (topic_slug_or_id)
+
+    except MethodUnsupported, e:
+        status = 405 
+        data['error'] = "%s" % e
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+
+
 def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     """Return a paginated list of comments for a particular topic. """
     # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 

@@ -286,7 +286,45 @@ function handleDeleteTopicLink() {
     return false;
 }
 
-// Show update summary form
+// Show update summary form with default value
 function handleUpdateTopicSummaryLink() {
+    $('.update-topic-summary textarea').html($('.topic-summary').html());
+    $('.update-topic-summary').show();
+    return false;
+}
+
+// Hide the update summary form
+function handleUpdateTopicSummaryCancel() {
+    $('.topic-summary').show();
+    $('.update-topic-summary').hide();
+    return false;
+}
+   
+// Update the summary
+function handleUpdateTopicSummarySubmit() {
+    // substr() to seperate the id number from the "topic-" part
+    // of the id attribute.
+    var topic = $(this).closest('.topic')
+    var topicId = topic.attr('id').substr(6); 
+    var newSummary = $(this).children('.new-topic-summary').html();
+
+    $.ajax({
+        type: "post",
+        url: "/api/json/topics/" + topicId + "/summary/",
+        data: { summary: newSummary },
+        success: function(data) {
+            topic.children('.topic-summary').html(newSummary);
+            topic.children('.update-topic-summary').hide();
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var errorNum = requestError.status;
+            //var response_data = $.parseJSON(response_text);
+            //var errorMsg = response_data['error'];
+            // TODO: Handle this error somehow.
+
+        }
+    });
+
     return false;
 }

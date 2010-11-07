@@ -1,0 +1,22 @@
+<script type="text/javascript" >
+    $(function() {
+        // Enable TinyMCE Rich Text Editor.   
+        $('.update-topic-summary textarea.tinymce').tinymce({
+           script_url : '{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/tiny_mce.js',
+           theme : "advanced",
+           width: "600",
+           height: "300"
+        });
+
+        // Hide the update-topic-summary form initially
+        $('.update-topic-summary').hide();
+
+        $('.update-topic-summary button.cancel').unbind('click', handleUpdateTopicSummaryCancel).bind('click', handleUpdateTopicSummaryCancel)
+        $('.update-topic-summary').unbind('submit', handleUpdateTopicSummarySubmit).bind('submit', handleUpdateTopicSummarySubmit)
+
+    });
+</script>
+<form class="update-topic-summary">
+    <textarea class="tinymce new-topic-summary" name="new-topic-summary"></textarea>
+    <input type="submit" value="Update" /> <button type="button" class="cancel">Cancel</button>
+</form>

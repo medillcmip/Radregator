@@ -67,7 +67,10 @@
         {% include "core-frontpage-topic_tools.html" %}
         {% endif %}
 		
-		<p>{{ thetopic.summary.text|safe }}</p>
+		<div class="topic-summary">{{ thetopic.summary.text|safe }}</div>
+        {% if is_reporter %}
+        {% include "core-frontpage-update_summary_form.html" %}
+        {% endif %}
 			
 		<h4>Local Coverage</h4>
 		
