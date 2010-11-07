@@ -18,6 +18,9 @@
         $('#addtopic .cancel').click(function () {
             $('#addtopic').hide();
         });
+
+        // Bind handler for form submission.
+        $('#addtopicform').unbind('submit', handleNewTopicForm).bind('submit', handleNewTopicForm);
     });
 </script>
 

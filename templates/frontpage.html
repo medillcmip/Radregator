@@ -18,8 +18,6 @@
 		$(document).ready(function() {
 			$('a.commenttabs').unbind('click', handleReplyform).bind('click', handleReplyform); 
             $('.youagree a').unbind('click', handleResponseLink).bind('click', handleResponseLink);
-            $('#addtopicform').unbind('submit', handleNewTopicForm).bind('submit', handleNewTopicForm);
-            $('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
             $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
             $('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             $('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form

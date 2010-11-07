@@ -10,6 +10,9 @@
         $('#addsource .cancel').click(function () {
             $('#addsource').hide();
         });
+
+        // Bind handler for form submission
+        $('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
     });
 </script>
 
