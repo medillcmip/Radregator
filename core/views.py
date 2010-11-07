@@ -28,7 +28,8 @@ from core.forms import CommentSubmitForm, CommentDeleteForm, \
                                   MergeCommentForm, NewSummaryForm, \
                                   CommentTopicForm
 import core.utils
-from users.models import UserProfile,User
+from users.models import UserProfile, User
+from users.views import ajax_login_required 
 from users.exceptions import UserNotAuthenticated, UserNotReporter
 from tagger.models import Tag
 from clipper.forms import UrlSubmitForm
@@ -392,7 +393,6 @@ def index(request):
 
 
 def topic_from_slug_or_id(topic_slug_or_id):
-
     # topic_slug_or_id can either be a slug or an id
     if topic_slug_or_id.isdigit():
         # It's all numbers, so treat it as an id
@@ -404,6 +404,7 @@ def topic_from_slug_or_id(topic_slug_or_id):
     return topic
 
 
+@ajax_login_required
 def api_topic_delete(request, topic_slug_or_id=None, output_format="json"):
     data = {} # Data we'll eventually return as JSON
     status = 200 # HTTP response status.  Be optimistic
@@ -424,7 +425,7 @@ def api_topic_delete(request, topic_slug_or_id=None, output_format="json"):
 
     return response
 
-
+@ajax_login_required
 def api_topic(request, topic_slug_or_id=None, output_format="json"):
     data = {} # Data we'll eventually return as JSON
     status = 200 # HTTP response status.  Be optimistic
@@ -446,6 +447,7 @@ def api_topic(request, topic_slug_or_id=None, output_format="json"):
     return response
 
 
+@ajax_login_required
 def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
     data = {} # Data we'll eventually return as JSON
     status = 200 # HTTP response status.  Be optimistic
