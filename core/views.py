@@ -289,6 +289,7 @@ def api_commentsubmission(request, output_format = 'json'):
                 if f_sources:
                     comment.sources = [f_sources]
                 comment.save()
+                data['comment_id'] = comment.id
 
                 if f_in_reply_to: # Comment is in reply to another comment
                     reply_relation = CommentRelation(left_comment = comment, right_comment = f_in_reply_to, relation_type = 'reply')
@@ -306,8 +307,9 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
-def frontpage(request):
+def frontpage(request, whichtopic=1):
     """ Front page demo"""
+    print whichtopic
 
     clipper_url_form = UrlSubmitForm()
     
@@ -372,7 +374,8 @@ def frontpage(request):
     topics = Topic.objects.filter(is_deleted=False)[:5] 
 
     template_dict['topics'] = topics
-    template_dict['topic'] = topics[0]
+    try: template_dict['topic'] = Topic.objects.get(id=whichtopic)
+    except: raise Http404
     template_dict['comment_form'] = form
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}

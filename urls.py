@@ -10,6 +10,8 @@ urlpatterns = patterns('',
     # (r'^newsqa/', include('newsqa.foo.urls')),
     (r'^$', 'core.views.frontpage'),
 
+    (r'^topic/(?P<whichtopic>\d+)/', 'core.views.frontpage'),
+
     (r'^reporterview', 'core.views.reporterview'),
 
     (r'^loginstatus', 'core.views.login_status'),

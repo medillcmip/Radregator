@@ -186,6 +186,8 @@ function handleReplySubmit(){
     var thiscomment_type = "3"; // Reply
     var thistopic = $("#id_topic-"+thiscomment_id).val();
     var this_sources = $('#id_sources-'+thiscomment_id).val();
+    var this_url = $('#id_url_field-'+thiscomment_id).val();
+
     $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
 
@@ -202,8 +204,23 @@ function handleReplySubmit(){
 
         },
         success: function(data){
-        $('.replyform').hide();
-        location.reload(); // TODO - make this clearer
+            $('.replyform').hide();
+            if(this_url != '')
+            {
+                // Need to go to the clipper
+                var response_data = $.parseJSON(data);
+                var new_comment_id=response_data.comment_id;
+                var posturl = '/clipper/' + new_comment_id +'/' + encodeURI(this_url);
+                location.href = posturl;
+
+
+
+
+            }
+                
+            else {
+            location.reload(); // TODO - make this clearer
+            }
             
         },
         error: function (requestError, status, errorResponse) {
