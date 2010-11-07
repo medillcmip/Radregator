@@ -146,3 +146,13 @@ function handleCopyComment() {
 
     return false;
 }
+
+// Delete a topic
+function handleDeleteTopicLink() {
+    return false;
+}
+
+// Show update summary form
+function handleUpdateTopicSummaryLink() {
+    return false;
+}
