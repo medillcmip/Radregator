@@ -292,7 +292,6 @@ ul.recentquestcons li li.bbq {
 	float: left;
 	min-height: 80px;
 	height: auto;
-	overflow:hidden;
 }
 
 ul.recentquestcons li li.chef {

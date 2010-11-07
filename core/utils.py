@@ -16,6 +16,7 @@ def build_readable_errors(errordict):
 def comment_cmp(comm1, comm2):
     
     # Reporter comments take priority
+
     if comm1.user.is_reporter() and not comm2.user.is_reporter():
         return -1
 

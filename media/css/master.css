@@ -1,3 +1,4 @@
+
 body {
 	color: #323232;
 	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
@@ -34,7 +35,7 @@ div#header {
 	width: 940px;
 	margin: 4px auto 0 auto;
 	font-size: 1em;
-	overflow: hidden;
+	;
 	padding: 8px 0;
 	height: 28px;
 	position: relative;
@@ -47,7 +48,7 @@ div#header h1.logo {
 	width: 122px;
 	height: 29px;
 	text-indent: -8000px;
-	overflow: hidden;
+	;
 }
 
 /* IF LOGGED OUT */
@@ -127,7 +128,7 @@ div#header a#fbloginbut {
 	display: block;
 	margin-top: 2px;
 	float: left;
-	overflow: hidden;
+	;
 	text-indent: -8000px;
 	background: url(../img/icns/fblogin.png) no-repeat top center;
 }
@@ -345,7 +346,7 @@ div.qaoptions p.viewby {
 /* QA INPUT */
 
 div.qaoptions div.optionsdrop {
-	overflow: hidden;
+	;
 	padding: 10px 20px;
 	background: #f6f6f6;
 	border-bottom: 1px solid #ececec;

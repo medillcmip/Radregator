@@ -215,7 +215,6 @@ function handleCommentSubmit(){
     var thistext = $('#questionform #id_text').val();
     var thistopic = $('#questionform #id_topic').val();
     var thissources = $('#questionform #id_sources').val();
-    alert(thiscomment_type);
     var thisin_reply_to = '';
 
     $.ajax({
@@ -271,12 +270,11 @@ function handleReplySubmit(){
     var thiscomment_id = 
         thiscomment.attr('id').replace('comment-', '');
 
-    var thisin_reply_to = $(".replydiv form #id_in_reply_to").val();
-    var thistext = $('.replydiv form #id_text').val();
+    var thisin_reply_to = thiscomment_id;
+    var thistext = $('#id_text-'+thiscomment_id).val();
     var thiscomment_type = "3"; // Reply
-    var thistopic = $("ul.tabs a.current").html();
-	var parentid = $(this).closest("li.comment").attr("id");
-    var this_sources = $('.replydiv form #id_sources').val();
+    var thistopic = $("#id_topic-"+thiscomment_id).val();
+    var this_sources = $('#id_sources-'+thiscomment_id).val();
     $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
 
@@ -293,7 +291,7 @@ function handleReplySubmit(){
 
         },
         success: function(data){
-        closeReplyform('reply', parentid);
+        $('.replyform').hide();
         location.reload(); // TODO - make this clearer
             
         },
@@ -526,7 +524,7 @@ function handleResponseLink() {
         data: { type : response_type },
         success: function(data){
             // Update counter
-            var count = thiscomment.children(".commentguts").children(".response-counter").children('.count');
+            var count = thiscomment.children(".votebox").children(".count");
             count_val = count.text();
             count_val++;
             count.text(count_val);
