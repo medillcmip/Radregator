@@ -389,9 +389,59 @@ def index(request):
     return render_to_response('index.html', template_dict)
 
 
-def api_topic(request, topic_slug_or_id, output_format="json"):
-    return HttpResponseNotFound()
+def topic_from_slug_or_id(topic_slug_or_id):
 
+    # topic_slug_or_id can either be a slug or an id
+    if topic_slug_or_id.isdigit():
+        # It's all numbers, so treat it as an id
+        topic = Topic.objects.get(pk=int(topic_slug_or_id))
+    else:
+        # It's a slug
+        topic = Topic.objects.get(slug=topic_slug_or_id) 
+
+    return topic
+
+
+def api_topic_delete(request, topic_slug_or_id=None, output_format="json"):
+    data = {} # Data we'll eventually return as JSON
+    status = 200 # HTTP response status.  Be optimistic
+    response = None
+
+    try:
+        topic = topic_from_slug_or_id(topic_slug_or_id) 
+        topic.is_deleted = True
+        topic.save()
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = "Topic with slug or id %s does not exist" % \
+            (topic_slug_or_id)
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+
+
+def api_topic(request, topic_slug_or_id=None, output_format="json"):
+    data = {} # Data we'll eventually return as JSON
+    status = 200 # HTTP response status.  Be optimistic
+    response = None
+
+    try:
+        if request.method == 'DELETE':
+            response = api_topic_delete(request, topic_slug_or_id, output_format) 
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." %\
+                request.method)
+
+    except MethodUnsupported, e:
+        status = 405 
+        data['error'] = "%s" % e
+        response = HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+        
+    return response
 
 def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     """Return a paginated list of comments for a particular topic. """
@@ -406,13 +456,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
             raise UnknownOutputFormat("Unknown output format '%s'" % \
                                               (output_format))
 
-        # topic_slug_or_id can either be a slug or an id
-        if topic_slug_or_id.isdigit():
-            # It's all numbers, so treat it as an id
-            topic = Topic.objects.get(pk=int(topic_slug_or_id))
-        else:
-            # It's a slug
-            topic = Topic.objects.get(slug=topic_slug_or_id) 
+        topic = topic_from_slug_or_id(topic_slug_or_id) 
 
         # Serialize the data
         # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
@@ -447,6 +491,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
         # TODO: Handle this exception
 
     return HttpResponse(data, mimetype='application/json') 
+
 
 def api_comment_responses(request, comment_id, output_format='json',
                           response_id=None):

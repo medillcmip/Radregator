@@ -244,21 +244,41 @@ function handleDeleteTopicLink() {
     // the jQuery selectors/attributes to get this and then use 
     // substr() to seperate the id number from the "topic-" part
     // of the id attribute.
-    var topicId = $(this).closest('.topic').attr('id').substr(6); 
+    var topic = $(this).closest('.topic')
+    var topicId = topic.attr('id').substr(6); 
 
     $.ajax({
         type: "delete",
-        url: "/api/json/topic/" + topicId + "/",
+        url: "/api/json/topics/" + topicId + "/",
         data: {},
         success: function(data) {
+            // get handle to the tabs API (must have been constructed before this call)
+            var api = $("ul.tabs").data("tabs");
+            var tabIndex = api.getIndex();
+            var numTabs = api.getTabs().length;
+
+            if (tabIndex == 0) {
+                // advance to the next tab
+                api.next(); 
+            }
+            else {
+                // advance to the previous tab
+                api.prev(); 
+            }
+
+            tabIndex = api.getIndex(); // Get the new index
+
+            topic.remove(); // Remove the topic wrapper div
+            $(".switchtab#topic-" + topicId).remove(); // Remove the tab
+            api.getPanes().hide().eq(tabIndex).show();
+
         },
         error: function (requestError, status, errorResponse) {
-            console.debug('Got here');
-            console.debug(requestError);
             var response_text = requestError.responseText;
             var errorNum = requestError.status;
             //var response_data = $.parseJSON(response_text);
             //var errorMsg = response_data['error'];
+            // TODO: Handle this error somehow.
 
         }
     });
