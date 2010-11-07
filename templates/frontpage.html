@@ -61,8 +61,14 @@
 	<div class="panes">
 	
 	{% for thetopic in topics.all %}
-	<div>
+	<div id="topic-{{ thetopic.id }}" class="topic">
 		<h2>{{ thetopic.title }}</h2>
+        {% if is_reporter %}
+        <ul class="topic-tools">
+            <li class="delete"><a href="#">Delete topic</a></li>
+            <li class="update-summary"><a href="#">Update summary</a></li>
+        </ul>
+        {% endif %}
 		
 		<p>{{ thetopic.summary.text|safe }}</p>
 			
