@@ -239,6 +239,30 @@ function handleCopyComment() {
 
 // Delete a topic
 function handleDeleteTopicLink() {
+    // Get the id of the topic.  The parent div should have a class of
+    // "topic" and and id of the form "topic-TOPIC_NUM".  So, we use
+    // the jQuery selectors/attributes to get this and then use 
+    // substr() to seperate the id number from the "topic-" part
+    // of the id attribute.
+    var topicId = $(this).closest('.topic').attr('id').substr(6); 
+
+    $.ajax({
+        type: "delete",
+        url: "/api/json/topic/" + topicId + "/",
+        data: {},
+        success: function(data) {
+        },
+        error: function (requestError, status, errorResponse) {
+            console.debug('Got here');
+            console.debug(requestError);
+            var response_text = requestError.responseText;
+            var errorNum = requestError.status;
+            //var response_data = $.parseJSON(response_text);
+            //var errorMsg = response_data['error'];
+
+        }
+    });
+
     return false;
 }
 

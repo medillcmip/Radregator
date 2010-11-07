@@ -44,6 +44,9 @@ urlpatterns = patterns('',
     (r'^disassociatecomment', 'core.views.disassociatecomment'),
     (r'^disabled_act', 'users.views.disabled_act'),
 
+    (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/$', \
+        'core.views.api_topic'),
+
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'core.views.api_topic_comments'),
 
     (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/responses/(?P<response_id>\d*)$',

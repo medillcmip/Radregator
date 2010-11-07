@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -387,6 +387,10 @@ def index(request):
     template_dict = {}
 
     return render_to_response('index.html', template_dict)
+
+
+def api_topic(request, topic_slug_or_id, output_format="json"):
+    return HttpResponseNotFound()
 
 
 def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
