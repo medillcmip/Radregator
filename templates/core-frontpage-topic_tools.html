@@ -1,0 +1,12 @@
+<script type="text/javascript" >
+    $(document).ready(function() {
+        // Handle topic tools links 
+        $('.topic-tools .delete a').unbind('click', handleDeleteTopicLink).bind('click', handleDeleteTopicLink);
+        $('.topic-tools .update-summary a').unbind('click', handleUpdateTopicSummaryLink).bind('click', handleUpdateTopicSummaryLink);
+
+    });
+</script>
+<ul class="topic-tools">
+    <li class="delete"><a href="#">Delete topic</a></li>
+    <li class="update-summary"><a href="#">Update summary</a></li>
+</ul>

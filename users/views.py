@@ -1,19 +1,63 @@
 import json
 
-from models import UserProfile
-from models import User
-from forms import LoginForm, RegisterForm  
-from fbapi import facebook 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
+
+from fbapi import facebook 
 from core.exceptions import MethodUnsupported, NonAjaxRequest
 from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
                              UserUsernameExists, UserEmailExists, \
                              NoFacebookUser
 import core.utils
+
+from models import UserProfile
+from models import User
+from forms import LoginForm, RegisterForm  
+
+def ajax_login_required(view_func):
+    """
+    Decorator for AJAX endpoints requiring authentication.
+    
+    Thank you http://stackoverflow.com/questions/312925/django-authentication-and-ajax-urls-that-require-login/523196#523196
+    
+    """
+
+    def wrap(request, *args, **kwargs):
+        status = 200 
+        data = {}
+
+        try:
+            if request.is_ajax():
+                if request.user.is_authenticated():
+                    return view_func(request, *args, **kwargs)
+
+                else:
+                    raise BadUsernameOrPassword
+
+            else:
+                # Non-AJAX request.  Disallow for now.
+                raise NonAjaxRequest( \
+                    "Remote API calls aren't allowed right now. " + \
+                    "This might change some day.")
+
+        except NonAjaxRequest, e:
+            status = 403 # Forbidden
+            data['error'] = "%s" % e
+        except BadUsernameOrPassword, error:
+            status = 401 # unauthorized
+            data['error'] = "%s" % error
+
+        return HttpResponse(content=json.dumps(data), \
+            mimetype='application/json', status=status)
+
+    wrap.__doc__ = view_func.__doc__
+    wrap.__dict__ = view_func.__dict__
+
+    return wrap
+
 
 def disabled_act(request):
     template_dict = {}

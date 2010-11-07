@@ -1,22 +1,38 @@
 <script type="text/javascript" >
     $(document).ready(function() {
         // Enable TinyMCE Rich Text Editor.   
-        $('textarea.tinymce').tinymce({
+        $('#addtopicform textarea.tinymce').tinymce({
            script_url : '{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/tiny_mce.js',
            theme : "advanced",
-           width: "400"
+           width: "600",
+           height: "300"
         });
+
+        // Handler to reveal the 'Add a topic' form
+        $('#addatopic').click(function ()
+        {
+            $('#addtopic').show();
+            return false;
+        });
+        $('#addtopic').hide();
+        $('#addtopic .cancel').click(function () {
+            $('#addtopic').hide();
+        });
+
+        // Bind handler for form submission.
+        $('#addtopicform').unbind('submit', handleNewTopicForm).bind('submit', handleNewTopicForm);
     });
 </script>
 
 <a href="#" id="addatopic">Add a topic</a>
 
-<div id= "addtopic">
+<div id="addtopic">
     <form action="#" method="post" id="addtopicform">
         <label for="title">Topic name:</label> <input type="text" id="addtopictitle" name="title" /> <br />
         <label for="summary">Summary:</label><br /> <textarea id="addtopicsummary" name="summary" class="tinymce"></textarea>
         <br>
         <input type = "submit" name="submit" value="submit" />
+        <button type="button" class="cancel">Cancel</button>
     </form>
     <br>
 </div>

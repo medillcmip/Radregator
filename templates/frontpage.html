@@ -10,32 +10,20 @@
 
 {% block addscripts %}
 {% if is_reporter %}
-<!-- Add editor Javascript -->
-<script type="text/javascript" src="{{ MEDIA_URL}}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/functions-admin.js"></script>
 {% endif %}
 <script type="text/javascript">
 	
 		$(document).ready(function() {
 			$('a.commenttabs').unbind('click', handleReplyform).bind('click', handleReplyform); 
             $('.youagree a').unbind('click', handleResponseLink).bind('click', handleResponseLink);
-            $('#addtopicform').unbind('submit', handleNewTopicForm).bind('submit', handleNewTopicForm);
-            $('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
             $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
             $('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             $('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             $('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
             $('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
-            $('#addatopic').click(function ()
-            {
-                $('#addtopic').show();
-            });
-            $('#addtopic').hide();
-            $('#addasource').click(function ()
-            {
-                $('#addsource').show();
-            });
-            $('#addsource').hide();
 
 			
 			// DEAL WITH INDENTED COMMENTS
@@ -71,10 +59,16 @@
 	<div class="panes">
 	
 	{% for thetopic in topics.all %}
-	<div>
+	<div id="topic-{{ thetopic.id }}" class="topic">
 		<h2>{{ thetopic.title }}</h2>
+        {% if is_reporter %}
+        {% include "core-frontpage-topic_tools.html" %}
+        {% endif %}
 		
-		<p>{{ thetopic.summary.text|safe }}</p>
+		<div class="topic-summary">{{ thetopic.summary.text|safe }}</div>
+        {% if is_reporter %}
+        {% include "core-frontpage-update_summary_form.html" %}
+        {% endif %}
 			
 		<h4>Local Coverage</h4>
 		

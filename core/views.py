@@ -1,36 +1,39 @@
-from django.http import HttpResponseRedirect, HttpResponse
+import json
+import datetime
+
+from django.http import HttpResponseRedirect, HttpResponse, \
+                        HttpResponseNotFound, Http404
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.core.paginator import Paginator
-from fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
+from django.core.context_processors import csrf
+from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
+
+
+from fbapi.facebook import *
 
 from core.models import Topic,CommentType, Comment, Summary, CommentRelation, \
                    CommentResponse
-from tagger.models import Tag
-from core.forms import CommentSubmitForm, CommentDeleteForm, \
-                                  TopicDeleteForm, NewTopicForm, \
-                                  MergeCommentForm, NewSummaryForm
-from core.forms import CommentTopicForm
-from clipper.forms import UrlSubmitForm
-from django.core.context_processors import csrf
-from django.core.exceptions import ObjectDoesNotExist
 from core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
                                        MethodUnsupported, InvalidTopic, \
                                        MaximumExceeded, UserOwnsItem, \
                                        NotUserQuestionReply
-
-from users.exceptions import UserNotAuthenticated, UserNotReporter
-from django.core import serializers
+from core.forms import CommentSubmitForm, CommentDeleteForm, \
+                                  TopicDeleteForm, NewTopicForm, \
+                                  MergeCommentForm, NewSummaryForm, \
+                                  CommentTopicForm
 import core.utils
-from django.http import Http404
+from users.models import UserProfile, User
+from users.views import ajax_login_required 
+from users.exceptions import UserNotAuthenticated, UserNotReporter
+from tagger.models import Tag
+from clipper.forms import UrlSubmitForm
 
-import json
-import datetime
 
 def reporterview(request):
     """ VERY rudimentary reporter view"""
@@ -390,6 +393,95 @@ def index(request):
     return render_to_response('index.html', template_dict)
 
 
+def topic_from_slug_or_id(topic_slug_or_id):
+    # topic_slug_or_id can either be a slug or an id
+    if topic_slug_or_id.isdigit():
+        # It's all numbers, so treat it as an id
+        topic = Topic.objects.get(pk=int(topic_slug_or_id))
+    else:
+        # It's a slug
+        topic = Topic.objects.get(slug=topic_slug_or_id) 
+
+    return topic
+
+
+@ajax_login_required
+def api_topic_delete(request, topic_slug_or_id=None, output_format="json"):
+    data = {} # Data we'll eventually return as JSON
+    status = 200 # HTTP response status.  Be optimistic
+    response = None
+
+    try:
+        topic = topic_from_slug_or_id(topic_slug_or_id) 
+        topic.is_deleted = True
+        topic.save()
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = "Topic with slug or id %s does not exist" % \
+            (topic_slug_or_id)
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+
+@ajax_login_required
+def api_topic(request, topic_slug_or_id=None, output_format="json"):
+    data = {} # Data we'll eventually return as JSON
+    status = 200 # HTTP response status.  Be optimistic
+    response = None
+
+    try:
+        if request.method == 'DELETE':
+            response = api_topic_delete(request, topic_slug_or_id, output_format) 
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." %\
+                request.method)
+
+    except MethodUnsupported, e:
+        status = 405 
+        data['error'] = "%s" % e
+        response = HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+        
+    return response
+
+
+@ajax_login_required
+def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
+    data = {} # Data we'll eventually return as JSON
+    status = 200 # HTTP response status.  Be optimistic
+    response = None
+
+    try:
+        if request.method == 'POST':
+            new_summary_text = request.POST['summary']
+            topic = topic_from_slug_or_id(topic_slug_or_id) 
+            new_summary = Summary(text=new_summary_text)
+            new_summary.save()
+            topic.summary = new_summary 
+            topic.save()
+
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." %\
+                request.method)
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = "Topic with slug or id %s does not exist" % \
+            (topic_slug_or_id)
+
+    except MethodUnsupported, e:
+        status = 405 
+        data['error'] = "%s" % e
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+
+
 def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     """Return a paginated list of comments for a particular topic. """
     # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
@@ -403,13 +495,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
             raise UnknownOutputFormat("Unknown output format '%s'" % \
                                               (output_format))
 
-        # topic_slug_or_id can either be a slug or an id
-        if topic_slug_or_id.isdigit():
-            # It's all numbers, so treat it as an id
-            topic = Topic.objects.get(pk=int(topic_slug_or_id))
-        else:
-            # It's a slug
-            topic = Topic.objects.get(slug=topic_slug_or_id) 
+        topic = topic_from_slug_or_id(topic_slug_or_id) 
 
         # Serialize the data
         # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
@@ -444,6 +530,7 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
         # TODO: Handle this exception
 
     return HttpResponse(data, mimetype='application/json') 
+
 
 def api_comment_responses(request, comment_id, output_format='json',
                           response_id=None):

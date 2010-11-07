@@ -1,3 +1,21 @@
+<script type="text/javascript" >
+    $(document).ready(function() {
+        // Handler to reveal the 'Add a source' form
+        $('#addasource').click(function ()
+        {
+            $('#addsource').show();
+            return false;
+        });
+        $('#addsource').hide();
+        $('#addsource .cancel').click(function () {
+            $('#addsource').hide();
+        });
+
+        // Bind handler for form submission
+        $('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
+    });
+</script>
+
 <br />
 <a href="#" id="addasource">Add a source</a>
 <div id= "addsource">
@@ -8,7 +26,9 @@
         <label for="sourcephone">Phone:</label> <input type = "text" id = "sourcephone" name = "sourcephone" /> <br />
 
         <br />
-        <input type = "submit" name="submit" value="submit" />
+        <input type="submit" name="submit" value="submit" />
+        <button type="button" class="cancel">Cancel</button>
+
     </form>
     <br />
 </div>
