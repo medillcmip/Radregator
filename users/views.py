@@ -1,19 +1,21 @@
 import json
 
-from models import UserProfile
-from models import User
-from forms import LoginForm, RegisterForm  
-from fbapi import facebook 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
+
+from fbapi import facebook 
 from core.exceptions import MethodUnsupported, NonAjaxRequest
 from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
                              UserUsernameExists, UserEmailExists, \
                              NoFacebookUser
 import core.utils
+
+from models import UserProfile
+from models import User
+from forms import LoginForm, RegisterForm  
 
 def ajax_login_required(view_func):
     """
