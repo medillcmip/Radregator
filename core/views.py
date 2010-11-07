@@ -1,36 +1,38 @@
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
+import json
+import datetime
+
+from django.http import HttpResponseRedirect, HttpResponse, \
+                        HttpResponseNotFound, Http404
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.core.paginator import Paginator
-from fbapi.facebook import *
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from users.models import UserProfile,User
 from django.contrib.auth import authenticate, login, logout
+from django.core.context_processors import csrf
+from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
+
+
+from fbapi.facebook import *
 
 from core.models import Topic,CommentType, Comment, Summary, CommentRelation, \
                    CommentResponse
-from tagger.models import Tag
-from core.forms import CommentSubmitForm, CommentDeleteForm, \
-                                  TopicDeleteForm, NewTopicForm, \
-                                  MergeCommentForm, NewSummaryForm
-from core.forms import CommentTopicForm
-from clipper.forms import UrlSubmitForm
-from django.core.context_processors import csrf
-from django.core.exceptions import ObjectDoesNotExist
 from core.exceptions import UnknownOutputFormat, NonAjaxRequest, \
                                        MissingParameter, RecentlyResponded, \
                                        MethodUnsupported, InvalidTopic, \
                                        MaximumExceeded, UserOwnsItem, \
                                        NotUserQuestionReply
-
-from users.exceptions import UserNotAuthenticated, UserNotReporter
-from django.core import serializers
+from core.forms import CommentSubmitForm, CommentDeleteForm, \
+                                  TopicDeleteForm, NewTopicForm, \
+                                  MergeCommentForm, NewSummaryForm, \
+                                  CommentTopicForm
 import core.utils
-from django.http import Http404
+from users.models import UserProfile,User
+from users.exceptions import UserNotAuthenticated, UserNotReporter
+from tagger.models import Tag
+from clipper.forms import UrlSubmitForm
 
-import json
-import datetime
 
 def reporterview(request):
     """ VERY rudimentary reporter view"""
