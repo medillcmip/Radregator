@@ -2,7 +2,7 @@ from django import forms
 
 class UrlSubmitForm(forms.Form):
     url_field = forms.URLField(label='Site you want to clip', required=True,\
-                widget=forms.TextInput(attrs={'size':'100'}))
+                widget=forms.TextInput(attrs={'size':'70'}))
 
 class ClipTextForm(forms.Form):
     """

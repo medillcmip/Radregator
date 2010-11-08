@@ -204,7 +204,7 @@ def create_article(url):
         the_article.save()
 
 @login_required()
-def clipper_paste_url(request, comment_id):
+def clipper_paste_url(request, comment_id, url_field, user_comments):
     """
     grab an html page (or holla back if the input was too rough)
     and fuck that baby up, and spit it out on a new page so the 
@@ -213,7 +213,26 @@ def clipper_paste_url(request, comment_id):
     template_dict = {}
     form = None
     return_page = 'clipper.html'
-    if request.method == 'POST':
+    if request.method == 'GET':
+        url = url_field
+        try:
+            values = get_page(url)
+            template_dict['requested_page_body'] = values['page_body']
+            template_dict['requested_page_head'] = values['page_head']
+            template_dict['url'] = url
+            form = clipper.forms.ClipTextForm(initial={'url_field': url,\
+                 'comment_id_field': comment_id, 'title': values['title'],\
+                'author': values['author'], 'user_comments': user_comments})
+            return_page = 'clipper_select_text.html'
+        except FileTypeNotSupported as fns:
+            logger.debug('clipper_paste_url(request, comment_id): TYPE=' + str(type(fns)) +\
+                ', REASON=' + str(fns) + ', URL=' + url)
+            template_dict['errors'] = str(fns) + "  Please try another url."
+        except Exception as ex:
+            logger.debug('clipper_paste_url(request, comment_id): type=' + str(type(ex)) +\
+                         ' ,REASON='+ str(ex) +',URL=' + url)
+            template_dict['errors'] = str(ex)
+    elif request.method == 'POST':
         form = clipper.forms.UrlSubmitForm(request.POST)
         if form.is_valid():
             #start parsing out the page and get ready to forward us onto 
@@ -253,7 +272,6 @@ def api_clipper_submit(request, output_format='json'):
         if request.is_ajax():
             if request.method == 'POST':
                 form = clipper.forms.ClipTextForm(request.POST)
-                print form
                 if form.is_valid():
                     logger.debug('clipper_submit_selection(request): form is valid')
                     url = form.cleaned_data['url_field']

@@ -31,7 +31,7 @@ urlpatterns = patterns('',
     
     (r'^clipper_select', 'clipper.views.clipper_submit_select'),
     
-    (r'^clipper/(?P<comment_id>\d+)/', 'clipper.views.clipper_paste_url'),
+    (r'^clipper/(?P<comment_id>\d+)/(?P<url_field>.*)/(?P<user_comments>.*)', 'clipper.views.clipper_paste_url'),
 
 
     (r'^api/(?P<output_format>json)/clipper_select/',
