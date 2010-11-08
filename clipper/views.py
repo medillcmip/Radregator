@@ -14,7 +14,8 @@ import users.models
 import clipper.forms
 import clipper.models
 import core.utils
-import json 
+import json
+from core.exceptions import *
 
 logger = core.utils.get_logger()
 
@@ -217,6 +218,7 @@ def clipper_paste_url(request, comment_id, user_comments, url_field):
     return_page = 'clipper.html'
     if request.method == 'GET':
         url = url_field
+        article = create_article(url)
         if not url.startswith('http://'):
             url = 'http://'+url
         try:
@@ -273,6 +275,7 @@ def api_clipper_submit(request, output_format='json'):
     data = {} # Response data 
     status = 200 # Ok
     try:
+        print request.is_ajax()
         if request.is_ajax():
             if request.method == 'POST':
                 form = clipper.forms.ClipTextForm(request.POST)
@@ -286,6 +289,7 @@ def api_clipper_submit(request, output_format='json'):
                     date_published = form.cleaned_data['date_published']
                     user = users.models.UserProfile.objects.get(user=request.user)
                     try:
+                        comment_type = core.models.CommentType.objects.get(name='Reply')
                         comment = core.models.Comment.objects.get(id=form.cleaned_data['comment_id_field'])
                         the_article = clipper.models.Article.objects.get(url=url)
                         author = create_author(author_name)
@@ -296,17 +300,32 @@ def api_clipper_submit(request, output_format='json'):
                         the_clip = clipper.models.Clip(article=the_article, \
                             text = selected_text, user=user, user_comments=comment_text)
                         the_clip.save()
-                        comment.clips.add(the_clip)
-                        comment.save()
+                        new_comment = core.models.Comment()
+                        new_comment.text = comment_text
+                        new_comment.user = user
+                        new_comment.comment_type = comment_type
+                        new_comment.save()
+                        new_comment.is_parent = True
+                        new_comment.is_deleted = False
+                        new_comment.topics = comment.topics.all()
+                        new_comment.clips.add(the_clip)
+                        new_comment.save()
+
+                        reply_relation = core.models.CommentRelation(\
+                            left_comment = new_comment, right_comment=comment,\
+                            relation_type = 'reply')
+                        reply_relation.save()
 
                     except clipper.models.Article.DoesNotExist, e:
                         logger.debug('clipper_submit_selection(request): type='+\
                                     str(type(e)) + ' ,REASON=' + str(e))
                         data['error'] = "%s" % e
+                        status = 400
                     except core.models.Comment.DoesNotExist, e:
                         logger.debug('clipper_submit_selection(request): type='+\
                                     str(type(e)) + ' ,REASON=' + str(e))
                         data['error'] = "%s" % e
+                        status = 400
                 else:
                     # Form didn't validate
                     #template_dict['form'] = form
