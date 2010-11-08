@@ -189,7 +189,7 @@ function handleReplySubmit(){
     $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
     if(this_url != '' &&  this_url != null){
-        var posturl = '/clipper/' + thiscomment_id +'/' + encodeURI(this_url) + '/'+ encodeURI(thistext);
+        var posturl = '/clipper/' + thiscomment_id + '/'+ encodeURI(thistext) + '/' + encodeURI(this_url) ;
         location.href = posturl;
     }
     else{

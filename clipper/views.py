@@ -204,17 +204,21 @@ def create_article(url):
         the_article.save()
 
 @login_required()
-def clipper_paste_url(request, comment_id, url_field, user_comments):
+def clipper_paste_url(request, comment_id, user_comments, url_field):
     """
     grab an html page (or holla back if the input was too rough)
     and fuck that baby up, and spit it out on a new page so the 
     user can start selecting text inside our site
     """
+    print url_field
+    print user_comments
     template_dict = {}
     form = None
     return_page = 'clipper.html'
     if request.method == 'GET':
         url = url_field
+        if not url.startswith('http://'):
+            url = 'http://'+url
         try:
             values = get_page(url)
             template_dict['requested_page_body'] = values['page_body']
