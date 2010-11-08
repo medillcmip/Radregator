@@ -179,9 +179,7 @@ function handleCommentSubmit(){
 function handleReplySubmit(){
     alert($(this).attr('id'));
     var thiscomment = $(this).closest('.comment'); 
-    var thiscomment_id = 
-        thiscomment.attr('id').replace('comment-', '');
-
+    var thiscomment_id = $(this).attr('id').replace('replyform-','');
     var thisin_reply_to = thiscomment_id;
     var thistext = $('#id_text-'+thiscomment_id).val();
     var thiscomment_type = "3"; // Reply
@@ -191,66 +189,53 @@ function handleReplySubmit(){
 
     $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
-
-    $.ajax({
-        type: "post",
-        url: "/api/json/comments/",
-        data: { in_reply_to : thisin_reply_to,
-        topic: thistopic,
-        comment_type_str : thiscomment_type,
-        text : thistext,
-        in_reply_to: thisin_reply_to,
-        sources : this_sources,
-
-
-        },
-        success: function(data){
-            $('.replyform').hide();
-            if(this_url != '')
-            {
-                // Need to go to the clipper
-                var response_data = $.parseJSON(data);
-                var new_comment_id=response_data.comment_id;
-                var posturl = '/clipper/' + new_comment_id +'/' + encodeURI(this_url);
-                location.href = posturl;
+    if(this_url != '' &&  this_url != null){
+        var posturl = '/clipper/' + thiscomment_id +'/' + encodeURI(this_url) + '/'+ encodeURI(thistext);
+        location.href = posturl;
+    }
+    else{
+        $.ajax({
+            type: "post",
+            url: "/api/json/comments/",
+            data: { in_reply_to : thisin_reply_to,
+            topic: thistopic,
+            comment_type_str : thiscomment_type,
+            text : thistext,
+            in_reply_to: thisin_reply_to,
+            sources : this_sources,
 
 
+            },
+            success: function(data){
+                $('.replyform').hide();
+                location.reload();
+            },
+            error: function (requestError, status, errorResponse) {
+                var response_text = requestError.responseText;
+                var response_data = $.parseJSON(response_text);
+                var errorNum = requestError.status;
 
+                if (errorNum == "401") {
+                    // User isn't logged in
+                    var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                    thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                    $('a.login').bind('click', launchLogin);
+                } 
+                else if (errorNum == "403") {
+                    // Another error
+                    var errorMsg = response_data.error; 
+                    thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                }
 
+                error_message = thiscomment.children('.error-message');
+                error_message.css('display','block');
+
+                $('.error-message').click(function() {
+                    $(this).remove();
+                });
             }
-                
-            else {
-            location.reload(); // TODO - make this clearer
-            }
-            
-        },
-        error: function (requestError, status, errorResponse) {
-            var response_text = requestError.responseText;
-            var response_data = $.parseJSON(response_text);
-            var errorNum = requestError.status;
-
-            if (errorNum == "401") {
-                // User isn't logged in
-                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-                $('a.login').bind('click', launchLogin);
-            } 
-            else if (errorNum == "403") {
-                // Another error
-                var errorMsg = response_data.error; 
-                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-            }
-
-            error_message = thiscomment.children('.error-message');
-            error_message.css('display','block');
-
-            $('.error-message').click(function() {
-                $(this).remove();
-            });
-
-        }
-    });
-
+        });
+    }
     return false;
 
 
