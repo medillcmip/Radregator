@@ -188,10 +188,6 @@ function handleReplySubmit(){
 
     $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
-    if(this_url != '' &&  this_url != null){
-        var posturl = '/clipper/' + thiscomment_id + '/'+ encodeURI(thistext) + '/' + encodeURI(this_url) ;
-        location.href = posturl;
-    }
     else{
         $.ajax({
             type: "post",
@@ -207,7 +203,13 @@ function handleReplySubmit(){
             },
             success: function(data){
                 $('.replyform').hide();
-                location.reload();
+                if(this_url != '' &&  this_url != null){
+                    var posturl = '/clipper/' + thiscomment_id + '/'+ encodeURI(thistext) + '/' + encodeURI(this_url) ;
+                    location.href = posturl;
+                }
+                else {
+                    location.reload();
+                }
             },
             error: function (requestError, status, errorResponse) {
                 var response_text = requestError.responseText;
