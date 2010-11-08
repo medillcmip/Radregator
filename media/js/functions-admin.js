@@ -100,11 +100,11 @@ function handleNewTopicForm(){
 function handleDisassociateCommentLink() {
     // Todo - hide children
     //
-    var thiscomment = $(this).closest('.comment'); 
-    var thiscomment_id = 
-        thiscomment.attr('id').replace('comment-', '');
+    var thiscomment_id = $(this).attr('id').replace('disassociatecommentlink-','');
+    var thiscomment = $('#' + 'comment-' + thiscomment_id);
+    var commentschildren = $('#' + 'comment-' + thiscomment_id + ' li');
 
-    var curtopicid = $("ul.tabs a.current").attr('id').replace('topic-', '');
+    var curtopicid = $('.topicid').attr('id');
     $.ajax({
         type: "post", 
         url: "/disassociatecomment",
@@ -112,6 +112,7 @@ function handleDisassociateCommentLink() {
         topic : curtopicid},
         success: function(data){
             thiscomment.fadeOut();
+            commentschildren.fadeOut();
         },
         error: function (requestError, status, errorResponse) {
             var response_text = requestError.responseText;
@@ -148,15 +149,17 @@ function handleDisassociateCommentLink() {
 function handleDeleteCommentLink() {
     // Todo - hide children
     //
-    var thiscomment = $(this).closest('.comment'); 
-    var thiscomment_id = 
-        thiscomment.attr('id').replace('comment-', '');
+    var thiscomment_id = $(this).attr('id').replace('deletecommentlink-','');
+    var thiscomment = $('#' + 'comment-' + thiscomment_id);
+    var commentschildren = $('#' + 'comment-' + thiscomment_id + ' li');
+
     $.ajax({
         type: "post", 
         url: "/deletecomments",
         data: { comments : thiscomment_id },
         success: function(data){
             thiscomment.fadeOut();
+            commentschildren.fadeOut();
         },
         error: function (requestError, status, errorResponse) {
             var response_text = requestError.responseText;
