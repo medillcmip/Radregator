@@ -308,7 +308,7 @@ function handleUpdateTopicSummarySubmit() {
     // substr() to seperate the id number from the "topic-" part
     // of the id attribute.
     var topic = $(this).closest('.topic')
-    var topicId = topic.attr('id').substr(6); 
+    var topicId = $('.topicid').attr("id");
     var newSummary = $(this).children('.new-topic-summary').html();
 
     $.ajax({
@@ -316,8 +316,8 @@ function handleUpdateTopicSummarySubmit() {
         url: "/api/json/topics/" + topicId + "/summary/",
         data: { summary: newSummary },
         success: function(data) {
-            topic.children('.topic-summary').html(newSummary);
-            topic.children('.update-topic-summary').hide();
+            $('.topic-summary').html(newSummary);
+            $('.update-topic-summary').hide();
         },
         error: function (requestError, status, errorResponse) {
             var response_text = requestError.responseText;

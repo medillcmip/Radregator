@@ -302,7 +302,7 @@ function handleOpinionLink () {
 function handleResponseLink() {
     var thiscomment = $(this).closest('.comment'); 
     var thiscomment_id = 
-        thiscomment.attr('id').replace('comment-', '');
+        $(this).attr("id").replace("thumbsup-","");
     var response_type = 'concur';
 
     $.ajax({

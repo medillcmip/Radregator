@@ -461,7 +461,7 @@ def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
         if request.method == 'POST':
             new_summary_text = request.POST['summary']
             topic = topic_from_slug_or_id(topic_slug_or_id) 
-            new_summary = Summary(text=new_summary_text)
+            new_summary = Summary.objects.get_or_create(text=new_summary_text)[0]
             new_summary.save()
             topic.summary = new_summary 
             topic.save()
