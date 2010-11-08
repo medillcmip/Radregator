@@ -36,7 +36,7 @@
             $('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
             $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
             $('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
-			$('#logoutlink').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
+			//$('#logoutlink').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
 
             // TK - placeholders, we may rebind these 
             //$('#addtopicform').unbind('submit', handleNewTopicForm).bind('submit', handleNewTopicForm);
@@ -147,7 +147,7 @@
 				</ul>
 				
 				<h1 class="logo">Querity</h1>
-				<p id="greetuser">Hello, {{user.username}}. <a href="#" id="logoutlink">Log out</a>?</p>
+				<p id="greetuser">Hello, {{user.username}}. <a href="/logout" id="logoutlink">Log out</a>?</p>
 								
 			</div> 
 		<!--CLOSE HEADER "LOGGED IN"-->
