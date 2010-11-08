@@ -217,6 +217,7 @@ def clipper_paste_url(request, comment_id, user_comments, url_field):
     return_page = 'clipper.html'
     if request.method == 'GET':
         url = url_field
+        article = create_article(url)
         if not url.startswith('http://'):
             url = 'http://'+url
         try:
@@ -303,10 +304,12 @@ def api_clipper_submit(request, output_format='json'):
                         logger.debug('clipper_submit_selection(request): type='+\
                                     str(type(e)) + ' ,REASON=' + str(e))
                         data['error'] = "%s" % e
+                        status = 400
                     except core.models.Comment.DoesNotExist, e:
                         logger.debug('clipper_submit_selection(request): type='+\
                                     str(type(e)) + ' ,REASON=' + str(e))
                         data['error'] = "%s" % e
+                        status = 400
                 else:
                     # Form didn't validate
                     #template_dict['form'] = form
