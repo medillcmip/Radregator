@@ -177,7 +177,6 @@ function handleCommentSubmit(){
 
 // HANDLE A REPLY
 function handleReplySubmit(){
-    alert($(this).attr('id'));
     var thiscomment = $(this).closest('.comment'); 
     var thiscomment_id = $(this).attr('id').replace('replyform-','');
     var thisin_reply_to = thiscomment_id;
