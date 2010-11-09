@@ -101,6 +101,7 @@ div#header form#usersignin .textinput {
 	margin-right: 5px;
 	color: #666;
 	border: 1px solid #aaa;
+	padding: 1px 3px;
 }
 
 div#header form#usersignin .submit {
@@ -204,7 +205,10 @@ span.downarrow {
 	border-left: 8px solid transparent;
 	line-height: 0;
 	font-size: 0;
+	position: relative;
+	top: 7px;
 	margin: 0 4px;
+	float: right;
 }
 
 span.uparrow {
@@ -218,6 +222,7 @@ span.uparrow {
 	position: relative;
 	top: -8px;
 	margin: 0 4px;
+	float: right;
 }
 
 .darkback span.downarrow, .darkback span.uparrow {
@@ -268,11 +273,13 @@ a.expanderbut {
 	position: absolute;
 	bottom: 0;
 	right: 0;
-	padding: 3px 2px 3px 8px;
+	padding: 0 2px 0 8px;
 	background-color: #ececec;
 	color: #a3a3a3;
 	text-transform: lowercase;
 	font-size: 0.9em;
+	line-height: 20px;
+	height: 20px;
 	cursor: pointer;
 }
 
@@ -339,7 +346,7 @@ div.qaoptions p.viewby {
 	font-size:0.8em;
 	float: left;
 	width: 210px;
-	margin-right: 10px;
+	margin-right: 6px;
 	text-align: right;
 }
 
@@ -362,16 +369,16 @@ div.qaoptions div.optionsdrop textarea {
 	font-size: 1.1em;
 	padding: 10px;
 	height: 100px;
-	margin: 5px 0;
+	margin: 5px 0 2px 0;
 	border: 1px solid #ccc;
 }
 
 div.qaoptions div.optionsdrop input {
 	width: 100px;
 	font-size: 0.9em;
-	line-height: 26px;
+	line-height: 20px;
 	height: 26px;
-	margin: 5px 0;
+	margin: 2px 0 5px 0;
 	border: 1px solid #ccc;
 	cursor: pointer;
 }
@@ -566,6 +573,65 @@ ul.masterlist li ul li ul li ul li div.answer {
 
 
 
+/* ANSWER FORM DROPDOWN */
+form.answerform, form.replyform {
+	display:block;
+	height: auto;
+	overflow: auto;
+	width: auto;
+	padding: 15px 15px 15px 15px;
+	margin-bottom: 25px;
+	background-color: #e5e5e5;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+}
+
+form.answerform h4, form.answerform label, form.replyform h4, form.replyform label {
+	display: block;
+	margin-bottom: 6px;
+}
+
+form.answerform textarea, form.replyform textarea {
+	height: 100px;
+	padding: 5px;
+	border: 1px solid #888;
+	margin-bottom: 8px;
+}
+
+form.answerform textarea {
+	width: 475px;
+}
+
+form.answerform input, form.replyform input {
+	padding: 0 5px;
+	line-height: 22px;
+	height: 22px;
+	border: 1px solid #888;
+	margin-bottom: 8px;
+}
+
+form.answerform input {
+	width: 475px;
+}
+
+ul.masterlist li ul li form.replyform textarea, ul.masterlist li ul li form.replyform input {
+	width:  415px;
+}
+
+ul.masterlist li ul li ul li form.replyform textarea, ul.masterlist li ul li ul li form.replyform input {
+	width:  355px;
+}
+
+ul.masterlist li ul li ul li ul li form.replyform textarea, ul.masterlist li ul li ul li ul li form.replyform input {
+	width:  295px;
+}
+
+form.answerform input.attachsubmit, form.replyform input.attachsubmit, ul.masterlist li ul li form.replyform input.attachsubmit, ul.masterlist li ul li ul li form.replyform input.attachsubmit, ul.masterlist li ul li ul li form.replyform input.attachsubmit {
+	width: 100px;
+	margin-bottom: 0;
+}
+
+
 /* SIDEBAR STYLES */
 
 p.toplabel {
@@ -641,4 +707,6 @@ div.toppanes ol.top5 li p a {
 	font-size: 0.8em;
 	font-weight: bold;
 }
+
+
 

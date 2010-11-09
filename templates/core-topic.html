@@ -27,6 +27,12 @@
                 var id = $(this).attr("id");
                 var formid = id.replace('toggle', '');
                 $('#' + formid).toggle();
+                var thistext = $(this).text();
+                if (thistext == "Reply") {
+               		$(this).text("Close reply box");
+                } else {
+                	$(this).text("Reply"); 
+                }
                 return false;
 
             });
@@ -34,8 +40,13 @@
                 var id = $(this).attr("id");
                 var formid = id.replace('toggle', '');
                 $('#' + formid).toggle();
+                var thistext = $(this).text();
+				if (thistext == "Answer this") {
+               		$(this).text("Close answer box");
+                } else {
+                	$(this).text("Answer this"); 
+                }
                 return false;
-
             });
             $('.replyform').hide();
             $('.answerform').hide();
@@ -114,19 +125,19 @@
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
 				<h1>{{topic.title}}</h1>
-					<div id="contextintro" class="topic-summary">
+					<p id="contextintro" class="topic-summary">
                     {{topic.summary.text|safe}}
-                    </div>
+                    </p>
         {% if is_reporter %}
         {% include "core-frontpage-update_summary_form.html" %}
         {% endif %}
-			<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>
+			<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
 			</div>
 		
 		
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
-				<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>
+				<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
 			</div>
 		
         {% if is_reporter %}
@@ -139,8 +150,8 @@
 					<div id="optselect">
 						<ul class="tabs">
 							<li class="nullpane" style="display:none;"><a href="#"></a></li>
-							<li class="lightback"><a href="#askquestion">Ask a question about this topic <span class="downarrow"></span></a></li>
-							<li class="lightback"><a href="#filterqas">Filter Q&As <span class="downarrow"></span></a></li>
+							<li class="lightback"><a href="#askquestion"><span class="downarrow"></span>Ask a question about this topic </a></li>
+							<li class="lightback"><a href="#filterqas"><span class="downarrow"></span>Filter Q&As </a></li>
 						</ul>
 							
 						<p class="viewby">Viewing by: <label>Popularity</label></p>
