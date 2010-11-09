@@ -49,7 +49,6 @@
             //$('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
-            $('.replyform').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
             $('.replyformtoggle').click(function () {
                 var id = $(this).attr("id");
                 var formid = id.replace('toggle', '');

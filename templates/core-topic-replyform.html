@@ -1,3 +1,10 @@
+<script type="text/javascript">
+$(document).ready( function () {
+    $('.replyform').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
+});
+
+</script>
+
 <form action="" method="post" class="replyform" id="replyform-{{question.id}}">
 <h4>Enter your answer</h4>
 <textarea id="id_text-{{question.id}}" rows="10" cols="40" name="text" class="qainput"></textarea>
