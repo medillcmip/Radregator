@@ -390,7 +390,7 @@ def frontpage(request, whichtopic=1):
         
     template_dict.update(csrf(request)) # Required for csrf system
 
-    return render_to_response('topic.html', template_dict, \
+    return render_to_response('core-topic.html', template_dict, \
                               context_instance=RequestContext(request))
    
 def index(request):
