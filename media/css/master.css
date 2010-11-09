@@ -642,3 +642,7 @@ div.toppanes ol.top5 li p a {
 	font-weight: bold;
 }
 
+.hidden {
+    display: none;
+}
+
