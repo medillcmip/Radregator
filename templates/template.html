@@ -144,6 +144,9 @@
 					<li class="button darkback"><a href="#askquestion">Ask a Question <span class="downarrow"></span></a></li>
 					<li class="lightback"><a href="#">Favorites <span class="downarrow"></span></a></li>
 					<li class="lightback"><a href="#">Recent Q&As <span class="downarrow"></span></a></li>
+                    {% if is_reporter %}
+                    {% include "core-topic-usercontrols-reporter.html" %}
+                    {% endif %}
 				</ul>
 				
 				<h1 class="logo">Querity</h1>
