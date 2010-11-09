@@ -120,13 +120,15 @@
         {% if is_reporter %}
         {% include "core-frontpage-update_summary_form.html" %}
         {% endif %}
-			<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>
+            <div class="hidden">
+			<a class="hidden expanderbut lightback" href="#">more <span class="hidden downarrow"></span></a>
+            </div>
 			</div>
 		
 		
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
-				<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>
+				<a class="hidden expanderbut lightback" href="#">more <span class="downarrow"></span></a>
 			</div>
 		
         {% if is_reporter %}
@@ -138,12 +140,12 @@
 				<div class="qaoptions gotabscollapse">
 					<div id="optselect">
 						<ul class="tabs">
-							<li class="nullpane" style="display:none;"><a href="#"></a></li>
+							<li class="nullpane hidden" style="display:none;"><a href="#"></a></li>
 							<li class="lightback"><a href="#askquestion">Ask a question about this topic <span class="downarrow"></span></a></li>
-							<li class="lightback"><a href="#filterqas">Filter Q&As <span class="downarrow"></span></a></li>
+							<li class="lightback hidden"><a href="#filterqas">Filter Q&As <span class="downarrow"></span></a></li>
 						</ul>
 							
-						<p class="viewby">Viewing by: <label>Popularity</label></p>
+						<p class="viewby hidden">Viewing by: <label>Popularity</label></p>
 					</div>
 					
 					<div id="askquestion" class="optionsdrop">
