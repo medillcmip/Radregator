@@ -1,21 +1,18 @@
 <script type="text/javascript">
 $(document).ready( function () {
-    $('.replyform').submit(handleReplySubmit);
 });
 
 </script>
 
 
-				<form action = "/clipper/{{theanswer.id}}/" method="post" class="replyform" id="replyform-{{theanswer.id}}">
+				<form action = "/clipper/{{question.id}}/" method="post" class="answerform" id="answerform-{{question.id}}">
           <h4>Enter your thoughts...</h4>
           {{clipper_url_form.user_comments}}<BR>
 					<label>Enter a URL: </label>
 					{{clipper_url_form.url_field}}
 		<!--			<input type="hidden" value="3" name="comment_type_str">
 					<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->
-                    <input type="hidden" id="id_topic-{{theanswer.id}}" value="{{topic.title}}"/>
 					{% csrf_token %}
-                
 					<input type="submit" name="submit" class="attachsubmit" value="Submit" />
 			    </form>    
 

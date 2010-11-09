@@ -56,7 +56,15 @@
                 return false;
 
             });
+            $('.answerformtoggle').click(function () {
+                var id = $(this).attr("id");
+                var formid = id.replace('toggle', '');
+                $('#' + formid).toggle();
+                return false;
+
+            });
             $('.replyform').hide();
+            $('.answerform').hide();
             $('#clipperform').hide();
 
 			// GRAB THE FORM INPUT AND KILL BEHAVIOR
@@ -280,7 +288,7 @@
                                 <p class="qa">{{question.text}}</p>
                                 <p class="userinfo"><span class="username">{{question.user}}</span> on <span class="date">{{question.date_created}}</span>
                                 <!--START ANSWER FORM CONTROLS -->
-                                <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{question.id}}">Answer this</a>
+                                <a href="#" class="answerthis answerformtoggle" id="answerformtoggle-{{question.id}}">Answer this</a>
                                 {% if is_reporter %}
                                 <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
                                 <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>
@@ -289,7 +297,7 @@
                                 {% endif %}
                                 </p>
 
-                                {% include "core-topic-replyform.html" %}
+                                {% include "core-topic-answerform.html" %}
                                 
                             </div>
                         </div>
@@ -330,24 +338,12 @@
                                         <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
 
                                         {% endif %}
-                                        </p>
-                                    <form action="" method="post" class="replyform" id="replyform-{{theanswer.id}}">
-                                        <h4>Enter your reply</h4>
-                                        <textarea id="id_text-{{theanswer.id}}" rows="10" cols="40" name="text" class="qainput"></textarea>
-                                        <p>
-                                        <label>Citation needed! Enter a URL: </label>
-                                        <input type="text" name="url_field" id="id_url_field-{{theanswer.id}}" /> 
-                                        </p>
-                                        <input type="hidden" name="topic_name" id="id_topic-{{theanswer.id}}" value="{{topic.title}}" />
-                                        <input type="hidden" name="comment_type_str" id="id_comment_type_str-{{theanswer.id}}" value ="3" />
-                                        {% if is_reporter %}
-                                            <br> Attribute to (optional): {{comment_form.sources}} <br>
-                                        {% endif %}
-                                        <input type="hidden" name="in_reply_to" id="id_in_reply_to-{{theanswer.id}}" value="{{theanswer.id}}" />
 
-                                        <br><br>
-                                        <input type="submit" name="submit" class="submit" value="Submit" />
-                                    </form>
+                                        </p>
+
+                                {% include "core-topic-replyform.html" %}
+
+
                                         </div>
                                     </div>
                                 {% with answer|slice:"1:" as replies %}

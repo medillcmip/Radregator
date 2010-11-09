@@ -374,7 +374,9 @@ def frontpage(request, whichtopic=1):
     topics = Topic.objects.filter(is_deleted=False)[:5] 
 
     template_dict['topics'] = topics
-    try: template_dict['topic'] = Topic.objects.get(id=whichtopic)
+    try: 
+        template_dict['topic'] = Topic.objects.get(id=whichtopic)
+        print template_dict['topic'].comments_to_show()
     except: 
         # No topic loaded
         pass

@@ -2,7 +2,7 @@ from django import forms
 
 class UrlSubmitForm(forms.Form):
     url_field = forms.URLField(label='Site you want to clip', required=True,\
-                widget=forms.TextInput(attrs={'size':'70'}))
+                widget=forms.TextInput(attrs={'size':'70', 'class':'clipper_url_field'}))
     user_comments = forms.CharField(widget=forms.Textarea(\
         attrs={'class':'clipper_text_field'}), required=False, \
         label="Add some of your own commentary here.")

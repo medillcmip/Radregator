@@ -179,19 +179,19 @@ function handleCommentSubmit(){
 function handleReplySubmit(){
     var thiscomment = $(this).closest('.comment'); 
     var thiscomment_id = $(this).attr('id').replace('replyform-','');
+    var thisform = $(this).attr('id');
     var thisin_reply_to = thiscomment_id;
-    var thistext = $('#id_text-'+thiscomment_id).val();
+    var thistext = $('#' + thisform + ' .clipper_text_field').val();
     var thiscomment_type = "3"; // Reply
     var thistopic = $("#id_topic-"+thiscomment_id).val();
     var this_sources = $('#id_sources-'+thiscomment_id).val();
-    var this_url = $('#id_url_field-'+thiscomment_id).val();
+    var this_url = $('#' + thisform + ' .clipper_url_field').val();
 
     $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
         if(this_url != '' &&  this_url != null){
-            var posturl = '/clipper/' + thiscomment_id + '/'+ encodeURI(thistext) + '/' + encodeURI(this_url) ;
-            location.href = posturl;
-            return false;
+            
+            return true;
         }
         $.ajax({
             type: "post",
