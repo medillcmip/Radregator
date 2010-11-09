@@ -1,0 +1,21 @@
+<form action="" method="post" class="replyform" id="replyform-{{question.id}}">
+<h4>Enter your answer</h4>
+<textarea id="id_text-{{question.id}}" rows="10" cols="40" name="text" class="qainput"></textarea>
+<p>
+<label>Citation needed! Enter a URL: </label>
+<input type="text" name="url_field" id="id_url_field-{{question.id}}" /> 
+</p>
+<input type="hidden" name="topic_name" id="id_topic-{{question.id}}" value="{{topic.title}}" />
+<input type="hidden" name="comment_type_str" id="id_comment_type_str-{{question.id}}" value ="3" />
+{% if is_reporter %}
+    <br> Attribute to (optional): {{comment_form.sources}} <br>
+{% endif %}
+<input type="hidden" name="in_reply_to" id="id_in_reply_to-{{question.id}}" value="{{question.id}}" />
+
+
+<p>
+<br><br>
+<input type="submit" name="submit" class="submit" value="Submit" />
+</p>
+
+</form>
