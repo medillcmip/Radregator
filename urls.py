@@ -30,8 +30,10 @@ urlpatterns = patterns('',
     (r'^accounts/login/register/$', 'users.views.register'),
     
     (r'^clipper_select', 'clipper.views.clipper_submit_select'),
+
+    (r'^clipper/(?P<comment_id>\d+)', 'clipper.views.clipper_paste_url'),
     
-    (r'^clipper/(?P<comment_id>\d+)/(?P<user_comments>.*?)/(?P<url_field>.*)', 'clipper.views.clipper_paste_url'),
+#    (r'^clipper/(?P<comment_id>\d+)/(?P<user_comments>.*?)/(?P<url_field>.*)', 'clipper.views.clipper_paste_url'),
 
 
     (r'^api/(?P<output_format>json)/clipper_select/',
