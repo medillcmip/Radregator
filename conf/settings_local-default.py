@@ -62,3 +62,6 @@ if DEBUG and ENABLE_FIREPYTHON:
 # See http://stackoverflow.com/questions/690723/log-all-errors-to-console-or-file-on-django-site/691252#691252
 if DEBUG:
     DEBUG_PROPAGATE_EXCEPTIONS = False 
+
+SITE_NAME = 'Querity'
+SITE_BODY_CLASSES = ''
