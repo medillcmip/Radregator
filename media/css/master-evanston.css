@@ -1,0 +1,14 @@
+/*
+ * Styles to override defaults.  These only apply to pages with a body class
+ * of "evanston" (that is SITE_BODY_CLASSES = 'evanston' in settings_local.py)
+ *
+ */
+
+.evanston h1.logo {
+    background: url("../img/logo-evanston.png") no-repeat scroll center top transparent !important; 
+    width: 216px !important;
+}
+
+.evanston #greetuser {
+    left: 224px !important;
+}
