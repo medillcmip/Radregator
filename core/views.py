@@ -307,7 +307,7 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
-def frontpage(request, whichtopic=1):
+def topic(request, whichtopic=1):
     """ Front page demo"""
     print whichtopic
 
