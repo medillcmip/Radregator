@@ -364,3 +364,9 @@ function handleFacebookSiteLoginButton() {
 
     return false;
 }
+
+function getCurrentTopicId() {
+    topicId = $(".topicid").attr("id"); 
+
+    return topicId;
+}
