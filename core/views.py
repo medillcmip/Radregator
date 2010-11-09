@@ -375,7 +375,9 @@ def frontpage(request, whichtopic=1):
 
     template_dict['topics'] = topics
     try: template_dict['topic'] = Topic.objects.get(id=whichtopic)
-    except: raise Http404
+    except: 
+        # No topic loaded
+        pass
     template_dict['comment_form'] = form
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
