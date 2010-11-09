@@ -219,6 +219,7 @@ def clipper_paste_url(request, comment_id):
         if form.is_valid():
             #start parsing out the page and get ready to forward us onto 
             url = form.cleaned_data['url_field']
+            user_comments = form.cleaned_data['user_comments']
             article = create_article(url)
             #html to output on the next page
             try:
@@ -228,7 +229,7 @@ def clipper_paste_url(request, comment_id):
                 template_dict['url'] = url
                 form = clipper.forms.ClipTextForm(initial={'url_field': url,\
                      'comment_id_field': comment_id, 'title': values['title'],\
-                    'author': values['author']})
+                    'author': values['author'], 'user_comments': user_comments})
                 return_page = 'clipper_select_text.html'
             except FileTypeNotSupported as fns:
                 logger.debug('clipper_paste_url(request, comment_id): TYPE=' + str(type(fns)) +\
