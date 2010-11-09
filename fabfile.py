@@ -32,7 +32,7 @@ def testing(instance_num):
     env.instance = 'testing_' + instance_num
     env.git_repo = 'git@github.com:medillcmip/Radregator.git' 
     env.git_remote = 'origin'
-    env.git_branch = 'master'
+    env.git_branch = 'testing'
 
 
 def mkinstance(db_password, fb_api_id, fb_api_key, fb_secret_key):
