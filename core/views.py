@@ -307,6 +307,24 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
+def frontpage(request):
+    """ 
+    Front page view. 
+
+    This is a dummy view for now that just redirects to the first non-deleted topic. 
+    """
+    if Topic.objects.filter(is_deleted=False).count() > 0:
+        # There is at least one topic to display. 
+
+        # Get the first topic
+        topic = Topic.objects.filter(is_deleted=False)[0]
+        topic_url = '/topic/%s/' % (topic.id) 
+
+        return HttpResponseRedirect(topic_url)
+
+    else:
+        return render_to_response('core-frontpage.html', context_instance=RequestContext(request))  
+
 def topic(request, whichtopic=1):
     """ Front page demo"""
     print whichtopic
