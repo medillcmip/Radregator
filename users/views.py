@@ -15,7 +15,11 @@ import core.utils
 
 from models import UserProfile
 from models import User
-from forms import LoginForm, RegisterForm  
+from forms import LoginForm, RegisterForm 
+
+
+ 
+logger = core.utils.get_logger()
 
 def ajax_login_required(view_func):
     """
@@ -108,7 +112,6 @@ def auth(request):
      account won't be merged, thus we have two unique accounts with no
      bridge.  
     """
-    logger = core.utils.get_logger()
 
     if request.user.is_authenticated():    
         return HttpResponseRedirect('/')
@@ -188,8 +191,6 @@ def weblogin(request):
             we use Facebooks external authorization flow (which we verify in
             the auth method)
     """
-    print 'in weblogin'
-    print request
     logger = core.utils.get_logger()
 
     template_dict = {}
@@ -231,43 +232,49 @@ def register(request):
     have django credentials
     """
     template_dict = {}
+    form = None
+    logger.debug('user.views.register(request): entering register method')
+    return_page = ''
     if request.method == 'POST':
         form = RegisterForm(request.POST)
-        template_dict['form'] = form
         if form.is_valid():
             #grab input
+            logger.debug('users.views.register(request): form was valid')
             f_username = form.cleaned_data['username']
             f_password = form.cleaned_data['password']
-            f_email = form.cleaned_data['email']
-            f_first_name = form.cleaned_data['first_name']
-            f_last_name = form.cleaned_data['last_name']
-            f_street_address = form.cleaned_data['street_address']
-            f_city = form.cleaned_data['city']
-            f_state = form.cleaned_data['state']
-            f_zip_code = form.cleaned_data['zip_code']
-            f_phone = form.cleaned_data['phone']
-            f_dob = form.cleaned_data['dob']
+            #f_email = form.cleaned_data['email']
+            #f_first_name = form.cleaned_data['first_name']
+            #f_last_name = form.cleaned_data['last_name']
+            #f_street_address = form.cleaned_data['street_address']
+            #f_city = form.cleaned_data['city']
+            #f_state = form.cleaned_data['state']
+            #f_zip_code = form.cleaned_data['zip_code']
+            #f_phone = form.cleaned_data['phone']
+            #f_dob = form.cleaned_data['dob']
             #we validate the username / email is unique by overriding
             #clean_field methods in RegisterForm
             baseuser = User.objects.create_user(username=f_username,\
-                password=f_password, email=f_email)
-            baseuser.first_name=f_first_name
-            baseuser.last_name=f_last_name
+                password=f_password, email='')
+            baseuser.first_name=''
+            baseuser.last_name=''
             baseuser.save()
-            newuser = UserProfile(user=baseuser, city=f_city,\
-                street_address=f_street_address, state=f_state, zip=f_zip_code,\
-                phone_number=f_phone)
+            newuser = UserProfile(user=baseuser)
             newuser.save()
-            return do_login(f_username,f_password,request)
+            logger.debug('user.views.register(request): user saved') 
+            #this call is antiquated and not how the flow is designed to work
+            #any longer.  
+            #return do_login(f_username,f_password,request)
+            return HttpResponseRedirect('/')
         else:
-            return render_to_response('register.html', template_dict,\
-                context_instance=RequestContext(request))
+            return_page = 'register.html'
     if request.method != 'POST': 
         #get a new form
         form = RegisterForm()
-        template_dict['form'] = form
-        return render_to_response('register.html', template_dict,\
-            context_instance=RequestContext(request))
+        return_page = 'register.html'
+    template_dict['form'] = form
+    logger.debug('users.views.register(request: returning page='+return_page)
+    return render_to_response(return_page, template_dict,\
+        context_instance=RequestContext(request))
 
 
 def api_auth(request, uri_username, output_format='json'):
