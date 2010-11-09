@@ -313,6 +313,9 @@ def frontpage(request):
 
     This is a dummy view for now that just redirects to the first non-deleted topic. 
     """
+    template_dict = { 'site_name':settings.SITE_NAME, \
+        'body_classes':settings.SITE_BODY_CLASSES }
+
     if Topic.objects.filter(is_deleted=False).count() > 0:
         # There is at least one topic to display. 
 
@@ -386,7 +389,8 @@ def topic(request, whichtopic=1):
     else:
         reply_form = None
 
-    template_dict = {}
+    template_dict = { 'site_name':settings.SITE_NAME, \
+        'body_classes':settings.SITE_BODY_CLASSES }
 
     # Will want to filter, order in later versions
     topics = Topic.objects.filter(is_deleted=False)[:5] 

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head> 
  
-	<title>Querity</title> 
+	<title>{{ site_name }}</title> 
  
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" /> 
 	<meta http-equiv="content-style-type" content="text/css" /> 
@@ -34,7 +34,7 @@
     {% block addscripts %}
     {% endblock %}
 </head> 
-<body>
+<body class="{{ body_classes }}">
         <div id="fb-root"></div>
         <script type="text/javascript">
         window.fbAsyncInit = function() {
@@ -65,7 +65,7 @@
                     {% endif %}
 				</ul>
 				
-				<h1 class="logo">Querity</h1>
+				<h1 class="logo">{{ site_name }}</h1>
 				<p id="greetuser">Hello, {{user.username}}. <a href="/logout" id="logoutlink">Log out</a>?</p>
 								
 			</div> 
