@@ -57,9 +57,9 @@
 			-->
 			
     {% if is_reporter %}
-        {% include "core-frontpage-addtopic.html" %}
+        {% include "core-topic-addtopic.html" %}
 
-        {% include "core-frontpage-addsource.html" %}
+        {% include "core-topic-addsource.html" %}
     {% endif %}
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
@@ -68,7 +68,7 @@
                     {{topic.summary.text|safe}}
                     </div>
         {% if is_reporter %}
-        {% include "core-frontpage-update_summary_form.html" %}
+        {% include "core-topic-update_summary_form.html" %}
         {% endif %}
 			<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>
 			</div>
@@ -80,7 +80,7 @@
 			</div>
 		
         {% if is_reporter %}
-        {% include "core-frontpage-topic_tools.html" %}
+        {% include "core-topic-topic_tools.html" %}
         {% endif %}
 		
 			<div id="qas">
