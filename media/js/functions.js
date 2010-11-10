@@ -307,7 +307,7 @@ function handleResponseLink() {
 
             if (errorNum == "401") {
                 // User isn't logged in
-                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                var errorMsg = 'You need to login or <a href="/register/">register</a> to do this!' 
                 displayMessage(errorMsg, 'error');
             } 
             else if (errorNum == "403") {
