@@ -260,9 +260,13 @@ span.uparrow {
     right: 0px;
 }
 
-#messages #hidemessages a {
+#messages a {
     color: white;
     text-decoration: none;
+}
+
+#message p a {
+    text-decoration: underline;
 }
 
 /* LEFT CONTENT ON TOPIC/CONTENT PAGES */

@@ -308,22 +308,13 @@ function handleResponseLink() {
             if (errorNum == "401") {
                 // User isn't logged in
                 var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-                $('a.login').bind('click', launchLogin);
+                displayMessage(errorMsg, 'error');
             } 
             else if (errorNum == "403") {
                 // User has already responded
                 var errorMsg = response_data.error; 
-                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                displayMessage(errorMsg, 'error');
             }
-
-            error_message = thiscomment.children('.error-message');
-            error_message.css('display','block');
-
-            $('.error-message').click(function() {
-                $(this).remove();
-            });
-
         }
     });
 
@@ -431,4 +422,9 @@ function displayMessage(message, level) {
     $('#messageswrap').addClass(level);
     $('#messageswrap').show();
 
+}
+
+// Hide the message bar
+function hideMessages() {
+    $('#messagewrap').hide();
 }
