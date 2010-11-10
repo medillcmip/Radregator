@@ -383,9 +383,7 @@ function handleUserSignInForm() {
     {
         // User didn't enter username or didn't enter password
         var errorMsg = 'You need to enter a user name and password.';
-        $(this).find(".errormsg").html(errorMsg);
-        $(this).find(".errormsg").css("display", "block");
-        alert(errorMsg);
+        displayMessage(errorMsg, 'error');
         return false;
     }
         
@@ -416,11 +414,21 @@ function handleUserSignInForm() {
             {
                 errorMsg += responseText.error_html;
             }
-            $(this).find(".errormsg").html(errorMsg);
-            $(this).find(".errormsg").css("display", "block");
+
+            displayMessage(errorMsg, 'error');
         }
     });
 
     return false;
+
+}
+
+// Display a message in the message bar
+function displayMessage(message, level) {
+    level = typeof(level) != 'undefined' ? level : 'info';
+
+    $('#messages p').html(message);
+    $('#messageswrap').addClass(level);
+    $('#messageswrap').show();
 
 }

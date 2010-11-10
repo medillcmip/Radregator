@@ -35,6 +35,12 @@
     <script type="text/javascript">
 		$(document).ready( function () {
             $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
+            $('#messageswrap').hide(); // Hide messages bar initially
+
+            // Handler for collapsing the messages bar
+            $('#messages #hidemessages a').click(function() {
+                $('#messageswrap').hide();
+            });
         });
     </script>
 
@@ -102,8 +108,20 @@
 
         {%endif%}
 		</div>
-		
-		
+
+        <!-- MESSAGE BAR FOR MESSAGES/ERRORS -->
+        <div id="messageswrap">
+            <div id="messages" class="container_12">
+                <p></p>
+
+                <div id="hidemessages">
+                    <a href="#">
+                        <span>Close</span>
+                        <span class="uparrow"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
 		
 		<div id="leftcontent" class="grid_8">
             {% block leftcontent %}	
