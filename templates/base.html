@@ -32,6 +32,12 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}js/functions-admin.js"></script>
     {% endif %}
 
+    <script type="text/javascript">
+		$(document).ready( function () {
+            $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
+        });
+    </script>
+
     {% block addscripts %}
     {% endblock %}
 </head> 

@@ -370,3 +370,57 @@ function getCurrentTopicId() {
 
     return topicId;
 }
+
+
+// Handle user sign-in form
+// This handler grabs the form input and kills the behavior.
+function handleUserSignInForm() {
+    var thisuser = $("#usersignin-username").val();
+    var thispass = $("#usersignin-password").val();
+
+    //if (thisuer == '' || thispass == '')
+    if (false)
+    {
+        // User didn't enter username or didn't enter password
+        var errorMsg = 'You need to enter a user name and password.';
+        $(this).find(".errormsg").html(errorMsg);
+        $(this).find(".errormsg").css("display", "block");
+        alert(errorMsg);
+        return false;
+    }
+        
+
+    // Clear prior error messages
+    $('.errormsg').each(function(index) {
+        $(this).html('');
+    });
+
+    var posturl = "/api/json/users/"+thisuser+"/login/";
+        // alert(posturl);
+
+    $.ajax({
+        type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
+        success: function(data){
+            // console.log(data);
+            var loggeduser = data.username;
+            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
+            location.reload();
+        },
+        error: function (requestError, status, errorResponse) {
+            var errorNum = requestError.status;
+        
+            var responseText = jQuery.parseJSON(requestError.responseText);
+            var errorMsg = responseText.error;
+            
+            if(responseText.error_html)
+            {
+                errorMsg += responseText.error_html;
+            }
+            $(this).find(".errormsg").html(errorMsg);
+            $(this).find(".errormsg").css("display", "block");
+        }
+    });
+
+    return false;
+
+}
