@@ -17,6 +17,7 @@
 	<link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" type="text/css" />
 	<link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" type="text/css" />
 	<link href="{{ MEDIA_URL }}css/master.css" rel="stylesheet" type="text/css" /> 
+	<link href="{{ MEDIA_URL }}css/master-evanston.css" rel="stylesheet" type="text/css" /> 
 	<link href="{{ MEDIA_URL }}css/colorbox.css" rel="stylesheet" type="text/css" /> 
 
     {% block addstyles %}
@@ -30,6 +31,12 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/functions-admin.js"></script>
     {% endif %}
+
+    <script type="text/javascript">
+		$(document).ready( function () {
+            $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
+        });
+    </script>
 
     {% block addscripts %}
     {% endblock %}
