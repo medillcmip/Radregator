@@ -7,7 +7,18 @@
 	
 			$( ".gotabscollapse" ).tabs({collapsible: true,});			
 
-            $('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
+            if (!userIsAuthenticated()) {
+                // If the user isn't logged in disabled the 
+                // "ask a question ..." tab.
+                $(".qaoptions").tabs("option", "disabled", [1]);
+
+                // Also show an error message if they try to click on the tab
+                $(".qaoptions a.askquestion").click(function() {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                });
+            }
+
+            //$('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
             $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
             $('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
 			//$('#logoutlink').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
@@ -24,16 +35,28 @@
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
             $('.replyformtoggle').click(function () {
-                var id = $(this).attr("id");
-                var formid = id.replace('toggle', '');
-                $('#' + formid).toggle();
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+                    $('#' + formid).toggle();
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+
                 return false;
 
             });
             $('.answerformtoggle').click(function () {
-                var id = $(this).attr("id");
-                var formid = id.replace('toggle', '');
-                $('#' + formid).toggle();
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+                    $('#' + formid).toggle();
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+
                 return false;
 
             });
@@ -89,7 +112,7 @@
 					<div id="optselect">
 						<ul class="tabs">
 							<li class="nullpane" style="display:none;"><a href="#"></a></li>
-							<li class="lightback"><a href="#askquestion">Ask a question about this topic <span class="downarrow"></span></a></li>
+							<li class="lightback"><a class="askquestion" href="#askquestion">Ask a question about this topic <span class="downarrow"></span></a></li>
 							<li class="lightback"><a href="#filterqas">Filter Q&As <span class="downarrow"></span></a></li>
 						</ul>
 							
