@@ -468,7 +468,7 @@ function contextexpander() {
 	function()
 	{
 		$('#context').animate({
-		height: fullheight-20, 
+		height: fullheight+10, 
 		overflow: "auto",
 		}, 500);
 		$(".contextbot .more").css("display","none");
@@ -499,4 +499,13 @@ function displayMessage(message, level) {
 // Hide the message bar
 function hideMessages() {
     $('#messagewrap').hide();
+}
+
+// Set up earmarks on the answers
+function earmarkheight() {
+	$('.earmark').each(function(index) {
+		var thisheight = $(this).closest(".answer").height();
+		//console.log(thisheight);
+		$(this).height(thisheight);
+ 	});
 }

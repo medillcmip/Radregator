@@ -4,7 +4,7 @@
 	<script type="text/javascript">
 		$(document).ready( function () {
 			$( ".gotabs" ).tabs();
-			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'slow' }});
+			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'fast' }});
 
             if (!userIsAuthenticated()) {
                 // If the user isn't logged in disabled the 
@@ -76,7 +76,13 @@
             $('.answerform').hide();
             $('#clipperform').hide();
 
+			// HANDLE CONTEXT MORE/LESS
 			contextexpander();
+			
+			// HANDLE EARMARK HEIGHTS
+			earmarkheight();
+			
+			
         });
 	</script>
 {% endblock %}
@@ -210,6 +216,7 @@
                         {% with answer|first as theanswer %}
                             <li id="comment-{{theanswer.id}}">
                                 <div class = "comment answer">
+									<div class="earmark accepted olvl0"><span class="textspan">Accepted</span></div>
                                     <div class = "votebox">
                                         <p class="count">{{theanswer.num_upvotes}}</p>
                                         <p class="countsub">thumbs up</p>
@@ -229,7 +236,7 @@
 
                                         {% endfor %}
                                         <p class="userinfo"><span class="username">{{theanswer.user}}</span> on <span class="date">{{theanswer.date_created}}</span>
-                                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a>
+                                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" class="flagasopinion">Flag this as opinion</a>
                                         {% if is_reporter %}
                                         <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{theanswer.id}}">Delete Answer</a>
                                         <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
@@ -277,7 +284,7 @@
                                             <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{reply.id}}">Remove Reply from Topic</a>
 
                                             {% endif %}
-                                            <a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
+                                            <a href="#" class="flagasopinion">Flag this as opinion</a></p>
                                             </p>
                                         </div>
                                     </div>
@@ -334,11 +341,21 @@
 			</div>
 			
 			<div id="topanswers" class="toppanes">
-				TOP ANSWERS
+				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
+				<ol class="top5">
+                    {% for topq in topqs %}
+					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% endfor %}
+				</ol>
 			</div>
 			
 			<div id="mostpopular" class="toppanes">
-				MOST POPULAR
+				<img src="{{ MEDIA_URL }}img/icns/qbubbles.png" class="paneicon"><h2>Most Popular</h2>
+				<ol class="top5">
+                    {% for topq in topqs %}
+					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% endfor %}
+				</ol>
 			</div>
 
 {% endblock %}

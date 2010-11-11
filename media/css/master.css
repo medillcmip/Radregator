@@ -613,6 +613,8 @@ ul.masterlist li div.answer {
 	border: 1px solid #ccc;
 	background-color: #f4f4f4;
 	margin-bottom: 17px;
+	padding-left: 14px;
+	position: relative;
 }
 
 ul.masterlist li div.answer div.qabox {
@@ -727,6 +729,37 @@ ul.masterlist li ul li ul li ul li form.replyform textarea, ul.masterlist li ul 
 form.answerform input.attachsubmit, form.replyform input.attachsubmit, ul.masterlist li ul li form.replyform input.attachsubmit, ul.masterlist li ul li ul li form.replyform input.attachsubmit, ul.masterlist li ul li ul li form.replyform input.attachsubmit {
 	width: 100px;
 	margin-bottom: 0;
+}
+
+/* ANSWER FLAGS */
+.earmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 14px;
+	display: block;
+	background: url(../img/backs/accepted.png) repeat-y;
+	font-size: 0.8em;
+	color: #fff;
+}
+
+.earmark .textspan {
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	position: relative;
+	left: -1.5em;
+	top: 2em;
+}
+
+/* My Comment */
+
+.accepted {
+	
+}
+
+.moderator {
+	
 }
 
 

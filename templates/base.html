@@ -26,6 +26,7 @@
 	<script src="{{ MEDIA_URL }}js/jquery.tools.min.js"></script>
 	<script src="{{ MEDIA_URL }}js/functions.js"></script>
 	<script src="{{ MEDIA_URL }}js/jquery.colorbox-min.js"></script>
+	<script src="{{ MEDIA_URL }}js/jquery.rotate.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js"></script>
     {% if is_reporter %}
     <script type="text/javascript" src="{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
@@ -101,8 +102,9 @@
 				</div>
 				<form id="usersignin">
 					<label>Login:</label>
-					<input type="text" value="username" name="username" class="textinput" id="usersignin-username" />
-					<input type="password" value="password" name="password" class="textinput" id="usersignin-password" />
+					<input type="text" value="username" name="username" class="textinput" id="usersignin-username" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';" />
+					
+					<input type="password" value="password" name="password" class="textinput" id="usersignin-password" onblur="if (this.value=='') { this.value=this.defaultValue; } else {}" onfocus="if (this.value==this.defaultValue) { this.value=''; }" />
 					<input type="submit" value="submit" name="submit" class="submit" id="usersignin-submit" />
 				</form>
 				
