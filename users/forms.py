@@ -44,7 +44,7 @@ class RegisterForm(forms.Form):
     USERNAME_MUST_BE_ALNUM_MSG = 'Usernames must be alphanumeric (i.e., A-Z,0-9)'
 
     username = forms.CharField(max_length=30)
-    password = forms.CharField(max_length=30)
+    password = forms.CharField(max_length=30, widget=forms.PasswordInput)
     #first_name = forms.CharField(max_length=30, required=False)
     #last_name = forms.CharField(max_length=45, required=False)
     #email = forms.EmailField(required=False)
