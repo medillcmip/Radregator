@@ -1,3 +1,4 @@
+var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/register/">register</a> to do this!'; 
 
 // VARIABLE VERTICAL ALIGNMENT
 (function ($) {
@@ -47,6 +48,24 @@ function authCheck() {
 	});
 }
 
+/*
+ * Set a flag so other javascript code can tell that a user is logged in.
+ */
+function setUserAuthenticated() {
+    jQuery.data(document.body, "is_authenticated", true);
+}
+
+/* 
+ * Is the user logged in?
+ *
+ * NOTE: This is likely to make authCheck() deprecated
+ *
+ */
+function userIsAuthenticated() {
+    // Read the flag set by setUserAuthenticated() to see if the user is
+    // logged in
+    return jQuery.data(document.body, "is_authenticated");
+}
 
 //
 //
@@ -103,20 +122,27 @@ function openReplyform (replytype,parentid) {
 
 // ATTACH FUNCTIONS TO LINKS
 function handleReplyform() {
-	var parentid = $(this).closest("li.comment").attr("id");
-	
-	if ($(this).hasClass("attach")) { var replytype = "attach"; }
-		else { var replytype = "reply"; }
-						
-	
-	if ($("#"+parentid+" ."+replytype+"div").hasClass("opened")) {
-		$(this).removeClass("opened");
-		closeReplyform(replytype,parentid);
-		return false;
-	}
-	openReplyform(replytype, parentid);
-	$(this).addClass("opened");
-	return false;
+    if (userIsAuthenticated()) {
+        var parentid = $(this).closest("li.comment").attr("id");
+        
+        if ($(this).hasClass("attach")) { var replytype = "attach"; }
+            else { var replytype = "reply"; }
+                            
+        
+        if ($("#"+parentid+" ."+replytype+"div").hasClass("opened")) {
+            $(this).removeClass("opened");
+            closeReplyform(replytype,parentid);
+            return false;
+        }
+        openReplyform(replytype, parentid);
+        $(this).addClass("opened");
+        return false;
+    }
+    else {
+        console.debug('got here');
+        displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+        return false;
+    }
 }
 
 

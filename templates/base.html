@@ -42,6 +42,12 @@
                 $('#messageswrap').hide();
                 return false;
             });
+
+            {% if user.is_authenticated %}
+            // Set a flag that shows that tells other javascript code
+            // that the user is logged in.
+            setUserAuthenticated(); 
+            {% endif %}
         });
     </script>
 
