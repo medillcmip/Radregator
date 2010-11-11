@@ -1,4 +1,3 @@
-
 body {
 	color: #323232;
 	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
@@ -197,7 +196,7 @@ ul#usercontrols li.button a:active {
 	background-color: #087520;
 }
 
-span.downarrow {
+span.downarrow, .downarrow {
 	height: 0;
 	width: 0;
 	border-top: 8px solid #a3a3a3;
@@ -211,7 +210,11 @@ span.downarrow {
 	float: right;
 }
 
-span.uparrow {
+div#header span.downarrow {
+	top: 9px;
+}
+
+span.uparrow, a.uparrow {
 	height: 0;
 	width: 0;
 	border-bottom: 8px solid #a3a3a3;
@@ -220,7 +223,7 @@ span.uparrow {
 	line-height: 0;
 	font-size: 0;
 	position: relative;
-	top: -8px;
+	top: 8px;
 	margin: 0 4px;
 	float: right;
 }
@@ -261,11 +264,22 @@ div#leftcontent div#context {
 	border-bottom: 1px solid #eee;
 	margin-bottom: 40px;
 	padding-bottom: 10px;
+	overflow: hidden;
+	height: 9.5em;
 }
 
 div#leftcontent div#context p {
 	margin: 0 0 20px 0;
-	line-height: 140%;
+	line-height: 1.4em;
+}
+
+div#leftcontent div#context div.contextbot {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 20px;
+	background: transparent url(../img/misc/bottom-fade.png) repeat-x;
 }
 
 a.expanderbut {
@@ -304,12 +318,12 @@ div.qaoptions {
 
 div.qaoptions div#optselect {
 	width: 620px;
-	height: 20px;
+	height: 24px;
 	border-bottom: 1px solid #ececec;
 }
 
 div.qaoptions ul.tabs {
-	height: 20px;
+	height: 24px;
 	overflow: auto;
 	width: 400px;
 	float: left;
@@ -317,14 +331,14 @@ div.qaoptions ul.tabs {
 
 div.qaoptions ul.tabs li {
 	float: left;
-	height: 20px;
+	height: 24px;
 	width: auto;
 	margin-right: 5px;
 }
 
 div.qaoptions ul.tabs li a {
-	height: 20px;
-	line-height: 20px;
+	height: 24px;
+	line-height: 24px;
 	padding: 0 2px 0 8px;
 	background-color: #ececec;
 	color: #a3a3a3;
@@ -332,12 +346,41 @@ div.qaoptions ul.tabs li a {
 	font-size: 0.9em;
 	cursor: pointer;
 	display: block;
+	-moz-border-radius: 5px 5px 0 0;
+	border-radius: 5px 5px 0 0;
 }
 
 div.qaoptions ul.tabs li a:hover {
 	text-decoration: none;
 	background-color: #dcdcdc;
 	color: #a3a3a3;
+}
+
+div.qaoptions ul.tabs li.lightback a.asktab {
+	background-color: #0B9024;
+	color: #ececec;
+}
+
+div.qaoptions ul.tabs li.lightback a span.downarrow {
+	top: 9px;
+}
+
+
+div.qaoptions ul.tabs li.lightback a.asktab span.downarrow {
+	border-top-color: #ececec;
+}
+
+/* TOGGLES FOR UPARROW-DOWNARROW */
+
+div.qaoptions ul.tabs li.lightback a span.uparrow, div.qaoptions ul.tabs li.lightback a.ui-state-active span.downarrow {display: none;}
+div.qaoptions ul.tabs li.lightback a.ui-state-active span.uparrow {display: block;}
+
+/* My Group */
+
+div.qaoptions ul.tabs li.lightback a.asktab:hover {
+	text-decoration: none;
+	background-color: #0F9D2E;
+	color: #fff;
 }
 
 div.qaoptions p.viewby {
@@ -352,11 +395,17 @@ div.qaoptions p.viewby {
 
 /* QA INPUT */
 
+/* @end */
 div.qaoptions div.optionsdrop {
-	;
 	padding: 10px 20px;
 	background: #f6f6f6;
 	border-bottom: 1px solid #ececec;
+}
+
+div.qaoptions div#askquestion {
+	border-top: 1px solid #0B9024;
+	position: relative;
+	top: -1px;
 }
 
 div.qaoptions div.optionsdrop h4 {
@@ -476,7 +525,7 @@ ul.masterlist li div.question {
 
 ul.masterlist li div.question div.qabox {
 	width: 518px;
-	padding: 12px 10px 20px;
+	padding: 12px 10px 10px;
 	height: auto;
 	overflow: auto;
 	position: relative;

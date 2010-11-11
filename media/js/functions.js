@@ -30,11 +30,11 @@ function launchLogin () {
 //NOTE TO SELF: LOGIC NEEDS TO INCLUDE LINK PASS THROUGH/POST PASS THROUGH BEFORE IMPLEMENTATION
 function authCheck() {
 	$.ajax({
-	    type: "post", url: "/loginstatus",
-	    success: function(data){
+		 type: "post", url: "/loginstatus",
+		 success: function(data){
 			return;
 		},
-	    error: function (requestError, status, errorResponse) {
+		 error: function (requestError, status, errorResponse) {
 			var errorNum = requestError.status;
 			
 			//FINISH THIS LOGIC:
@@ -88,7 +88,7 @@ function openReplyform (replytype,parentid) {
 		$(drawer).html(contents).addClass("opened");
 		$(drawer).append('<a href="javascript:closeReplyform(\''+replytype+'\',\''+parentid+'\');" class="closereply">close</a>');
 		var pkid = parentid.substr(8);
-        $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
+		  $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 		
 		if (replytype == "attach") {
 			var postto = "/clipper/"+pkid+"/";
@@ -121,306 +121,329 @@ function handleReplyform() {
 
 
 function handleCommentSubmit(){
-    var questionform = $('#questionform');
-    var thiscomment_type = $('#questionform #id_comment_type_str').val();
-    var thistext = $('#questionform #id_text').val();
-    var thistopic = $('#questionform #id_topic').val();
-    var thissources = $('#questionform #id_sources').val();
-    var thisin_reply_to = '';
+	 var questionform = $('#questionform');
+	 var thiscomment_type = $('#questionform #id_comment_type_str').val();
+	 var thistext = $('#questionform #id_text').val();
+	 var thistopic = $('#questionform #id_topic').val();
+	 var thissources = $('#questionform #id_sources').val();
+	 var thisin_reply_to = '';
 
-    $.ajax({
-        type: "post",
-        url: "/api/json/comments/",
-        data: { in_reply_to : thisin_reply_to,
-        topic: thistopic,
-        comment_type_str : thiscomment_type,
-        text : thistext,
-        in_reply_to: thisin_reply_to,
-        sources : thissources,
+	 $.ajax({
+		  type: "post",
+		  url: "/api/json/comments/",
+		  data: { in_reply_to : thisin_reply_to,
+		  topic: thistopic,
+		  comment_type_str : thiscomment_type,
+		  text : thistext,
+		  in_reply_to: thisin_reply_to,
+		  sources : thissources,
 
 
-        },
-        success: function(data){
-        location.reload(); // TODO - make this clearer
-            
-        },
-        error: function (requestError, status, errorResponse) {
-            var response_text = requestError.responseText;
-            var response_data = $.parseJSON(response_text);
-            var errorNum = requestError.status;
+		  },
+		  success: function(data){
+		  location.reload(); // TODO - make this clearer
+				
+		  },
+		  error: function (requestError, status, errorResponse) {
+				var response_text = requestError.responseText;
+				var response_data = $.parseJSON(response_text);
+				var errorNum = requestError.status;
 
-            if (errorNum == "401") {
-                // User isn't logged in
-                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-                questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-                $('a.login').bind('click', launchLogin);
-            } 
-            else if (errorNum == "403") {
-                // Another error
-                var errorMsg = response_data.error; 
-                questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-            }
+				if (errorNum == "401") {
+					 // User isn't logged in
+					 var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+					 questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+					 $('a.login').bind('click', launchLogin);
+				} 
+				else if (errorNum == "403") {
+					 // Another error
+					 var errorMsg = response_data.error; 
+					 questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+				}
 
-            error_message = questionform.children('.error-message');
-            error_message.css('display','block');
+				error_message = questionform.children('.error-message');
+				error_message.css('display','block');
 
-            $('.error-message').click(function() {
-                $(this).remove();
-            });
+				$('.error-message').click(function() {
+					 $(this).remove();
+				});
 
-        }
-    });
+		  }
+	 });
 
-    return false;
+	 return false;
 }
 
 
 // HANDLE A REPLY
 function handleReplySubmit(){
-    var thiscomment = $(this).closest('.comment'); 
-    var thiscomment_id = $(this).attr('id').replace('replyform-','');
-    var thisform = $(this).attr('id');
-    var thisin_reply_to = thiscomment_id;
-    var thistext = $('#' + thisform + ' .clipper_text_field').val();
-    var thiscomment_type = "3"; // Reply
-    var thistopic = $("#id_topic-"+thiscomment_id).val();
-    var this_sources = $('#id_sources-'+thiscomment_id).val();
-    var this_url = $('#' + thisform + ' .clipper_url_field').val();
+	 var thiscomment = $(this).closest('.comment'); 
+	 var thiscomment_id = $(this).attr('id').replace('replyform-','');
+	 var thisform = $(this).attr('id');
+	 var thisin_reply_to = thiscomment_id;
+	 var thistext = $('#' + thisform + ' .clipper_text_field').val();
+	 var thiscomment_type = "3"; // Reply
+	 var thistopic = $("#id_topic-"+thiscomment_id).val();
+	 var this_sources = $('#id_sources-'+thiscomment_id).val();
+	 var this_url = $('#' + thisform + ' .clipper_url_field').val();
 
-    $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
+	 $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
 
-        if(this_url != '' &&  this_url != null){
-            
-            return true;
-        }
-        $.ajax({
-            type: "post",
-            url: "/api/json/comments/",
-            data: { in_reply_to : thisin_reply_to,
-            topic: thistopic,
-            comment_type_str : thiscomment_type,
-            text : thistext,
-            in_reply_to: thisin_reply_to,
-            sources : this_sources,
+		  if(this_url != '' &&  this_url != null){
+				
+				return true;
+		  }
+		  $.ajax({
+				type: "post",
+				url: "/api/json/comments/",
+				data: { in_reply_to : thisin_reply_to,
+				topic: thistopic,
+				comment_type_str : thiscomment_type,
+				text : thistext,
+				in_reply_to: thisin_reply_to,
+				sources : this_sources,
 
 
-            },
-            success: function(data){
-                $('.replyform').hide();
-                location.reload();
-            },
-            error: function (requestError, status, errorResponse) {
-                var response_text = requestError.responseText;
-                var response_data = $.parseJSON(response_text);
-                var errorNum = requestError.status;
+				},
+				success: function(data){
+					 $('.replyform').hide();
+					 location.reload();
+				},
+				error: function (requestError, status, errorResponse) {
+					 var response_text = requestError.responseText;
+					 var response_data = $.parseJSON(response_text);
+					 var errorNum = requestError.status;
 
-                if (errorNum == "401") {
-                    // User isn't logged in
-                    var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-                    thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-                    $('a.login').bind('click', launchLogin);
-                } 
-                else if (errorNum == "403") {
-                    // Another error
-                    var errorMsg = response_data.error; 
-                    thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-                }
+					 if (errorNum == "401") {
+						  // User isn't logged in
+						  var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+						  thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+						  $('a.login').bind('click', launchLogin);
+					 } 
+					 else if (errorNum == "403") {
+						  // Another error
+						  var errorMsg = response_data.error; 
+						  thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+					 }
 
-                error_message = thiscomment.children('.error-message');
-                error_message.css('display','block');
+					 error_message = thiscomment.children('.error-message');
+					 error_message.css('display','block');
 
-                $('.error-message').click(function() {
-                    $(this).remove();
-                });
-            }
-        });
-    return false;
+					 $('.error-message').click(function() {
+						  $(this).remove();
+					 });
+				}
+		  });
+	 return false;
 
 
 }
 
 // Flag a comment as opinion
 function handleOpinionLink () {
-    var thiscomment = $(this).closest('.comment'); 
-    var thiscomment_id = 
-        thiscomment.attr('id').replace('comment-', '');
-    var response_type = 'opinion';
-    
-    $.ajax({
-        type: "post", 
-        url: "/api/json/comments/" + thiscomment_id + "/responses/",
-        data: { type : response_type },
-        success: function(data){
-            // TK - Update counter
-        },
-        error: function (requestError, status, errorResponse) {
-            var response_text = requestError.responseText;
-            var response_data = $.parseJSON(response_text);
-            var errorNum = requestError.status;
+	 var thiscomment = $(this).closest('.comment'); 
+	 var thiscomment_id = 
+		  thiscomment.attr('id').replace('comment-', '');
+	 var response_type = 'opinion';
+	 
+	 $.ajax({
+		  type: "post", 
+		  url: "/api/json/comments/" + thiscomment_id + "/responses/",
+		  data: { type : response_type },
+		  success: function(data){
+				// TK - Update counter
+		  },
+		  error: function (requestError, status, errorResponse) {
+				var response_text = requestError.responseText;
+				var response_data = $.parseJSON(response_text);
+				var errorNum = requestError.status;
 
-            if (errorNum == "401") {
-                // User isn't logged in
-                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-                $('a.login').bind('click', launchLogin);
-            } 
-            else if (errorNum == "403") {
-                // User has already responded
-                var errorMsg = response_data.error; 
-                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-            }
+				if (errorNum == "401") {
+					 // User isn't logged in
+					 var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+					 thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+					 $('a.login').bind('click', launchLogin);
+				} 
+				else if (errorNum == "403") {
+					 // User has already responded
+					 var errorMsg = response_data.error; 
+					 thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+				}
 
-            error_message = thiscomment.children('.error-message');
-            error_message.css('display','block');
+				error_message = thiscomment.children('.error-message');
+				error_message.css('display','block');
 
-            $('.error-message').click(function() {
-                $(this).remove();
-            });
+				$('.error-message').click(function() {
+					 $(this).remove();
+				});
 
-        }
-    });
+		  }
+	 });
 
-    return false;
+	 return false;
 }
 
 function handleResponseLink() {
-    var thiscomment = $(this).closest('.comment'); 
-    var thiscomment_id = 
-        $(this).attr("id").replace("thumbsup-","");
-    var response_type = 'concur';
+	 var thiscomment = $(this).closest('.comment'); 
+	 var thiscomment_id = 
+		  $(this).attr("id").replace("thumbsup-","");
+	 var response_type = 'concur';
 
-    $.ajax({
-        type: "post", 
-        url: "/api/json/comments/" + thiscomment_id + "/responses/",
-        data: { type : response_type },
-        success: function(data){
-            // Update counter
-            var count = thiscomment.children(".votebox").children(".count");
-            count_val = count.text();
-            count_val++;
-            count.text(count_val);
-        },
-        error: function (requestError, status, errorResponse) {
-            var response_text = requestError.responseText;
-            var response_data = $.parseJSON(response_text);
-            var errorNum = requestError.status;
+	 $.ajax({
+		  type: "post", 
+		  url: "/api/json/comments/" + thiscomment_id + "/responses/",
+		  data: { type : response_type },
+		  success: function(data){
+				// Update counter
+				var count = thiscomment.children(".votebox").children(".count");
+				count_val = count.text();
+				count_val++;
+				count.text(count_val);
+		  },
+		  error: function (requestError, status, errorResponse) {
+				var response_text = requestError.responseText;
+				var response_data = $.parseJSON(response_text);
+				var errorNum = requestError.status;
 
-            if (errorNum == "401") {
-                // User isn't logged in
-                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-                $('a.login').bind('click', launchLogin);
-            } 
-            else if (errorNum == "403") {
-                // User has already responded
-                var errorMsg = response_data.error; 
-                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-            }
+				if (errorNum == "401") {
+					 // User isn't logged in
+					 var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+					 thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+					 $('a.login').bind('click', launchLogin);
+				} 
+				else if (errorNum == "403") {
+					 // User has already responded
+					 var errorMsg = response_data.error; 
+					 thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+				}
 
-            error_message = thiscomment.children('.error-message');
-            error_message.css('display','block');
+				error_message = thiscomment.children('.error-message');
+				error_message.css('display','block');
 
-            $('.error-message').click(function() {
-                $(this).remove();
-            });
+				$('.error-message').click(function() {
+					 $(this).remove();
+				});
 
-        }
-    });
+		  }
+	 });
 
-    return false;
+	 return false;
 }
 
 // Handler for logout (.logout) links
 function handleLogoutLink() {
-    FB.logout(function(response) {
-    }); // Log the user out of Facebook
+	 FB.logout(function(response) {
+	 }); // Log the user out of Facebook
 
-    // Return true so the browser follows the link (and logs the user out
-    // of our site too)
-    return true; 
+	 // Return true so the browser follows the link (and logs the user out
+	 // of our site too)
+	 return true; 
 }
 
 // Handler for Facebook site login button.  This is the "fake" Facebook 
 // login button that we show on the login page when a user is already
 // logged into Facebook.
 function handleFacebookSiteLoginButton() {
-    var posturl = "/api/json/users/facebooklogin/";
+	 var posturl = "/api/json/users/facebooklogin/";
 
-    $.ajax({
-        type: "post", context: $(this), url: posturl, data: {},
-        success: function(data) {
-            var loggeduser = data.username;
-            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Log out</a>");
-            parent.$.fn.colorbox.close();
-        },
-        error: function (requestError, status, errorResponse) {
-            var errorNum = requestError.status;
+	 $.ajax({
+		  type: "post", context: $(this), url: posturl, data: {},
+		  success: function(data) {
+				var loggeduser = data.username;
+				parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Log out</a>");
+				parent.$.fn.colorbox.close();
+		  },
+		  error: function (requestError, status, errorResponse) {
+				var errorNum = requestError.status;
 						
-            errorMsg = jQuery.parseJSON(requestError.responseText).error;
-            $(this).find(".errormsg").html(errorMsg);
-            $(this).find(".errormsg").css("display", "block");
-        }
-    });
+				errorMsg = jQuery.parseJSON(requestError.responseText).error;
+				$(this).find(".errormsg").html(errorMsg);
+				$(this).find(".errormsg").css("display", "block");
+		  }
+	 });
 
-    return false;
+	 return false;
 }
 
 function getCurrentTopicId() {
-    topicId = $(".topicid").attr("id"); 
+	 topicId = $(".topicid").attr("id"); 
 
-    return topicId;
+	 return topicId;
 }
 
 
 // Handle user sign-in form
 // This handler grabs the form input and kills the behavior.
 function handleUserSignInForm() {
-    var thisuser = $("#usersignin-username").val();
-    var thispass = $("#usersignin-password").val();
+	 var thisuser = $("#usersignin-username").val();
+	 var thispass = $("#usersignin-password").val();
 
-    //if (thisuer == '' || thispass == '')
-    if (false)
-    {
-        // User didn't enter username or didn't enter password
-        var errorMsg = 'You need to enter a user name and password.';
-        $(this).find(".errormsg").html(errorMsg);
-        $(this).find(".errormsg").css("display", "block");
-        alert(errorMsg);
-        return false;
-    }
-        
+	 //if (thisuer == '' || thispass == '')
+	 if (false)
+	 {
+		  // User didn't enter username or didn't enter password
+		  var errorMsg = 'You need to enter a user name and password.';
+		  $(this).find(".errormsg").html(errorMsg);
+		  $(this).find(".errormsg").css("display", "block");
+		  alert(errorMsg);
+		  return false;
+	 }
+		  
 
-    // Clear prior error messages
-    $('.errormsg').each(function(index) {
-        $(this).html('');
-    });
+	 // Clear prior error messages
+	 $('.errormsg').each(function(index) {
+		  $(this).html('');
+	 });
 
-    var posturl = "/api/json/users/"+thisuser+"/login/";
-        // alert(posturl);
+	 var posturl = "/api/json/users/"+thisuser+"/login/";
+		  // alert(posturl);
 
-    $.ajax({
-        type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
-        success: function(data){
-            // console.log(data);
-            var loggeduser = data.username;
-            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
-            location.reload();
-        },
-        error: function (requestError, status, errorResponse) {
-            var errorNum = requestError.status;
-        
-            var responseText = jQuery.parseJSON(requestError.responseText);
-            var errorMsg = responseText.error;
-            
-            if(responseText.error_html)
-            {
-                errorMsg += responseText.error_html;
-            }
-            $(this).find(".errormsg").html(errorMsg);
-            $(this).find(".errormsg").css("display", "block");
-        }
-    });
+	 $.ajax({
+		  type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
+		  success: function(data){
+				// console.log(data);
+				var loggeduser = data.username;
+				parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
+				location.reload();
+		  },
+		  error: function (requestError, status, errorResponse) {
+				var errorNum = requestError.status;
+		  
+				var responseText = jQuery.parseJSON(requestError.responseText);
+				var errorMsg = responseText.error;
+				
+				if(responseText.error_html)
+				{
+					 errorMsg += responseText.error_html;
+				}
+				$(this).find(".errormsg").html(errorMsg);
+				$(this).find(".errormsg").css("display", "block");
+		  }
+	 });
 
-    return false;
+	 return false;
 
+}
+
+// MORE / LESS ON THREADS
+
+// MORE / LESS ON CONTEXT
+
+function contextviews() {
+	$("#content").toggle(
+	function()
+	{
+		$('#context').animate({
+		height: "auto", 
+		overflow: "auto",
+		padding: "0 0 20px 0"
+		}, 500);
+	},
+	function()
+	{
+		$('#context').animate({
+		height: "9.5em", 
+		overflow: "hidden"
+	}, 500);
+	});
 }

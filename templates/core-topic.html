@@ -4,8 +4,7 @@
 	<script type="text/javascript">
 		$(document).ready( function () {
 			$( ".gotabs" ).tabs();
-	
-			$( ".gotabscollapse" ).tabs({collapsible: true,});			
+			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'slow' }});
 
             $('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
             $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
@@ -52,6 +51,7 @@
             $('.answerform').hide();
             $('#clipperform').hide();
 
+			contextviews();
         });
 	</script>
 {% endblock %}
@@ -81,7 +81,8 @@
         {% if is_reporter %}
         {% include "core-frontpage-update_summary_form.html" %}
         {% endif %}
-			<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
+        
+		<div class="contextbot"><a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a></div>
 			</div>
 		
 		
@@ -100,8 +101,8 @@
 					<div id="optselect">
 						<ul class="tabs">
 							<li class="nullpane" style="display:none;"><a href="#"></a></li>
-							<li class="lightback"><a href="#askquestion"><span class="downarrow"></span>Ask a question about this topic </a></li>
-							<li class="lightback"><a href="#filterqas"><span class="downarrow"></span>Filter Q&As </a></li>
+							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
+							<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
 						</ul>
 							
 						<p class="viewby">Viewing by: <label>Popularity</label></p>
