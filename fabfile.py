@@ -73,7 +73,7 @@ def mkvirtualenv():
     """
     require("hosts", provided_by=[staging, production, testing])
     require("instance", provided_by=[staging, production, testing])
-    run("mkvirtualenv %s" % (env.instance))
+    run("mkvirtualenv --no-site-packages %s" % (env.instance))
 
 def rmvirtualenv():
     """
@@ -87,8 +87,19 @@ def install_packages():
     require("instance", provided_by=[staging, production, testing])
     require("base_dir", provided_by=[staging, production, testing])
     with cd("%s/radregator" % (env.base_dir)):
+        # egenix-mx-base doesn't like to be installed with pip in a 
+        # --no-site-packages virtualenv
+        run("workon %s; easy_install `grep egenix-mx-base ./conf/requirements.txt`" % \
+            (env.instance))
         run("workon %s; pip install --requirement=./conf/requirements.txt" % \
             (env.instance))
+
+def reinstall_virtualenv():
+    require("instance", provided_by=[staging, production, testing])
+    require("base_dir", provided_by=[staging, production, testing])
+    rmvirtualenv()
+    mkvirtualenv()
+    install_packages()
 
 def git_clone():
     """
