@@ -305,15 +305,15 @@ div#leftcontent h1 {
 
 div#leftcontent div#context {
 	position: relative;
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid #ccc;
 	margin-bottom: 40px;
 	padding-bottom: 10px;
-	overflow: hidden;
-	height: 9.5em;
+	overflow: auto;
+	height: auto;
 }
 
 div#leftcontent div#context p {
-	margin: 0 0 20px 0;
+	margin: 0 0 5px 0;
 	line-height: 1.4em;
 }
 
@@ -323,7 +323,12 @@ div#leftcontent div#context div.contextbot {
 	left: 0;
 	width: 100%;
 	height: 20px;
-	background: transparent url(../img/misc/bottom-fade.png) repeat-x;
+/*	background: transparent url(../img/misc/bottom-fade.png) repeat-x;
+*/
+}
+
+div#leftcontent div#context div.contextbot .less {
+	display: none;
 }
 
 a.expanderbut {

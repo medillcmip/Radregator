@@ -76,7 +76,7 @@
             $('.answerform').hide();
             $('#clipperform').hide();
 
-			contextviews();
+			contextexpander();
         });
 	</script>
 {% endblock %}
@@ -107,7 +107,10 @@
         {% include "core-topic-update_summary_form.html" %}
         {% endif %}
         
-		<div class="contextbot"><a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a></div>
+		<div class="contextbot"><a class="expanderbut lightback" href="#">
+			<span class="more"><span class="downarrow"></span>more </span>
+			<span class="less"><span class="uparrow"></span>less </span>
+		</a></div>
 			</div>
 		
 		

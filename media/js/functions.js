@@ -445,22 +445,43 @@ function handleUserSignInForm() {
 
 // MORE / LESS ON CONTEXT
 
-function contextviews() {
-	$("#content").toggle(
+function contextexpander() {
+	
+	// GET TOTAL HEIGHT
+	var fullheight = $("#context").height();
+	//alert(fullheight);
+	
+	if (fullheight < 150) {
+		$(".contextbot").css("display","none");
+		return false;
+	}
+	
+	// SET MINIMIZED HEIGHT ON LOAD
+	var csschunk = {
+      'height' : '10em',
+      'overflow' : 'hidden'
+    }
+	$("#context").css(csschunk);
+	
+	// ADD CLICK-TO-TOGGLE
+	$(".contextbot .expanderbut").toggle(
 	function()
 	{
 		$('#context').animate({
-		height: "auto", 
+		height: fullheight-20, 
 		overflow: "auto",
-		padding: "0 0 20px 0"
 		}, 500);
+		$(".contextbot .more").css("display","none");
+		$(".contextbot .less").css("display","block");
 	},
 	function()
-	{
-		$('#context').animate({
-		height: "9.5em", 
-		overflow: "hidden"
-	}, 500);
+		{
+			$('#context').animate({
+			height: "10em", 
+			overflow: "hidden"
+		}, 500);
+		$(".contextbot .more").css("display","block");
+		$(".contextbot .less").css("display","none");
 	});
 }
 
