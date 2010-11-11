@@ -6,7 +6,18 @@
 			$( ".gotabs" ).tabs();
 			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'slow' }});
 
-            $('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
+            if (!userIsAuthenticated()) {
+                // If the user isn't logged in disabled the 
+                // "ask a question ..." tab.
+                $(".qaoptions").tabs("option", "disabled", [1]);
+
+                // Also show an error message if they try to click on the tab
+                $(".qaoptions a.asktab").click(function() {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                });
+            }
+
+            //$('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
             $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
             $('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
 			//$('#logoutlink').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
@@ -23,28 +34,42 @@
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
             $('.replyformtoggle').click(function () {
-                var id = $(this).attr("id");
-                var formid = id.replace('toggle', '');
-                $('#' + formid).toggle();
-                var thistext = $(this).text();
-                if (thistext == "Reply") {
-               		$(this).text("Close reply box");
-                } else {
-                	$(this).text("Reply"); 
+
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+                    // Also toggle the link text
+                    if ($(this).html() == "Reply") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Reply");
+                    }
+                    $('#' + formid).toggle();
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
                 }
                 return false;
-
             });
             $('.answerformtoggle').click(function () {
-                var id = $(this).attr("id");
-                var formid = id.replace('toggle', '');
-                $('#' + formid).toggle();
-                var thistext = $(this).text();
-				if (thistext == "Answer this") {
-               		$(this).text("Close answer box");
-                } else {
-                	$(this).text("Answer this"); 
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+
+                    // Also toggle the link text
+                    if ($(this).html() == "Answer this") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Answer this");
+                    }
+                    $('#' + formid).toggle();
                 }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+
                 return false;
             });
             $('.replyform').hide();
@@ -68,9 +93,9 @@
 			-->
 			
     {% if is_reporter %}
-        {% include "core-frontpage-addtopic.html" %}
+        {% include "core-topic-addtopic.html" %}
 
-        {% include "core-frontpage-addsource.html" %}
+        {% include "core-topic-addsource.html" %}
     {% endif %}
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
@@ -79,7 +104,7 @@
                     {{topic.summary.text|safe}}
                     </p>
         {% if is_reporter %}
-        {% include "core-frontpage-update_summary_form.html" %}
+        {% include "core-topic-update_summary_form.html" %}
         {% endif %}
         
 		<div class="contextbot"><a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a></div>
@@ -92,7 +117,7 @@
 			</div>
 		
         {% if is_reporter %}
-        {% include "core-frontpage-topic_tools.html" %}
+        {% include "core-topic-topic_tools.html" %}
         {% endif %}
 		
 			<div id="qas">
@@ -101,6 +126,7 @@
 					<div id="optselect">
 						<ul class="tabs">
 							<li class="nullpane" style="display:none;"><a href="#"></a></li>
+
 							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
 							<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
 						</ul>

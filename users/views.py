@@ -266,11 +266,11 @@ def register(request):
             #return do_login(f_username,f_password,request)
             return HttpResponseRedirect('/')
         else:
-            return_page = 'register.html'
+            return_page = 'users-register.html'
     if request.method != 'POST': 
         #get a new form
         form = RegisterForm()
-        return_page = 'register.html'
+        return_page = 'users-register.html'
     template_dict['form'] = form
     logger.debug('users.views.register(request: returning page='+return_page)
     return render_to_response(return_page, template_dict,\

@@ -1,3 +1,4 @@
+var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/register/">register</a> to do this!'; 
 
 // VARIABLE VERTICAL ALIGNMENT
 (function ($) {
@@ -47,6 +48,24 @@ function authCheck() {
 	});
 }
 
+/*
+ * Set a flag so other javascript code can tell that a user is logged in.
+ */
+function setUserAuthenticated() {
+    jQuery.data(document.body, "is_authenticated", true);
+}
+
+/* 
+ * Is the user logged in?
+ *
+ * NOTE: This is likely to make authCheck() deprecated
+ *
+ */
+function userIsAuthenticated() {
+    // Read the flag set by setUserAuthenticated() to see if the user is
+    // logged in
+    return jQuery.data(document.body, "is_authenticated");
+}
 
 //
 //
@@ -103,20 +122,27 @@ function openReplyform (replytype,parentid) {
 
 // ATTACH FUNCTIONS TO LINKS
 function handleReplyform() {
-	var parentid = $(this).closest("li.comment").attr("id");
-	
-	if ($(this).hasClass("attach")) { var replytype = "attach"; }
-		else { var replytype = "reply"; }
-						
-	
-	if ($("#"+parentid+" ."+replytype+"div").hasClass("opened")) {
-		$(this).removeClass("opened");
-		closeReplyform(replytype,parentid);
-		return false;
-	}
-	openReplyform(replytype, parentid);
-	$(this).addClass("opened");
-	return false;
+    if (userIsAuthenticated()) {
+        var parentid = $(this).closest("li.comment").attr("id");
+        
+        if ($(this).hasClass("attach")) { var replytype = "attach"; }
+            else { var replytype = "reply"; }
+                            
+        
+        if ($("#"+parentid+" ."+replytype+"div").hasClass("opened")) {
+            $(this).removeClass("opened");
+            closeReplyform(replytype,parentid);
+            return false;
+        }
+        openReplyform(replytype, parentid);
+        $(this).addClass("opened");
+        return false;
+    }
+    else {
+        console.debug('got here');
+        displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+        return false;
+    }
 }
 
 
@@ -284,50 +310,41 @@ function handleOpinionLink () {
 }
 
 function handleResponseLink() {
-	 var thiscomment = $(this).closest('.comment'); 
-	 var thiscomment_id = 
-		  $(this).attr("id").replace("thumbsup-","");
-	 var response_type = 'concur';
+    var thiscomment = $(this).closest('.comment'); 
+    var thiscomment_id = 
+        $(this).attr("id").replace("thumbsup-","");
+    var response_type = 'concur';
 
-	 $.ajax({
-		  type: "post", 
-		  url: "/api/json/comments/" + thiscomment_id + "/responses/",
-		  data: { type : response_type },
-		  success: function(data){
-				// Update counter
-				var count = thiscomment.children(".votebox").children(".count");
-				count_val = count.text();
-				count_val++;
-				count.text(count_val);
-		  },
-		  error: function (requestError, status, errorResponse) {
-				var response_text = requestError.responseText;
-				var response_data = $.parseJSON(response_text);
-				var errorNum = requestError.status;
+    $.ajax({
+        type: "post", 
+        url: "/api/json/comments/" + thiscomment_id + "/responses/",
+        data: { type : response_type },
+        success: function(data){
+            // Update counter
+            var count = thiscomment.children(".votebox").children(".count");
+            count_val = count.text();
+            count_val++;
+            count.text(count_val);
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
 
-				if (errorNum == "401") {
-					 // User isn't logged in
-					 var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-					 thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-					 $('a.login').bind('click', launchLogin);
-				} 
-				else if (errorNum == "403") {
-					 // User has already responded
-					 var errorMsg = response_data.error; 
-					 thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-				}
+            if (errorNum == "401") {
+                // User isn't logged in
+                var errorMsg = 'You need to login or <a href="/register/">register</a> to do this!' 
+                displayMessage(errorMsg, 'error');
+            } 
+            else if (errorNum == "403") {
+                // User has already responded
+                var errorMsg = response_data.error; 
+                displayMessage(errorMsg, 'error');
+            }
+        }
+    });
 
-				error_message = thiscomment.children('.error-message');
-				error_message.css('display','block');
-
-				$('.error-message').click(function() {
-					 $(this).remove();
-				});
-
-		  }
-	 });
-
-	 return false;
+    return false;
 }
 
 // Handler for logout (.logout) links
@@ -375,53 +392,52 @@ function getCurrentTopicId() {
 // Handle user sign-in form
 // This handler grabs the form input and kills the behavior.
 function handleUserSignInForm() {
-	 var thisuser = $("#usersignin-username").val();
-	 var thispass = $("#usersignin-password").val();
+	
+    var thisuser = $("#usersignin-username").val();
+    var thispass = $("#usersignin-password").val();
 
-	 //if (thisuer == '' || thispass == '')
-	 if (false)
-	 {
-		  // User didn't enter username or didn't enter password
-		  var errorMsg = 'You need to enter a user name and password.';
-		  $(this).find(".errormsg").html(errorMsg);
-		  $(this).find(".errormsg").css("display", "block");
-		  alert(errorMsg);
-		  return false;
-	 }
-		  
+    //if (thisuer == '' || thispass == '')
+    if (false)
+    {
+        // User didn't enter username or didn't enter password
+        var errorMsg = 'You need to enter a user name and password.';
+        displayMessage(errorMsg, 'error');
+        return false;
+    }
+        
 
-	 // Clear prior error messages
-	 $('.errormsg').each(function(index) {
-		  $(this).html('');
-	 });
+    // Clear prior error messages
+    $('.errormsg').each(function(index) {
+        $(this).html('');
+    });
 
-	 var posturl = "/api/json/users/"+thisuser+"/login/";
-		  // alert(posturl);
+    var posturl = "/api/json/users/"+thisuser+"/login/";
+        // alert(posturl);
 
-	 $.ajax({
-		  type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
-		  success: function(data){
-				// console.log(data);
-				var loggeduser = data.username;
-				parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
-				location.reload();
-		  },
-		  error: function (requestError, status, errorResponse) {
-				var errorNum = requestError.status;
-		  
-				var responseText = jQuery.parseJSON(requestError.responseText);
-				var errorMsg = responseText.error;
-				
-				if(responseText.error_html)
-				{
-					 errorMsg += responseText.error_html;
-				}
-				$(this).find(".errormsg").html(errorMsg);
-				$(this).find(".errormsg").css("display", "block");
-		  }
-	 });
+    $.ajax({
+        type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
+        success: function(data){
+            // console.log(data);
+            var loggeduser = data.username;
+            parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
+            location.reload();
+        },
+        error: function (requestError, status, errorResponse) {
+            var errorNum = requestError.status;
+        
+            var responseText = jQuery.parseJSON(requestError.responseText);
+            var errorMsg = responseText.error;
+            
+            if(responseText.error_html)
+            {
+                errorMsg += responseText.error_html;
+            }
 
-	 return false;
+            displayMessage(errorMsg, 'error');
+        }
+    });
+
+    return false;
 
 }
 
@@ -446,4 +462,20 @@ function contextviews() {
 		overflow: "hidden"
 	}, 500);
 	});
+}
+
+
+// Display a message in the message bar
+function displayMessage(message, level) {
+    level = typeof(level) != 'undefined' ? level : 'info';
+
+    $('#messages p').html(message);
+    $('#messageswrap').addClass(level);
+    $('#messageswrap').show();
+
+}
+
+// Hide the message bar
+function hideMessages() {
+    $('#messagewrap').hide();
 }
