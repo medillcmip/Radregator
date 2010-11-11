@@ -37,6 +37,8 @@
             $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
             $('#messageswrap').hide(); // Hide messages bar initially
 
+            $('#fbloginbut').unbind('click', handleFacebookLoginButton).bind('click', handleFacebookLoginButton);
+
             // Handler for collapsing the messages bar
             $('#messages #hidemessages a').click(function() {
                 $('#messageswrap').hide();
