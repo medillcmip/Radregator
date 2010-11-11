@@ -45,6 +45,7 @@ class RegisterForm(forms.Form):
 
     username = forms.CharField(max_length=30)
     password = forms.CharField(max_length=30, widget=forms.PasswordInput)
+    confirm_password = forms.CharField(max_length=30, widget=forms.PasswordInput)
     #first_name = forms.CharField(max_length=30, required=False)
     #last_name = forms.CharField(max_length=45, required=False)
     #email = forms.EmailField(required=False)
@@ -55,6 +56,9 @@ class RegisterForm(forms.Form):
     #phone = USPhoneNumberField(required=False)
     #dob = forms.DateField(initial=datetime.date.today, required=False)
     #dont_log_user_in = forms.BooleanField(required = False, initial=False)
+
+    # TODO: validate that password = confirm password
+
     def clean_email(self):
         """
         ensure no other users have the same email
