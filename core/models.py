@@ -68,8 +68,13 @@ class Topic(models.Model):
             indentlist += [self.recursive_traverse(comment)]
 
         return indentlist
-    
-    
+
+    def get_burning_questions(self):
+        """Return a list of burning questions for this topic."""
+        pass
+        # TODO: implement this.
+
+
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
        answers, concerns and replies.
@@ -112,6 +117,10 @@ class Comment(models.Model):
 
     def num_upvotes(self):
         return CommentResponse.objects.filter(comment=self,type="concur").count()
+
+    def is_burning(self):
+        pass
+        # TODO: Implement this.
 
         
 
