@@ -38,6 +38,13 @@
                 if (userIsAuthenticated()) {
                     var id = $(this).attr("id");
                     var formid = id.replace('toggle', '');
+                    // Also toggle the link text
+                    if ($(this).html() == "Reply") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Reply");
+                    }
                     $('#' + formid).toggle();
                 }
                 else {
@@ -51,6 +58,14 @@
                 if (userIsAuthenticated()) {
                     var id = $(this).attr("id");
                     var formid = id.replace('toggle', '');
+
+                    // Also toggle the link text
+                    if ($(this).html() == "Answer this") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Answer this");
+                    }
                     $('#' + formid).toggle();
                 }
                 else {
