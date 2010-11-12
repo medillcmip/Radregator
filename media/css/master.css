@@ -738,9 +738,10 @@ form.answerform input.attachsubmit, form.replyform input.attachsubmit, ul.master
 	left: 0;
 	width: 14px;
 	display: block;
-	background: url(../img/backs/accepted.png) repeat-y;
-	font-size: 0.8em;
+	background: url(../img/backs/opinion-shading.png) repeat-y;
+	font-size: 0.7em;
 	color: #fff;
+	font-weight: bold;
 }
 
 .earmark .textspan {
@@ -748,18 +749,18 @@ form.answerform input.attachsubmit, form.replyform input.attachsubmit, ul.master
 	-moz-transform: rotate(-90deg);
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 	position: relative;
-	left: -1.5em;
-	top: 2em;
+	left: -1.6em;
+	top: 2.2em;
 }
 
 /* My Comment */
 
 .accepted {
-	
+	background-color: #339933;
 }
 
 .moderator {
-	
+	/* background-color: #006699; */
 }
 
 

@@ -502,10 +502,27 @@ function hideMessages() {
 }
 
 // Set up earmarks on the answers
-function earmarkheight() {
+function earmarksetup() {
 	$('.earmark').each(function(index) {
 		var thisheight = $(this).closest(".answer").height();
-		//console.log(thisheight);
 		$(this).height(thisheight);
+		
+		// If "accepted"
+		if ($(this).hasClass('accepted')) { $(this).children('.textspan').html('Accepted'); }
+		
+		// If "moderator"
+		if ($(this).hasClass('moderator')) { $(this).children('.textspan').html('Moderator'); }
+
+		// Get the "truthiness" and set background color accordingly
+		var classstring = $(this).attr("class");
+		var olevel = classstring.replace(/[a-zA-Z ]/g, '');
+		
+		// THIS IS WHERE THE AMOUNT EACH DOWNVOTE WEIGHS ON THE COLORING IS SET
+		var gval = 153 - (olevel * 2);
+		
+		var bground = "rgb(51,"+gval+",51)";
+		
+		$(this).css("background-color",bground);		
+		
  	});
 }
