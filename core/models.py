@@ -69,11 +69,6 @@ class Topic(models.Model):
 
         return indentlist
 
-    def get_burning_questions(self):
-        """Return a list of burning questions for this topic."""
-        pass
-        # TODO: implement this.
-
 
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
