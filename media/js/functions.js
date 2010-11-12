@@ -385,8 +385,10 @@ function authFacebookUserToSite() {
 function handleFacebookLoginButton() {
     FB.getLoginStatus(function(response) {
         if (response.session) {
+            //console.debug("Facebook user found.  Try to authenticate them to this site.");
             authFacebookUserToSite();
         } else {
+            //console.debug("No Facebook user found.  Launch Facebook login flow.");
             FB.login(function(response) {
                 if (response.session) {
                     authFacebookUserToSite();
