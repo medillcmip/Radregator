@@ -3,6 +3,9 @@ import unittest
 
 from django.test import Client
 
+from core.models import Summary, Topic
+import core.utils
+
 class ApiTestCase(unittest.TestCase):
     def setUp(self):
         pass
@@ -19,3 +22,6 @@ class ApiTestCase(unittest.TestCase):
 
         self.fail("Test not yet implemented.")
 
+class BurningQuestionsTestCase(inittest.TestCase):
+    def setUp(self):
+        pass
