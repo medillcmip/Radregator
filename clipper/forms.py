@@ -31,3 +31,4 @@ class ClipTextForm(forms.Form):
         "published under? If not, could you fix it?")
     url_field = forms.URLField(required=True, widget=forms.HiddenInput)
     comment_id_field = forms.CharField(widget=forms.HiddenInput, required=True)
+    topic_id_field = forms.CharField(widget=forms.HiddenInput, required=True)

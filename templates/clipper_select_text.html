@@ -112,6 +112,7 @@
             var comment_id_field_f = $("#id_comment_id_field").val()
             var selected_text_f = $("#id_selected_text").val()
             var user_comments_f = $("#id_user_comments").val()
+            var topic_id_f = $("#id_topic_id_field").val()
 
             // Clear prior error messages
             $('.errormsg').each(function(index) {
@@ -124,10 +125,10 @@
                 type: "post", context: $(this), url: posturl, data: { url_field: url_field_f,
                   author: author_name_f, title: title_name_f, date_published: date_f, 
                   comment_id_field: comment_id_field_f, selected_text: selected_text_f,
-                  user_comments: user_comments_f}, success: function(data){
+                  user_comments: user_comments_f, topic_id_field: topic_id_f}, success: function(data){
                 //parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
                 //parent.$.fn.colorbox.close();
-                location.href="/";
+                location.href="/topic/"+topic_id_f;
               },
                 error: function (requestError, status, errorResponse) {
                   var errorNum = requestError.status;
@@ -221,6 +222,7 @@
           {{form.date_published.errors}}Date Published:<div id="id_date_published_lbl" style="display:inline;"></div>{{form.date_published}}
           <BR><BR>
           {{form.comment_id_field}}
+          {{form.topic_id_field}}
           {{form.url_field}}
           {% csrf_token %} 
           <p class="errormsg" style="display:none;"></p>
