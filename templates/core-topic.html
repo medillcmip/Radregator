@@ -4,10 +4,20 @@
 	<script type="text/javascript">
 		$(document).ready( function () {
 			$( ".gotabs" ).tabs();
-	
-			$( ".gotabscollapse" ).tabs({collapsible: true,});			
+			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'slow' }});
 
-            $('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
+            if (!userIsAuthenticated()) {
+                // If the user isn't logged in disabled the 
+                // "ask a question ..." tab.
+                $(".qaoptions").tabs("option", "disabled", [1]);
+
+                // Also show an error message if they try to click on the tab
+                $(".qaoptions a.asktab").click(function() {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                });
+            }
+
+            //$('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
             $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
             $('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
 			//$('#logoutlink').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
@@ -24,23 +34,49 @@
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
             $('.replyformtoggle').click(function () {
-                var id = $(this).attr("id");
-                var formid = id.replace('toggle', '');
-                $('#' + formid).toggle();
-                return false;
 
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+                    // Also toggle the link text
+                    if ($(this).html() == "Reply") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Reply");
+                    }
+                    $('#' + formid).toggle();
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+                return false;
             });
             $('.answerformtoggle').click(function () {
-                var id = $(this).attr("id");
-                var formid = id.replace('toggle', '');
-                $('#' + formid).toggle();
-                return false;
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
 
+                    // Also toggle the link text
+                    if ($(this).html() == "Answer this") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Answer this");
+                    }
+                    $('#' + formid).toggle();
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+
+                return false;
             });
             $('.replyform').hide();
             $('.answerform').hide();
             $('#clipperform').hide();
 
+			contextexpander();
         });
 	</script>
 {% endblock %}
@@ -64,9 +100,9 @@
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
 				<h1>{{topic.title}}</h1>
-					<div id="contextintro" class="topic-summary">
+					<p id="contextintro" class="topic-summary">
                     {{topic.summary.text|safe}}
-                    </div>
+                    </p>
         {% if is_reporter %}
         {% include "core-topic-update_summary_form.html" %}
         {% endif %}

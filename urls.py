@@ -95,4 +95,3 @@ if settings.DEBUG:
         (r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.STATIC_DOC_ROOT}),
     )
-    print settings.STATIC_DOC_ROOT

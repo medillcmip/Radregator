@@ -37,10 +37,29 @@
             $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
             $('#messageswrap').hide(); // Hide messages bar initially
 
+            $('#fbloginbut').unbind('click', handleFacebookLoginButton).bind('click', handleFacebookLoginButton);
+
             // Handler for collapsing the messages bar
             $('#messages #hidemessages a').click(function() {
                 $('#messageswrap').hide();
+                return false;
             });
+
+            {% if user.is_authenticated %}
+            // Set a flag that shows that tells other javascript code
+            // that the user is logged in.
+            setUserAuthenticated(); 
+
+            // Handler for ask a question button in top bar
+            $("#usercontrols a.askquestion").click(function() {
+                // TODO: Show a more advanced dialog that let's user ask 
+                // questions across lots of topics.  For now, just 
+                // show the current topic's form.
+                $("#qas .qaoptions").tabs("option", "selected", 1);
+            });
+            {% endif %}
+
+            
         });
     </script>
 
