@@ -170,7 +170,7 @@ class Comment(models.Model):
 
     def num_upvotes(self):
         return self.num_responses("concur")
-_
+
     def num_related(self, relation_type):
         return CommentRelation.objects.filter(left_comment=self, \
             relation_type=relation_type).count()
