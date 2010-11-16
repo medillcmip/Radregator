@@ -224,6 +224,50 @@ span.uparrow {
 	border-top: 8px solid #ececec;
 }
 
+/* MESSAGES BAR */
+#messageswrap {
+    position: fixed;
+    top: 48px;
+    left: 0;
+
+    height: 29px;
+    width: 100%;
+
+    z-index: 1000;
+
+	background-color: #620505;
+}
+
+#messages {
+    position: relative;
+
+    margin: 0 auto;
+
+    height: 29px;
+    line-height: 29px;
+
+    color: white;
+    font-size: 0.9em;
+    font-weight: bold;
+
+    text-align: center;
+}
+
+#messages #hidemessages {
+    position: absolute;
+
+    top: 0px;
+    right: 0px;
+}
+
+#messages a {
+    color: white;
+    text-decoration: none;
+}
+
+#message p a {
+    text-decoration: underline;
+}
 
 /* LEFT CONTENT ON TOPIC/CONTENT PAGES */
 
