@@ -20,7 +20,7 @@ class ClipTextForm(forms.Form):
         label="Add some of your own commentary here.")
     title = forms.CharField(required=False, \
         label="Not the right title for this article?  Mind filling it in for us?"\
-        , widget=forms.TextInput(attrs={'size':'100', 'class':'clipper_text_field'}))
+        , widget=forms.TextInput(attrs={'size':'30', 'class':'clipper_text_field'}))
     author = forms.CharField(required=False, \
         widget=forms.TextInput(attrs={'class':'clipper_text_field'}),
         label="Is this the person who wrote the article?  " +\
