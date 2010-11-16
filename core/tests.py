@@ -3,7 +3,7 @@ import json
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
-from core.models import Summary, Topic, Comment, CommentType
+from core.models import Summary, Topic, Comment, CommentType, CommentResponse
 import core.utils
 from users.models import UserProfile
 
@@ -34,9 +34,10 @@ class BurningQuestionsTestCase(TestCase):
         question.save()
         question.topics = [topic]
         question.save()
+        self._questions.append(question)
 
     def _ask_initial_questions(self):
-        topic = Topic.objects.all()[0]
+        topic = self._topic
         user1_profile = UserProfile.objects.get(user__username="user1")
         user2_profile = UserProfile.objects.get(user__username="user2")
         user3_profile = UserProfile.objects.get(user__username="user3")
@@ -54,5 +55,30 @@ class BurningQuestionsTestCase(TestCase):
         self._ask_question(topic=topic, text="This is a fifth question", \
             user_profile=user5_profile)
 
+    def _respond_positively(self, user_profile, question):
+        """Utility method to respond positively to a question."""
+        comment_response = CommentResponse(user=user_profile, \
+                                           comment=question, \
+                                           type="concur")
+        comment_response.save()
+        
+
     def setUp(self):
+        self._questions = []
+        self._topic = Topic.objects.all()[0]
         self._ask_initial_questions()
+
+    def test_get_burning_questions(self):
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        question = self._questions[2]
+
+        self._respond_positively(user1_profile, question)
+        self._respond_positively(user2_profile, question)
+        self._respond_positively(user3_profile, question)
+        self._respond_positively(user4_profile, question)
+        self._respond_positively(user5_profile, question)
