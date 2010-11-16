@@ -75,16 +75,35 @@ class Topic(models.Model):
         return self.comments.filter(is_deleted=False, \
             comment_type__name="Question")
 
-
-
     def get_burning_questions(self):
-        """Return a QuerySet containing burning questions."""
+        """Return a list containing burning questions."""
         #questions = self.get_questions().annotate(num_responses=Count("responses"))
         # QUESTION: Can you filter on the argument of Count? Like if I only want 
         # count responses of a certain type?
-        for
+        # ANSWER: There is (but it's not super-easy)!
+        # http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django  
 
-        return questions
+        # HACK ALERT!: This is a really naive approach and should definitely be refactored in
+        # the future.
+        
+        burning_questions = [] 
+        questions = self.get_questions()
+        total_positive_responses = 0
+        for question in questions:
+            question.num_positive_responses = question.num_responses("concur")
+            total_positive_responses = total_positive_responses + question.num_positive_responses
+
+        avg_positive_responses = total_positive_responses / questions.count()
+
+        # Now that we have the average, let's see if the questions are above average.
+        # We have to loop through and re-get the response counts for each question again.
+        for question in questions:
+            if question.num_positive_responses > avg_positive_responses and \
+               question.is_answered():
+               question.is_burning = True
+               burning_questions.push(question)
+
+        return burning_questions
 
 
 class Comment(models.Model):
@@ -128,14 +147,23 @@ class Comment(models.Model):
     def __unicode__(self):
         return self.text[:80]
 
-
     def num_responses(self, response_type):
         return CommentResponse.objects.filter(comment=self, \
             type=response_type).count()
 
-
     def num_upvotes(self):
         return self.num_responses("concur")
+_
+    def num_related(self, relation_type):
+        return CommentRelation.objects.filter(left_comment=self, \
+            relation_type=relation_type).count()
+
+    def num_answers(self):
+        # TODO: Make the comment relation a constant or something.
+        return self.num_related("reply")
+
+    def is_answered(self):
+        return self.num_answers() > 0
 
 
 class CommentTypeManager(models.Manager):
