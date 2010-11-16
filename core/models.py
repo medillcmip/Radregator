@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from utils import comment_cmp
 from django.contrib.sites.models import Site
 from clipper.models import Article
@@ -69,6 +70,19 @@ class Topic(models.Model):
 
         return indentlist
 
+    def get_questions(self):
+        """Return a QuerySet containing visible questions for this topic."""
+        return self.comments.filter(is_deleted=False, \
+            comment_type__name="Question")
+
+
+
+    def get_burning_questions(self):
+        """Return a QuerySet containing burning questions."""
+        questions = self.get_questions().annotate(num_responses=Count("responses"))
+
+        return questions
+
 
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
@@ -107,17 +121,13 @@ class Comment(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     clips = models.ManyToManyField(Clip, blank=True, null=True)
+
     def __unicode__(self):
         return self.text[:80]
 
     def num_upvotes(self):
         return CommentResponse.objects.filter(comment=self,type="concur").count()
 
-    def is_burning(self):
-        pass
-        # TODO: Implement this.
-
-        
 
 class CommentTypeManager(models.Manager):
     def get_by_natural_key(self, name):
