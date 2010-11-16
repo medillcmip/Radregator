@@ -79,7 +79,10 @@ class Topic(models.Model):
 
     def get_burning_questions(self):
         """Return a QuerySet containing burning questions."""
-        questions = self.get_questions().annotate(num_responses=Count("responses"))
+        #questions = self.get_questions().annotate(num_responses=Count("responses"))
+        # QUESTION: Can you filter on the argument of Count? Like if I only want 
+        # count responses of a certain type?
+        for
 
         return questions
 
@@ -125,8 +128,14 @@ class Comment(models.Model):
     def __unicode__(self):
         return self.text[:80]
 
+
+    def num_responses(self, response_type):
+        return CommentResponse.objects.filter(comment=self, \
+            type=response_type).count()
+
+
     def num_upvotes(self):
-        return CommentResponse.objects.filter(comment=self,type="concur").count()
+        return self.num_responses("concur")
 
 
 class CommentTypeManager(models.Manager):
