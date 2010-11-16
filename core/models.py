@@ -75,35 +75,52 @@ class Topic(models.Model):
         return self.comments.filter(is_deleted=False, \
             comment_type__name="Question")
 
-    def get_burning_questions(self):
+    def burning_questions(self):
         """Return a list containing burning questions."""
-        #questions = self.get_questions().annotate(num_responses=Count("responses"))
-        # QUESTION: Can you filter on the argument of Count? Like if I only want 
-        # count responses of a certain type?
-        # ANSWER: There is (but it's not super-easy)!
-        # http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django  
 
-        # HACK ALERT!: This is a really naive approach and should definitely be refactored in
-        # the future.
-        
-        burning_questions = [] 
-        questions = self.get_questions()
-        total_positive_responses = 0
-        for question in questions:
-            question.num_positive_responses = question.num_responses("concur")
-            total_positive_responses = total_positive_responses + question.num_positive_responses
+        if not ("_burning_questions" in self.__dict__):
+            #questions = self.get_questions().annotate(num_responses=Count("responses"))
+            # QUESTION: Can you filter on the argument of Count? Like if I only want 
+            # count responses of a certain type?
+            # ANSWER: There is (but it's not super-easy)!
+            # http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django  
 
-        avg_positive_responses = total_positive_responses / questions.count()
+            # HACK ALERT!: This is a really naive approach and should definitely be refactored in
+            # the future.
+            
+            burning_questions = [] 
+            burning_question_ids = []
+            questions = self.get_questions()
+            total_positive_responses = 0
 
-        # Now that we have the average, let's see if the questions are above average.
-        # We have to loop through and re-get the response counts for each question again.
-        for question in questions:
-            if question.num_positive_responses > avg_positive_responses and \
-               question.is_answered():
-               question.is_burning = True
-               burning_questions.push(question)
+            for question in questions:
+                question.num_positive_responses = question.num_responses("concur")
+                total_positive_responses = total_positive_responses + question.num_positive_responses
 
-        return burning_questions
+            avg_positive_responses = total_positive_responses / questions.count()
+
+            # Now that we have the average, let's see if the questions are above average.
+            # We have to loop through and re-get the response counts for each question again.
+            for question in questions:
+                if question.num_positive_responses > avg_positive_responses and \
+                   question.is_answered():
+                   question.is_burning = True
+                   burning_questions.push(question)
+                   burning_question_ids.push(question.id)
+
+            self._burning_questions = burning_questions
+            self._burning_question_ids = burning_question_ids
+
+        return self._burning_questions
+
+
+        def is_burning(self, question):
+            """ Test whether a question is burning. """
+            if not ("_burning_questions" in self.__dict__):
+                # We haven't calculated our burning questions yet.  Do this.
+                self.burning_questions()
+
+            return question.id in self._burning_question_ids
 
 
 class Comment(models.Model):
