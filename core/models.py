@@ -186,7 +186,7 @@ class Comment(models.Model):
         return self.num_responses("concur")
 
     def num_related(self, relation_type):
-        return CommentRelation.objects.filter(left_comment=self, \
+        return CommentRelation.objects.filter(right_comment=self, \
             relation_type=relation_type).count()
 
     def num_answers(self):

@@ -3,9 +3,12 @@ import json
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
-from core.models import Summary, Topic, Comment, CommentType, CommentResponse
+from core.models import Summary, Topic, Comment, CommentType, \
+    CommentRelation, CommentResponse
 import core.utils
 from users.models import UserProfile
+from clipper.models import Article
+import clipper.views
 
 
 #class ApiTestCase(TestCase):
@@ -24,7 +27,8 @@ from users.models import UserProfile
 #
         #self.fail("Test not yet implemented.")
 
-class BurningQuestionsTestCase(TestCase):
+class QuestionTestCase(TestCase):
+    """ Base class for TestCases that deal with questions and answers. """
     fixtures = ['test_users.json', 'test_topics.json', 'comment_types.json']
 
     def _ask_question(self, topic, text, user_profile):
@@ -35,6 +39,29 @@ class BurningQuestionsTestCase(TestCase):
         question.topics = [topic]
         question.save()
         self._questions.append(question)
+
+        return question
+
+    def _answer_question(self, user_profile, question, clip_url, clip_text, \
+        comment_text):
+        comment_type = CommentType.objects.get(name="Reply")
+        clipper.views.create_article(clip_url)
+        article = Article.objects.get(url=clip_url)
+        clip = clipper.models.Clip(article=article, \
+            text = clip_text, user=user_profile, user_comments=comment_text)
+        clip.save()
+        answer = core.models.Comment(text=comment_text, \
+            user=user_profile, comment_type=comment_type, is_parent=True,\
+            is_deleted=False)
+        answer.save()
+        answer.topics = question.topics.all()
+        answer.clips.add(clip)
+        answer.save()
+
+        reply_relation = core.models.CommentRelation(\
+            left_comment = answer, right_comment=question,\
+            relation_type = 'reply')
+        reply_relation.save()
 
     def _respond_positively(self, user_profile, question):
         """Utility method to respond positively to a question."""
@@ -47,6 +74,31 @@ class BurningQuestionsTestCase(TestCase):
         self._questions = []
         self._topic = Topic.objects.all()[0]
 
+class BasicQuestionTestCase(QuestionTestCase):
+    def test_num_answers(self):
+        topic = self._topic
+
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        question = self._ask_question(topic=topic, text="How many wards is Chinatown in?", \
+            user_profile=user1_profile)
+        self._answer_question(user_profile=user2_profile, question=question, \
+            clip_url="http://chicagojournal.com/news/04-28-2010/Boundary_lines", \
+            clip_text="Chinatown, Bridgeport and McKinley Park - home to much of the city's Chinese-descended and immigrant populations - are politically fragmented, split between four city wards, four state representative districts, three state senate districts and three U.S. congressional districts.", \
+            comment_text="Chinatown is split between four wards.")
+        self._answer_question(user_profile=user3_profile, question=question, \
+            clip_url="http://www.chicagojournal.com/News/10-20-2010/Daley%27s_departure_opens_door_for_competitive_25th_Ward_race", \
+            clip_text="Candidates have until the third week of November to file papers with City Hall - in 2007, six candidates ran for 25th Ward Alderman with Morfin finishing second. The 25th Ward is made up of the predominantly Latino Pilsen neighborhood where Solis and his two initial challengers all reside. But it also includes parts of Chinatown, Little Italy and the Tri-Taylor area. ", \
+
+            comment_text="I don't know, but this article says the 25th ward contains parts of Chinatown.")
+
+        self.assertEqual(question.num_answers(), 2);
+
+class BurningQuestionsTestCase(QuestionTestCase):
     def test_get_questions(self):
         """Test the topic.get_questions() method."""
         user1_profile = UserProfile.objects.get(user__username="user1")
