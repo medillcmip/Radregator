@@ -82,3 +82,12 @@ class BurningQuestionsTestCase(TestCase):
         self._respond_positively(user3_profile, question)
         self._respond_positively(user4_profile, question)
         self._respond_positively(user5_profile, question)
+
+        burning_questions = self._topic.burning_questions()
+
+        # We only voted on one item, so there should only be one burning 
+        # question
+        self.assertEqual(burning_questions.count(), 1)
+
+        # And that one question should be our initial question.
+        self.assertEqual(question.id, burning_questions[0].id)
