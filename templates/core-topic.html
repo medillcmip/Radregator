@@ -327,8 +327,8 @@
 			<div id="burningqs" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/flame.png" class="paneicon"><h2>Burning Questions</h2>
 				<ol class="top5">
-                    {% for topq in topqs %}
-					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% for question in topic.burning_questions %}
+					<li><p>{{question.text}} <a href="#" id="answerthis-{{question.id}}">Answer this</a></p></li>
                     {% endfor %}
 				</ol>
 			</div>
