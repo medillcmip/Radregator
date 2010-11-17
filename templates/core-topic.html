@@ -143,12 +143,12 @@
                     <li id="comment-{{question.id}}">
                         <div class = "comment question">
                         <div class='qflag'>Q</div>
-                            <div class = "votebox{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
+                            <div title="{{question.num_upvotes}} people think that this is a good question. Do you?" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
                                 <p class="count">{{question.num_upvotes}}</p>
-                                <p class="countsub">thumbs up</p>
+                              <!--  <p class="countsub">thumbs up</p> -->
                                 <a href="#" class="thumbsup" id="thumbsup-{{question.id}}">
                                         <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                        <span>thumbs up!</span>
+                                        <span></span>
                                     </a>
                             </div>
 
@@ -184,12 +184,12 @@
                             	 <div class='aflag'></div>
                                 <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
-                                    <div class = "votebox">
+                                    <div title="{{theanswer.num_upvotes}} people think that this is a good answer. Do you?" class = "votebox tooltipper">
                                         <p class="count">{{theanswer.num_upvotes}}</p>
-                                        <p class="countsub">thumbs up</p>
+                                       <!-- <p class="countsub">thumbs up</p>-->
                                         <a href="#" class="thumbsup" id="thumbsup-{{theanswer.id}}">
                                                 <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                                <span>thumbs up!</span>
+                                                <span></span>
                                         </a>
                                     </div>
 
@@ -229,12 +229,12 @@
                             	 <div class='aflag'></div>
                                  <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
-                                        <div class = "votebox">
+                                        <div title="{{reply.num_upvotes}} people think that this is a good answer. Do you?" class = "votebox tooltipper">
                                             <p class="count">{{reply.num_upvotes}}</p>
-                                            <p class="countsub">thumbs up</p>
+<!--                                            <p class="countsub">thumbs up</p>-->
                                             <a href="#" class="thumbsup" id="thumbsup-{{reply.id}}">
                                                     <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                                    <span>thumbs up!</span>
+                                                    <span></span>
                                             </a>
                                         </div>
 

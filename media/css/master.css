@@ -47,7 +47,22 @@ div#header h1.logo {
 	width: 122px;
 	height: 29px;
 	text-indent: -8000px;
-	;
+	overflow: hidden;
+}
+
+div#header h1.templogo {
+	display: block;
+	float: left;
+	width: 130px;
+	height: 2em;
+	font-size: 2em;
+	font-weight: bold;
+	position: relative;
+	top: -3px;
+}
+
+div#header h1.templogo span {
+	color: #0f9d2e;
 }
 
 /* IF LOGGED OUT */
@@ -225,7 +240,6 @@ span.uparrow, a.uparrow {
 	position: relative;
 	top: 8px;
 	margin: 0 4px;
-	float: right;
 }
 
 .darkback span.downarrow, .darkback span.uparrow {
@@ -507,16 +521,17 @@ ul.masterlist li div.votebox {
 	float: right;
 	background-color: #e5e5e5;
 	text-align: center;
+	position: relative;
 }
 
 ul.masterlist li div.burningq {
-	background: #e5e5e5 url(../img/icns/flame.png) no-repeat 26px 1px;
+	background: #e5e5e5 url(../img/icns/flame.png) no-repeat 26px 7px;
 }
 
 ul.masterlist li div.votebox p.count {
 	font-size: 22px;
 	font-weight: bold;
-	margin: 3px 0 2px 0;
+	margin: 8px 0 2px 0;
 }
 
 ul.masterlist li div.burningq p.count {
@@ -534,12 +549,20 @@ ul.masterlist li div.votebox p.countsub {
 ul.masterlist li div.votebox a.thumbsup {
 	display: block;
 	text-decoration: none;
-	margin-top: 3px;
-	padding: 2px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	color: #fff;
+	background-color: #323232;
+	width: 60px;
+	margin: 8px auto 3px auto;
+	padding: 4px 2px 6px 2px;
+	position: absolute;
+	bottom: 9px;
+	left: 9px;
 }
 
 ul.masterlist li div.votebox a.thumbsup:hover {
-	background-color: #c5c5c5;
+	background-color: #339933;
 }
 
 ul.masterlist li div.votebox a.thumbsup img {
@@ -554,9 +577,10 @@ ul.masterlist li div.votebox a.thumbsup img {
 
 ul.masterlist li div.votebox a.thumbsup span {
 	font-size: 0.6em;
-	color: #323232;
+	color: #fff;
 	margin-top:0;
 }
+
 
 
 
@@ -913,4 +937,16 @@ div.toppanes ol.top5 li p a {
 }
 
 
-
+/* TOOLTIP STYLE */
+#tooltip, .tooltip {
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	font-size: 0.8em;
+	position: absolute;
+	z-index: 3000;
+	border: 1px solid #0F9D2E;
+	color: #fff;
+	padding: 5px 8px;
+	opacity: 0.85;
+	background: url('../img/backs/trans-dark.png');
+}
+#tooltip h3, #tooltip div, .tooltip h3, .tooltip div { margin: 0; }
