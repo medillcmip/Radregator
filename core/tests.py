@@ -68,6 +68,13 @@ class BurningQuestionsTestCase(TestCase):
         self._topic = Topic.objects.all()[0]
         self._ask_initial_questions()
 
+    def test_get_questions(self):
+        """Test the topic.get_questions() method."""
+
+        # After setUp, there should be five questions for the topic.
+        questions = self._topic.get_questions()
+        self.assertEqual(questions.count(), 5)
+
     def test_get_burning_questions(self):
         user1_profile = UserProfile.objects.get(user__username="user1")
         user2_profile = UserProfile.objects.get(user__username="user2")
@@ -79,9 +86,11 @@ class BurningQuestionsTestCase(TestCase):
 
         self._respond_positively(user1_profile, question)
         self._respond_positively(user2_profile, question)
-        self._respond_positively(user3_profile, question)
         self._respond_positively(user4_profile, question)
         self._respond_positively(user5_profile, question)
+        
+        # The question should now have 4 responses 
+        self.assertEqual(question.num_responses("concur"), 4)
 
         burning_questions = self._topic.burning_questions()
 
