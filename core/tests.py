@@ -36,13 +36,25 @@ class BurningQuestionsTestCase(TestCase):
         question.save()
         self._questions.append(question)
 
-    def _ask_initial_questions(self):
-        topic = self._topic
+    def _respond_positively(self, user_profile, question):
+        """Utility method to respond positively to a question."""
+        comment_response = CommentResponse(user=user_profile, \
+                                           comment=question, \
+                                           type="concur")
+        comment_response.save()
+        
+    def setUp(self):
+        self._questions = []
+        self._topic = Topic.objects.all()[0]
+
+    def test_get_questions(self):
+        """Test the topic.get_questions() method."""
         user1_profile = UserProfile.objects.get(user__username="user1")
         user2_profile = UserProfile.objects.get(user__username="user2")
         user3_profile = UserProfile.objects.get(user__username="user3")
         user4_profile = UserProfile.objects.get(user__username="user4")
         user5_profile = UserProfile.objects.get(user__username="user5")
+        topic = self._topic
 
         self._ask_question(topic=topic, text="This is a question", \
             user_profile=user1_profile)
@@ -55,23 +67,6 @@ class BurningQuestionsTestCase(TestCase):
         self._ask_question(topic=topic, text="This is a fifth question", \
             user_profile=user5_profile)
 
-    def _respond_positively(self, user_profile, question):
-        """Utility method to respond positively to a question."""
-        comment_response = CommentResponse(user=user_profile, \
-                                           comment=question, \
-                                           type="concur")
-        comment_response.save()
-        
-
-    def setUp(self):
-        self._questions = []
-        self._topic = Topic.objects.all()[0]
-        self._ask_initial_questions()
-
-    def test_get_questions(self):
-        """Test the topic.get_questions() method."""
-
-        # After setUp, there should be five questions for the topic.
         questions = self._topic.get_questions()
         self.assertEqual(questions.count(), 5)
 
@@ -81,6 +76,18 @@ class BurningQuestionsTestCase(TestCase):
         user3_profile = UserProfile.objects.get(user__username="user3")
         user4_profile = UserProfile.objects.get(user__username="user4")
         user5_profile = UserProfile.objects.get(user__username="user5")
+        topic = self._topic
+
+        self._ask_question(topic=topic, text="This is a question", \
+            user_profile=user1_profile)
+        self._ask_question(topic=topic, text="This is another question", \
+            user_profile=user2_profile)
+        self._ask_question(topic=topic, text="This is yet another question", \
+            user_profile=user3_profile)
+        self._ask_question(topic=topic, text="This is a fourth question", \
+            user_profile=user4_profile)
+        self._ask_question(topic=topic, text="This is a fifth question", \
+            user_profile=user5_profile)
 
         question = self._questions[2]
 
@@ -91,6 +98,59 @@ class BurningQuestionsTestCase(TestCase):
         
         # The question should now have 4 responses 
         self.assertEqual(question.num_responses("concur"), 4)
+
+        burning_questions = self._topic.burning_questions()
+
+        # We only voted on one item, so there should only be one burning 
+        # question
+        self.assertEqual(len(burning_questions), 1)
+
+        # And that one question should be our initial question.
+        self.assertEqual(question.id, burning_questions[0].id)
+
+    def test_get_burning_questions_one_vote(self):
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+        topic = self._topic
+
+        self._ask_question(topic=topic, text="This is a question", \
+            user_profile=user1_profile)
+        self._ask_question(topic=topic, text="This is another question", \
+            user_profile=user2_profile)
+        self._ask_question(topic=topic, text="This is yet another question", \
+            user_profile=user3_profile)
+        self._ask_question(topic=topic, text="This is a fourth question", \
+            user_profile=user4_profile)
+        self._ask_question(topic=topic, text="This is a fifth question", \
+            user_profile=user5_profile)
+
+        question = self._questions[2]
+
+        self._respond_positively(user1_profile, question)
+
+        burning_questions = self._topic.burning_questions()
+
+        # We only voted on one item, so there should only be one burning 
+        # question
+        self.assertEqual(len(burning_questions), 1)
+
+        # And that one question should be our initial question.
+        self.assertEqual(question.id, burning_questions[0].id)
+
+    def test_get_burning_questions_one_vote(self):
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        topic = self._topic
+
+        self._ask_question(topic=topic, text="This is a question", \
+            user_profile=user1_profile)
+
+        question = self._questions[0]
+
+        self._respond_positively(user2_profile, question)
 
         burning_questions = self._topic.burning_questions()
 
