@@ -100,14 +100,17 @@ class Topic(models.Model):
                     total_positive_responses = total_positive_responses + \
                         question.num_positive_responses
 
+                # Get average number of positive responses (be sure to cast to 
+                # a float)
                 avg_positive_responses = \
-                    total_positive_responses / questions.count()
+                    total_positive_responses / float(questions.count())
 
                 # Now that we have the average, let's see if the questions are
                 # above average. We have to loop through and re-get the response
                 # counts for each question again.
                 for question in questions:
-                    if question.num_positive_responses > avg_positive_responses and \
+                    if question.num_positive_responses > 0 and \
+                       question.num_positive_responses >= avg_positive_responses and \
                        not question.is_answered():
                        question.is_burning = True
                        burning_questions.append(question)
