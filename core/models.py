@@ -121,14 +121,20 @@ class Topic(models.Model):
 
         return self._burning_questions
 
+    def burning_question_ids(self):
+        if not ("_burning_question_ids" in self.__dict__):
+            # We haven't calculated our burning questions yet.  Do this.
+            self.burning_questions()
 
-        def is_burning(self, question):
-            """ Test whether a question is burning. """
-            if not ("_burning_questions" in self.__dict__):
-                # We haven't calculated our burning questions yet.  Do this.
-                self.burning_questions()
+        return self._burning_question_ids
 
-            return question.id in self._burning_question_ids
+    def is_burning(self, question):
+        """ Test whether a question is burning. """
+        if not ("_burning_questions" in self.__dict__):
+            # We haven't calculated our burning questions yet.  Do this.
+            self.burning_questions()
+
+        return question.id in self._burning_question_ids
 
 
 class Comment(models.Model):
