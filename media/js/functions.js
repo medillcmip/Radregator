@@ -501,7 +501,7 @@ function hideMessages() {
     $('#messagewrap').hide();
 }
 
-// Set up earmarks on the answers
+// Set up earmarks on the answers (and other answer layout elements)
 function earmarksetup() {
 	$('.earmark').each(function(index) {
 		var thisheight = $(this).closest(".answer").height();
@@ -517,12 +517,80 @@ function earmarksetup() {
 		var classstring = $(this).attr("class");
 		var olevel = classstring.replace(/[a-zA-Z ]/g, '');
 		
-		// THIS IS WHERE THE AMOUNT EACH DOWNVOTE WEIGHS ON THE COLORING IS SET
-		var gval = 153 - (olevel * 2);
+		// SET HOW EACH DOWNVOTE WEIGHS ON THE COLORING
+		var gval = 153 - (olevel * 8);
 		
-		var bground = "rgb(51,"+gval+",51)";
+		var bground = "rgb(31,"+gval+",31)";
 		
 		$(this).css("background-color",bground);		
 		
+		
+		// REMOVE THE MARGIN ON THE BOTTOM ANSWER
+		$("ul.answers li:last div.comment").css("margin-bottom","0");
+		
+		
+		// SET THE HEIGHT OF THE "CONNECTOR"
+		var halfheight = (thisheight / 2);
+		$(this).closest("li").children("div.aflag").height(halfheight).css("top",halfheight+"px");
+		
+		// REMOVE MARGIN FROM BOTTOM OF ANY ANSWERED QUESTIONS
+		$("ul.answers li").has("ul.answers").children("div.comment").css("margin-bottom","0");
  	});
+}
+
+// REFRESH THE HEIGHT OF THE EARMARK
+function earmarkrefresh(toggler) {
+	var newheight = $(toggler).closest("div.comment").height();
+	var newhalfheight = (newheight / 2);
+	// alert(newheight);
+	$(toggler).closest("div.comment").children("div.earmark").height(newheight);
+	$(toggler).closest("li").children("div.aflag").height(newhalfheight).css("top",newhalfheight+"px");
+}
+
+// ANSWER/REPLY DRAWERS
+function answerdrawers() {
+	$('.replyformtoggle').click(function () {
+
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+                    // Also toggle the link text
+                    if ($(this).html() == "Reply") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Reply");
+                    }
+                    $('#' + formid).toggle();
+                    // reset earmark+connector height
+                    earmarkrefresh(this);
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+                return false;
+            });
+            $('.answerformtoggle').click(function () {
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+
+                    // Also toggle the link text
+                    if ($(this).html() == "Answer this") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Answer this");
+                    }
+                    $('#' + formid).toggle();
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+
+                return false;
+            });
+            $('.replyform').hide();
+            $('.answerform').hide();
+            $('#clipperform').hide();
 }

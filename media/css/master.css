@@ -362,7 +362,7 @@ div.qaoptions {
 	height: auto;
 	overflow: auto;
 	width: 620px;
-	margin-bottom: 12px;
+	margin-bottom: 0;
 }
 
 div.qaoptions div#optselect {
@@ -569,7 +569,7 @@ ul.masterlist li div.question {
 	overflow: auto;
 	border: 1px solid #ccc;
 	background-color: #f4f4f4;
-	margin-bottom: 17px;
+	margin-top: 17px;
 }
 
 ul.masterlist li div.question div.qabox {
@@ -579,11 +579,13 @@ ul.masterlist li div.question div.qabox {
 	overflow: auto;
 	position: relative;
 	min-height: 56px;
+	z-index: 99;
 }
 
 ul.masterlist li div.question div.qabox p.qa {
 	margin-bottom: 20px;
 	font-size: 1.1em;
+	z-index: 100;
 }
 
 ul.masterlist li div.question div.qabox p.userinfo, ul.masterlist li div.answer div.qabox p.userinfo {
@@ -591,6 +593,7 @@ ul.masterlist li div.question div.qabox p.userinfo, ul.masterlist li div.answer 
 	bottom: 8px;
 	left: 10px;
 	font-size: 0.8em;
+	z-index: 100;
 }
 
 ul.masterlist li div.question div.qabox p.userinfo span.username, ul.masterlist li div.answer div.qabox p.userinfo span.username {
@@ -629,6 +632,7 @@ ul.masterlist li div.answer div.qabox {
 ul.masterlist li div.answer div.qabox p.qa {
 	margin-bottom: 15px;
 	font-size: 1.1em;
+	z-index: 100;
 }
 
 ul.masterlist li div.answer div.qabox div.answerclip {
@@ -636,6 +640,7 @@ ul.masterlist li div.answer div.qabox div.answerclip {
 	background-color: #e5e5e5;
 	padding: 10px;
 	font-size:0.9em;
+	z-index: 100;
 }
 
 ul.masterlist li div.answer div.qabox div.answerclip p.cliptext {
@@ -656,21 +661,84 @@ ul.masterlist li div.answer a.flagasopinion {
 }
 
 /* HANDLE NESTED ANSWERS WITH INDENTS */
+ul.masterlist li ul.answers {
+	margin-left: 29px;
+	border-left: 1px solid #ccc;
+	margin-bottom: 12px;
+	padding-top: 17px;
+}
+
 ul.masterlist li ul li div.answer {
-	margin-left: 60px;
+	margin-left: 15px;
 	margin-bottom: 17px;
 }
 
 ul.masterlist li ul li ul li div.answer {
-	margin-left: 120px;
+	margin-left: 15px;
 	margin-bottom: 17px;
 }
 
 ul.masterlist li ul li ul li ul li div.answer {
-	margin-left: 180px;
+	margin-left: 15px;
 	margin-bottom: 17px;
 }
 
+
+/* DEAL WITH THE Question: / Answer: */
+/*
+span.qaflag {
+	font-size: 0.8em;
+	line-height: 0.8em;
+	font-weight: bold;
+	padding: 0.1em 0.5em;
+	background: #323232;
+	color: #fff;
+	position: relative;
+	top: -1px;
+	margin-right: 3px;
+}
+*/
+div.qflag {
+	font-size: 5.5em;
+	color: #e3e3e3;
+	font-weight: bolder;
+	position: absolute;
+	left: -10px;
+	top:6px;
+	z-index: 1;
+}
+/* THIS IS FOR ARROWS
+div.aflag {
+	font-size: 5.5em;
+	height: 0;
+	width: 0;
+	border-left: 12px solid #ddd;
+	border-top: 18px solid transparent;
+	border-bottom: 18px solid transparent;
+	line-height: 0;
+	font-size: 0;
+	position: relative;
+	top: 7px;
+	margin: 0 4px;
+	float: right;
+	position: absolute;
+	left: -4px;
+	top:2px;
+	z-index: 1;
+}
+*/
+
+div.aflag {
+	width: 15px;
+	background: transparent;
+	border-top: 1px solid #ccc;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 1;
+}
+
+}
 
 
 /* ANSWER FORM DROPDOWN */

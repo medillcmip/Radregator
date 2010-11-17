@@ -33,48 +33,9 @@
             //$('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
-            $('.replyformtoggle').click(function () {
-
-                if (userIsAuthenticated()) {
-                    var id = $(this).attr("id");
-                    var formid = id.replace('toggle', '');
-                    // Also toggle the link text
-                    if ($(this).html() == "Reply") {
-                        $(this).html("Hide this");
-                    }
-                    else {
-                        $(this).html("Reply");
-                    }
-                    $('#' + formid).toggle();
-                }
-                else {
-                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-                }
-                return false;
-            });
-            $('.answerformtoggle').click(function () {
-                if (userIsAuthenticated()) {
-                    var id = $(this).attr("id");
-                    var formid = id.replace('toggle', '');
-
-                    // Also toggle the link text
-                    if ($(this).html() == "Answer this") {
-                        $(this).html("Hide this");
-                    }
-                    else {
-                        $(this).html("Answer this");
-                    }
-                    $('#' + formid).toggle();
-                }
-                else {
-                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-                }
-
-                return false;
-            });
-            $('.replyform').hide();
-            $('.answerform').hide();
-            $('#clipperform').hide();
+            
+            // SET UP ANSWER/REPLY DROPDOWN DRAWERS
+            answerdrawers();
 
 			// HANDLE CONTEXT MORE/LESS
 			contextexpander();
@@ -178,7 +139,8 @@
 
 
                     <li id="comment-{{question.id}}">
-                        <div class = "comment question" >
+                        <div class = "comment question">
+							<div class='qflag'>Q</div>
                             <div class = "votebox burningq">
                                 <p class="count">{{question.num_upvotes}}</p>
                                 <p class="countsub">thumbs up</p>
@@ -216,8 +178,9 @@
                         {% for answer in answers %}
                         {% with answer|first as theanswer %}
                             <li id="comment-{{theanswer.id}}">
+                            	 <div class='aflag'></div>
                                 <div class = "comment answer">
-									<div class="earmark accepted olvl0"><span class="textspan">Accepted</span></div>
+									<div class="earmark olvl0"><span class="textspan"></span></div>
                                     <div class = "votebox">
                                         <p class="count">{{theanswer.num_upvotes}}</p>
                                         <p class="countsub">thumbs up</p>
@@ -260,7 +223,9 @@
                                 {% with replyset|first as reply %}
 
                                 <li id="comment-{{reply.id}}">
-                                    <div class = "comment answer">
+                            	 <div class='aflag'></div>
+                                 <div class = "comment answer">
+									<div class="earmark olvl0"><span class="textspan"></span></div>
                                         <div class = "votebox">
                                             <p class="count">{{reply.num_upvotes}}</p>
                                             <p class="countsub">thumbs up</p>
