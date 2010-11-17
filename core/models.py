@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from utils import comment_cmp
 from django.contrib.sites.models import Site
 from clipper.models import Article
@@ -68,8 +69,74 @@ class Topic(models.Model):
             indentlist += [self.recursive_traverse(comment)]
 
         return indentlist
-    
-    
+
+    def get_questions(self):
+        """Return a QuerySet containing visible questions for this topic."""
+        return self.comments.filter(is_deleted=False, \
+            comment_type__name="Question")
+
+    def burning_questions(self):
+        """Return a list containing burning questions."""
+
+        if not ("_burning_questions" in self.__dict__):
+            #questions = self.get_questions().annotate(num_responses=Count("responses"))
+            # QUESTION: Can you filter on the argument of Count? Like if I only want 
+            # count responses of a certain type?
+            # ANSWER: There is (but it's not super-easy)!
+            # http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django  
+
+            # HACK ALERT!: This is a really naive approach and should definitely be refactored in
+            # the future.
+            
+            burning_questions = [] 
+            burning_question_ids = []
+            questions = self.get_questions()
+            total_positive_responses = 0
+
+            if questions.count() > 0:
+                for question in questions:
+                    question.num_positive_responses = \
+                        question.num_responses("concur")
+                    total_positive_responses = total_positive_responses + \
+                        question.num_positive_responses
+
+                # Get average number of positive responses (be sure to cast to 
+                # a float)
+                avg_positive_responses = \
+                    total_positive_responses / float(questions.count())
+
+                # Now that we have the average, let's see if the questions are
+                # above average. We have to loop through and re-get the response
+                # counts for each question again.
+                for question in questions:
+                    if question.num_positive_responses > 0 and \
+                       question.num_positive_responses >= avg_positive_responses and \
+                       not question.is_answered():
+                       question.is_burning = True
+                       burning_questions.append(question)
+                       burning_question_ids.append(question.id)
+
+            self._burning_questions = burning_questions
+            self._burning_question_ids = burning_question_ids
+
+        return self._burning_questions
+
+    def burning_question_ids(self):
+        if not ("_burning_question_ids" in self.__dict__):
+            # We haven't calculated our burning questions yet.  Do this.
+            self.burning_questions()
+
+        return self._burning_question_ids
+
+    def is_burning(self, question):
+        """ Test whether a question is burning. """
+        if not ("_burning_questions" in self.__dict__):
+            # We haven't calculated our burning questions yet.  Do this.
+            self.burning_questions()
+
+        return question.id in self._burning_question_ids
+
+
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
        answers, concerns and replies.
@@ -107,13 +174,28 @@ class Comment(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     clips = models.ManyToManyField(Clip, blank=True, null=True)
+
     def __unicode__(self):
         return self.text[:80]
 
-    def num_upvotes(self):
-        return CommentResponse.objects.filter(comment=self,type="concur").count()
+    def num_responses(self, response_type):
+        return CommentResponse.objects.filter(comment=self, \
+            type=response_type).count()
 
-        
+    def num_upvotes(self):
+        return self.num_responses("concur")
+
+    def num_related(self, relation_type):
+        return CommentRelation.objects.filter(left_comment=self, \
+            relation_type=relation_type).count()
+
+    def num_answers(self):
+        # TODO: Make the comment relation a constant or something.
+        return self.num_related("reply")
+
+    def is_answered(self):
+        return self.num_answers() > 0
+
 
 class CommentTypeManager(models.Manager):
     def get_by_natural_key(self, name):

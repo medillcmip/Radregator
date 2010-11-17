@@ -139,7 +139,6 @@ function handleReplyform() {
         return false;
     }
     else {
-        console.debug('got here');
         displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
         return false;
     }
@@ -357,29 +356,51 @@ function handleLogoutLink() {
 	 return true; 
 }
 
+/*
+ * Hit the AJAX endpoint to try to log a Facebook user into the site or
+ * automatically register them.
+ *
+ */
+function authFacebookUserToSite() {
+    var posturl = "/api/json/users/facebooklogin/";
+
+    $.ajax({
+        type: "post", context: $(this), url: posturl, data: {},
+        success: function(data) {
+            var loggeduser = data.username;
+            location.reload();
+        },
+        error: function (requestError, status, errorResponse) {
+            var errorNum = requestError.status;
+                    
+            errorMsg = jQuery.parseJSON(requestError.responseText).error;
+            displayMessage(errorMsg, "error");
+        }
+    });
+}
+
 // Handler for Facebook site login button.  This is the "fake" Facebook 
 // login button that we show on the login page when a user is already
 // logged into Facebook.
-function handleFacebookSiteLoginButton() {
-	 var posturl = "/api/json/users/facebooklogin/";
+function handleFacebookLoginButton() {
+    FB.getLoginStatus(function(response) {
+        if (response.session) {
+            //console.debug("Facebook user found.  Try to authenticate them to this site.");
+            authFacebookUserToSite();
+        } else {
+            //console.debug("No Facebook user found.  Launch Facebook login flow.");
+            FB.login(function(response) {
+                if (response.session) {
+                    authFacebookUserToSite();
+                }
+                else {
+                    // User cancelled Facebook login
+                }
+            });
+        }
+    });
 
-	 $.ajax({
-		  type: "post", context: $(this), url: posturl, data: {},
-		  success: function(data) {
-				var loggeduser = data.username;
-				parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Log out</a>");
-				parent.$.fn.colorbox.close();
-		  },
-		  error: function (requestError, status, errorResponse) {
-				var errorNum = requestError.status;
-						
-				errorMsg = jQuery.parseJSON(requestError.responseText).error;
-				$(this).find(".errormsg").html(errorMsg);
-				$(this).find(".errormsg").css("display", "block");
-		  }
-	 });
-
-	 return false;
+    return false;
 }
 
 function getCurrentTopicId() {
@@ -417,7 +438,6 @@ function handleUserSignInForm() {
     $.ajax({
         type: "post", context: $(this), url: posturl, data: { username: thisuser, password: thispass },
         success: function(data){
-            // console.log(data);
             var loggeduser = data.username;
             parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
             location.reload();

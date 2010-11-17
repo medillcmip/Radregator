@@ -17,8 +17,6 @@ from models import UserProfile
 from models import User
 from forms import LoginForm, RegisterForm 
 
-
- 
 logger = core.utils.get_logger()
 
 def ajax_login_required(view_func):
@@ -122,8 +120,6 @@ def auth(request):
                                             settings.FB_API_ID,\
                                             settings.FB_SECRET_KEY)
 
-    logger.debug(fb_user)
-
     if fb_user:
         #user has a FB account and we need to see if they have been 
         #registered in our db
@@ -191,7 +187,6 @@ def weblogin(request):
             we use Facebooks external authorization flow (which we verify in
             the auth method)
     """
-    logger = core.utils.get_logger()
 
     template_dict = {}
     template_dict['fb_app_id'] = settings.FB_API_ID
@@ -233,7 +228,7 @@ def register(request):
     """
     template_dict = {}
     form = None
-    logger.debug('user.views.register(request): entering register method')
+
     return_page = ''
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -282,7 +277,7 @@ def api_auth(request, uri_username, output_format='json'):
 
     data = {} # Response data 
     status = 200 # Ok
-    print 'in api_auth'
+
     try:
         if request.is_ajax():
             if request.method == 'POST':
@@ -313,7 +308,6 @@ def api_auth(request, uri_username, output_format='json'):
                     # are checked in the validation code of user.forms.LoginForm
                     # We'll detect this and try to return a more reasonable 
                     # error message.
-                    print form.errors.keys()
                     if '__all__' in form.errors.keys():
                         if form.errors['__all__'] == \
                             [form.WRONG_USERNAME_OR_PASSWORD_MSG]:
@@ -445,6 +439,9 @@ def api_users(request, output_format='json'):
 
 def api_facebook_auth(request, output_format='json'):
     """Authenticate a user who is already logged into Facebook into the site."""
+
+    #logger.debug("entering api_facebook_auth()")
+
     data = {} # Response data 
     status = 200 # Ok
 
@@ -478,6 +475,7 @@ def api_facebook_auth(request, output_format='json'):
                 user_profile.user.backend = \
                     'django.contrib.auth.backends.ModelBackend'
                 login(request, user_profile.user)
+                #logger.debug("User %s logged in." % (user_profile.user))
 
                 # Set up our return data
                 data['username'] = user_profile.user.username 

@@ -38,6 +38,8 @@
             $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
             $('#messageswrap').hide(); // Hide messages bar initially
 
+            $('#fbloginbut').unbind('click', handleFacebookLoginButton).bind('click', handleFacebookLoginButton);
+
             // Handler for collapsing the messages bar
             $('#messages #hidemessages a').click(function() {
                 $('#messageswrap').hide();
@@ -48,7 +50,17 @@
             // Set a flag that shows that tells other javascript code
             // that the user is logged in.
             setUserAuthenticated(); 
+
+            // Handler for ask a question button in top bar
+            $("#usercontrols a.askquestion").click(function() {
+                // TODO: Show a more advanced dialog that let's user ask 
+                // questions across lots of topics.  For now, just 
+                // show the current topic's form.
+                $("#qas .qaoptions").tabs("option", "selected", 1);
+            });
             {% endif %}
+
+            
         });
     </script>
 
@@ -78,7 +90,7 @@
 			<div id="header" class="loggedin">
 				
 				<ul id="usercontrols" class="grid_5">
-					<li class="button darkback"><a href="#askquestion">Ask a Question <span class="downarrow"></span></a></li>
+					<li class="button darkback"><a href="#askquestion" class="askquestion">Ask a Question <span class="downarrow"></span></a></li>
 					<li class="lightback"><a href="#">Favorites <span class="downarrow"></span></a></li>
 					<li class="lightback"><a href="#">Recent Q&As <span class="downarrow"></span></a></li>
                     {% if is_reporter %}

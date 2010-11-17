@@ -141,6 +141,9 @@ def create_author(name):
 
 @login_required()
 def clipper_submit_select(request):
+    """
+    DEPRECATED, please see the API version of this method
+    """
     template_dict = {} 
     if request.method == 'POST':
         form = clipper.forms.ClipTextForm(request.POST)
@@ -205,7 +208,7 @@ def create_article(url):
         the_article.save()
 
 @login_required()
-def clipper_paste_url(request, comment_id):
+def clipper_paste_url(request, comment_id, topic_id):
     """
     grab an html page (or holla back if the input was too rough)
     and fuck that baby up, and spit it out on a new page so the 
@@ -229,7 +232,8 @@ def clipper_paste_url(request, comment_id):
                 template_dict['url'] = url
                 form = clipper.forms.ClipTextForm(initial={'url_field': url,\
                      'comment_id_field': comment_id, 'title': values['title'],\
-                    'author': values['author'], 'user_comments': user_comments})
+                    'author': values['author'], 'user_comments': user_comments,\
+                    'topic_id_field': topic_id})
                 return_page = 'clipper_select_text.html'
             except FileTypeNotSupported as fns:
                 logger.debug('clipper_paste_url(request, comment_id): TYPE=' + str(type(fns)) +\
@@ -252,7 +256,6 @@ def api_clipper_submit(request, output_format='json'):
     data = {} # Response data 
     status = 200 # Ok
     try:
-        print request.is_ajax()
         if request.is_ajax():
             if request.method == 'POST':
                 form = clipper.forms.ClipTextForm(request.POST)
@@ -264,6 +267,7 @@ def api_clipper_submit(request, output_format='json'):
                     title = form.cleaned_data['title']
                     author_name = form.cleaned_data['author']
                     date_published = form.cleaned_data['date_published']
+                    data['topic_id'] = form.cleaned_data['topic_id_field']
                     user = users.models.UserProfile.objects.get(user=request.user)
                     try:
                         comment_type = core.models.CommentType.objects.get(name='Reply')
@@ -294,12 +298,12 @@ def api_clipper_submit(request, output_format='json'):
                         reply_relation.save()
 
                     except clipper.models.Article.DoesNotExist, e:
-                        logger.debug('clipper_submit_selection(request): type='+\
+                        logger.debug('api_clipper_submit(request): type='+\
                                     str(type(e)) + ' ,REASON=' + str(e))
                         data['error'] = "%s" % e
                         status = 400
                     except core.models.Comment.DoesNotExist, e:
-                        logger.debug('clipper_submit_selection(request): type='+\
+                        logger.debug('api_clipper_submit(request): type='+\
                                     str(type(e)) + ' ,REASON=' + str(e))
                         data['error'] = "%s" % e
                         status = 400
@@ -308,7 +312,7 @@ def api_clipper_submit(request, output_format='json'):
                     #template_dict['form'] = form
                     #return render_to_response('clipper_select_text.html',template_dict,\
                     #   context_instance=RequestContext(request))
-                    print form.errors.keys()
+                    logger.debug('api_clipper_submit(request): Something else broke' + str(form.errors.keys()))
         
                     status = 400 # Bad Request
                     data['error'] = "Some required fields are missing"
