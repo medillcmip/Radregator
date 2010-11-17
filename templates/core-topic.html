@@ -172,7 +172,7 @@
 
                     <li id="comment-{{question.id}}">
                         <div class = "comment question" >
-                            <div class = "votebox burningq">
+                            <div class = "votebox{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
                                 <p class="count">{{question.num_upvotes}}</p>
                                 <p class="countsub">thumbs up</p>
                                 <a href="#" class="thumbsup" id="thumbsup-{{question.id}}">
