@@ -87,7 +87,7 @@ class BurningQuestionsTestCase(TestCase):
 
         # We only voted on one item, so there should only be one burning 
         # question
-        self.assertEqual(burning_questions.count(), 1)
+        self.assertEqual(len(burning_questions), 1)
 
         # And that one question should be our initial question.
         self.assertEqual(question.id, burning_questions[0].id)
