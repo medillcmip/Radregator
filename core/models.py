@@ -103,10 +103,10 @@ class Topic(models.Model):
             # We have to loop through and re-get the response counts for each question again.
             for question in questions:
                 if question.num_positive_responses > avg_positive_responses and \
-                   question.is_answered():
+                   not question.is_answered():
                    question.is_burning = True
-                   burning_questions.push(question)
-                   burning_question_ids.push(question.id)
+                   burning_questions.append(question)
+                   burning_question_ids.append(question.id)
 
             self._burning_questions = burning_questions
             self._burning_question_ids = burning_question_ids
