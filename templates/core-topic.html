@@ -27,6 +27,7 @@
             //$('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
             {% if is_reporter %}
             $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
+            $('a.favoritecommentlink').unbind('click', handleFavoriteCommentLink).bind('click', handleFavoriteCommentLink);
             $('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
             {% endif %}
             //$('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
@@ -160,6 +161,7 @@
                                 <a href="#" class="answerthis collapseanswers">Hide answers</a>
                                 {% if is_reporter %}
                                 <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
+                                <a href="#" class="answerthis favoritecommentlink" id="favoritecommentlink-{{question.id}}">Favorite Question</a>
                                 <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>
                                 <!--END ANSWER FORM CONTROLS -->
 
@@ -206,6 +208,7 @@
                                         <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" class="flagasopinion">Flag this as opinion</a>
                                         {% if is_reporter %}
                                         <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{theanswer.id}}">Delete Answer</a>
+                                <a href="#" class="answerthis favoritecommentlink" id="favoritecommentlink-{{theanswer.id}}">Favorite Answer</a>
                                         <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
 
                                         {% endif %}
@@ -250,6 +253,7 @@
                                             <p class="userinfo"><span class="username">{{reply.user}}</span> on <span class="date">{{reply.date_created}}</span>
                                             {% if is_reporter %}
                                             <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{reply.id}}">Delete Reply</a>
+                                            <a href="#" class="answerthis favoritecommentlink" id="favoritecommentlink-{{reply.id}}">Favorite Reply</a>
                                             <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{reply.id}}">Remove Reply from Topic</a>
 
                                             {% endif %}

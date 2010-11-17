@@ -479,21 +479,22 @@ def api_comment_tag(request, output_format="json"):
     response = None
 
     try:
-        if request.method = 'POST':
-            tags = request.POST['tags']
+        if request.method == 'POST':
+            tagname = request.POST['tags']
 
-            comment = request.POST['comment']
+            comment = Comment.objects.get(id=request.POST['comment'])
 
-            for tagname in tags:
-                tag = Tag.objects.get_or_create(name=Tag)[0]
+            if tagname.startswith("_"):
+                tagname = tagname.replace("_", "_" + request.user.username +'_')
+            tag = Tag.objects.get_or_create(name=tagname)[0]
 
-                tag.save()
+            tag.save()
 
-                comment.tags += tag
+            comment.tags.add(tag)
 
             comment.save()
 
-            data = {'tags' : comment.tags }
+            data = {'tags' : [tag.name for tag in comment.tags.all()] }
 
 
         else:
@@ -503,6 +504,10 @@ def api_comment_tag(request, output_format="json"):
     except MethodUnsupported, e:
         status = 405
         data['error'] = "%s" % e
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = 'Cmment does not exist'
 
     response = HttpResponse(content=json.dumps(data), \
         mimetype='application/json', status=status)
@@ -516,21 +521,22 @@ def api_topic_tag(request, output_format="json"):
     response = None
 
     try:
-        if request.method = 'POST':
-            tags = request.POST['tags']
+        if request.method == 'POST':
+            tagname = request.POST['tags']
 
-            topic = request.POST['topic']
+            topic = Topic.objects.get(id=request.POST['topic'])
 
-            for tagname in tags:
-                tag = Tag.objects.get_or_create(name=Tag)[0]
+            if tagname.startswith("_"):
+                tagname = tagname.replace("_", "_" + request.user.username +'_')
+            tag = Tag.objects.get_or_create(name=tagname)[0]
 
-                tag.save()
+            tag.save()
 
-                topic.topic_tags += tag
+            topic.topic_tags.add(tag)
 
             topic.save()
 
-            data['tags'] = topic.topic_tags
+            data['tags'] = [tag.name for tag in topic.topic_tags.all()]
 
 
         else:
@@ -540,6 +546,11 @@ def api_topic_tag(request, output_format="json"):
     except MethodUnsupported, e:
         status = 405
         data['error'] = "%s" % e
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = "Topic does not exist"
+            
 
     response = HttpResponse(content=json.dumps(data), \
         mimetype='application/json', status=status)

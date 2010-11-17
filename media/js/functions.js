@@ -615,6 +615,43 @@ function answerdrawers() {
             $('#clipperform').hide();
 }
 
+function handleFavoriteCommentLink() {
+    var thiscomment_id = $(this).attr('id').replace('favoritecommentlink-', '');
+    var tag = '_favorite';
+    alert(tag);
+    
+    $.ajax({
+        type: "post",
+        url: "/api/json/comments/tag/",
+        data: { comment : thiscomment_id,
+        tags: tag },
+        success: function(data){
+            
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            if (errorNum == "401") {
+                // User isn't logged in
+                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                $('a.login').bind('click', launchLogin);
+            } 
+
+            error_message = thiscomment.children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    return false;
+}
 
 // SET UP "HIDE ANWERS"
 function hideanswers () {
