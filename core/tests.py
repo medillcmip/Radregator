@@ -24,7 +24,7 @@ from users.models import UserProfile
 #
         #self.fail("Test not yet implemented.")
 
-class BurningQuestionsTestCase(TestCase):
+class QuestionTestCase(TestCase):
     fixtures = ['test_users.json', 'test_topics.json', 'comment_types.json']
 
     def _ask_question(self, topic, text, user_profile):
@@ -47,6 +47,7 @@ class BurningQuestionsTestCase(TestCase):
         self._questions = []
         self._topic = Topic.objects.all()[0]
 
+class BurningQuestionsTestCase(QuestionTestCase):
     def test_get_questions(self):
         """Test the topic.get_questions() method."""
         user1_profile = UserProfile.objects.get(user__username="user1")
