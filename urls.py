@@ -71,6 +71,12 @@ urlpatterns = patterns('',
     (r'^api/(?P<output_format>json)/comments/$',
      'core.views.api_commentsubmission'),
 
+    (r'^api/(?P<output_format>json)/comments/tag/$',
+     'core.views.api_comment_tag'),
+
+    (r'^api/(?P<output_format>json)/topics/tag/$',
+     'core.views.api_topic_tag'),
+
     (r'^api/(?P<output_format>json)/comments/submit',
      'core.views.api_commentsubmission'),
 

@@ -472,6 +472,82 @@ def api_topic(request, topic_slug_or_id=None, output_format="json"):
         
     return response
 
+@ajax_login_required
+def api_comment_tag(request, output_format="json"):
+    data = {}
+    status = 200
+    response = None
+
+    try:
+        if request.method = 'POST':
+            tags = request.POST['tags']
+
+            comment = request.POST['comment']
+
+            for tagname in tags:
+                tag = Tag.objects.get_or_create(name=Tag)[0]
+
+                tag.save()
+
+                comment.tags += tag
+
+            comment.save()
+
+            data = {'tags' : comment.tags }
+
+
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." % request.method)
+
+
+    except MethodUnsupported, e:
+        status = 405
+        data['error'] = "%s" % e
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+
+@ajax_login_required
+def api_topic_tag(request, output_format="json"):
+    data = {}
+    status = 200
+    response = None
+
+    try:
+        if request.method = 'POST':
+            tags = request.POST['tags']
+
+            topic = request.POST['topic']
+
+            for tagname in tags:
+                tag = Tag.objects.get_or_create(name=Tag)[0]
+
+                tag.save()
+
+                topic.topic_tags += tag
+
+            topic.save()
+
+            data['tags'] = topic.topic_tags
+
+
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." % request.method)
+
+
+    except MethodUnsupported, e:
+        status = 405
+        data['error'] = "%s" % e
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+        
+
+
 
 @ajax_login_required
 def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
