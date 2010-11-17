@@ -43,6 +43,8 @@
 			// HANDLE EARMARK HEIGHTS, LABELS and COLORS
 			earmarksetup();
 			
+			// SET UP Q/A COLLAPSING
+			hideanswers();
 			
 			
         });
@@ -155,6 +157,7 @@
                                 <p class="userinfo"><span class="username">{{question.user}}</span> on <span class="date">{{question.date_created}}</span>
                                 <!--START ANSWER FORM CONTROLS -->
                                 <a href="#" class="answerthis answerformtoggle" id="answerformtoggle-{{question.id}}">Answer this</a>
+                                <a href="#" class="answerthis collapseanswers">Hide answers</a>
                                 {% if is_reporter %}
                                 <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
                                 <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>

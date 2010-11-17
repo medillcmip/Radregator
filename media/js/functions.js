@@ -594,3 +594,22 @@ function answerdrawers() {
             $('.answerform').hide();
             $('#clipperform').hide();
 }
+
+
+// SET UP "HIDE ANWERS"
+function hideanswers () {
+	// IF THERE ARE ANSWERS, SHOW BUTTON
+	$("ul.masterlist li").has("ul.answers").children("div.comment").children("div.qabox").children("p.userinfo").children("a.collapseanswers").css("display","inline");
+	
+	// THEN ARM BUTTON
+	$("a.collapseanswers").click( function() {
+		$(this).closest("li").children("ul.answers").slideToggle();
+		if ($(this).html() == "Hide answers") {
+			$(this).html("Show answers");
+		}
+		else {
+			$(this).html("Hide answers");
+		}
+		return false;
+	});
+}

@@ -605,6 +605,10 @@ ul.masterlist li div.question div.qabox a.answerthis, ul.masterlist li div.answe
 	font-weight: bold;
 }
 
+ul.masterlist li div.question div.qabox a.collapseanswers {
+	display: none;
+}
+
 
 /* EXTRA ANSWER STYLES TO SET APART FROM QUESTIONS */
 
