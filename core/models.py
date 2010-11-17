@@ -93,20 +93,25 @@ class Topic(models.Model):
             questions = self.get_questions()
             total_positive_responses = 0
 
-            for question in questions:
-                question.num_positive_responses = question.num_responses("concur")
-                total_positive_responses = total_positive_responses + question.num_positive_responses
+            if questions.count() > 0:
+                for question in questions:
+                    question.num_positive_responses = \
+                        question.num_responses("concur")
+                    total_positive_responses = total_positive_responses + \
+                        question.num_positive_responses
 
-            avg_positive_responses = total_positive_responses / questions.count()
+                avg_positive_responses = \
+                    total_positive_responses / questions.count()
 
-            # Now that we have the average, let's see if the questions are above average.
-            # We have to loop through and re-get the response counts for each question again.
-            for question in questions:
-                if question.num_positive_responses > avg_positive_responses and \
-                   not question.is_answered():
-                   question.is_burning = True
-                   burning_questions.append(question)
-                   burning_question_ids.append(question.id)
+                # Now that we have the average, let's see if the questions are
+                # above average. We have to loop through and re-get the response
+                # counts for each question again.
+                for question in questions:
+                    if question.num_positive_responses > avg_positive_responses and \
+                       not question.is_answered():
+                       question.is_burning = True
+                       burning_questions.append(question)
+                       burning_question_ids.append(question.id)
 
             self._burning_questions = burning_questions
             self._burning_question_ids = burning_question_ids
