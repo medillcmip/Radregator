@@ -26,7 +26,7 @@ msgstr[1] " %(num_upvotes)s people think this is a good question. Do you? "
 
 #: templates/core-topic.html:153
 msgid "Good Question!"
-msgstr "Good Question!"
+msgstr " "
 
 #: templates/core-topic.html:189
 #, python-format
