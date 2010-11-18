@@ -157,6 +157,7 @@
 
 
                     <li id="comment-{{question.id}}">
+                        <a name="comment-{{question.id}}"></a>
                         <div class = "comment question">
                         <div class='qflag'>Q</div>
                             <div title="{% blocktrans count question.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good question. Do you? {% plural %} {{ num_upvotes }} people think this is a good question. Do you? {% endblocktrans %}" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
@@ -197,6 +198,7 @@
                         {% for answer in answers %}
                         {% with answer|first as theanswer %}
                             <li id="comment-{{theanswer.id}}">
+                                <a name="comment-{{theanswer.id}}"></a>
                             	 <div class='aflag'></div>
                                 <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
@@ -242,6 +244,7 @@
                                 {% with replyset|first as reply %}
 
                                 <li id="comment-{{reply.id}}">
+                                 <a name="comment-{{reply.id}}"></a>
                             	 <div class='aflag'></div>
                                  <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
@@ -336,7 +339,7 @@
                 {% if topic.top_answers %}
 				<ol class="top5">
                     {% for answer in topic.top_answers %}
-					<li><p>{{answer.text}} <a href="#" id="seeanswer-{{answer.id}}">See the answer</a></p></li>
+					<li><p>{{answer.text}} <a href="#comment-{{answer.id}}" id="seeanswer-{{answer.id}}">See the answer</a></p></li>
                     {% endfor %}
 				</ol>
                 {% else %}
