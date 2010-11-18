@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-17 22:40-0600\n"
+"POT-Creation-Date: 2010-11-18 09:47-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: templates/core-topic.html:148
+#: templates/core-topic.html:162
 #, python-format
 msgid " %(num_upvotes)s person thinks this is a good question. Do you? "
 msgid_plural " %(num_upvotes)s people think this is a good question. Do you? "
 msgstr[0] " %(num_upvotes)s person thinks this is a good question. Do you? "
 msgstr[1] " %(num_upvotes)s people think this is a good question. Do you? "
 
-#: templates/core-topic.html:153
+#: templates/core-topic.html:167
 msgid "Good Question!"
 msgstr " "
 
-#: templates/core-topic.html:189
+#: templates/core-topic.html:203
 #, python-format
 msgid " %(num_upvotes)s person thinks this is a good answer.  Do you? "
 msgid_plural " %(num_upvotes)s people think this is a good answer. Do you? "
 msgstr[0] " %(num_upvotes)s person thinks this is a good answer.  Do you? "
 msgstr[1] " %(num_upvotes)s people think this is a good answer. Do you? "
 
-#: templates/core-topic.html:234
+#: templates/core-topic.html:248
 #, python-format
 msgid " person thinks this is a good answer.  Do you? "
 msgid_plural " %(num_upvotes)s people think this is a good answer. Do you? "
 msgstr[0] " person thinks this is a good answer.  Do you? "
 msgstr[1] " %(num_upvotes)s people think this is a good answer. Do you? "
+
+#: templates/core-topic.html:321
+msgid "A burning question is a popular question that hasn't been answered."
+msgstr ""
+
+#: templates/core-topic.html:329
+msgid ""
+"There aren't any burning questions for this topic.  Be the first to <a href="
+"\"#\" class=\"askquestion\">ask one</a>."
+msgstr ""

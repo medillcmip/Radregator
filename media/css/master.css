@@ -953,3 +953,17 @@ div.toppanes ol.top5 li p a {
 	background: url('../img/backs/trans-dark.png');
 }
 #tooltip h3, #tooltip div, .tooltip h3, .tooltip div { margin: 0; }
+
+/* WHAT'S THIS TOOLTIP LINK STYLE */
+/* Right now I'm using this to give a little bit of explaination to */
+/* the burning questions list in the sidebar, but I imagine we might use this */
+/* site-wide in the future. */
+.whatsthis {
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* STYLES FOR SIDEBAR */
+#sidebar .ui-tabs-panel p {
+    margin-top: 5px;
+}
