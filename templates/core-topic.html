@@ -47,6 +47,20 @@
 			
 			// SET UP Q/A COLLAPSING
 			hideanswers();
+
+            // Handler for ask a question links in sidebar
+            $(".topqas a.askquestion").click(function() {
+                if (!userIsAuthenticated()) {
+                    // Show an error message if they try to click on the link 
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+                else {
+                    // User is authenticated.  Show the form.
+                    $("#qas .qaoptions").tabs("option", "selected", 1);
+                }
+
+                return false;
+            });
 			
 			
         });
@@ -304,11 +318,16 @@
 			
 			<div id="burningqs" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/flame.png" class="paneicon"><h2>Burning Questions</h2>
+                <a title="{% blocktrans %}A burning question is a popular question that hasn't been answered.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                {% if topic.burning_questions %}
 				<ol class="top5">
                     {% for question in topic.burning_questions %}
 					<li><p>{{question.text}} <a href="#" id="answerthis-{{question.id}}">Answer this</a></p></li>
                     {% endfor %}
 				</ol>
+                {% else %}
+                <p>{% blocktrans  %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
+                {% endif %}
 			</div>
 			
 			<div id="topanswers" class="toppanes">
