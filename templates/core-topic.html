@@ -332,6 +332,8 @@
 			
 			<div id="topanswers" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
+                <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                <p>{% blocktrans  %}Hmmm.  There aren't any popular answers for this topic.  Maybe you've got the answer?.{% endblocktrans %}</p>
 				<ol class="top5">
                     {% for topq in topqs %}
 					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
@@ -341,6 +343,8 @@
 			
 			<div id="mostpopular" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/qbubbles.png" class="paneicon"><h2>Most Popular</h2>
+                <a title="{% blocktrans %}These are the questions and answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                <p>{% blocktrans  %}Did you know you can vote on which questions are the most important and which answers are the most helpful?{% endblocktrans %}</p>
 				<ol class="top5">
                     {% for topq in topqs %}
 					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>

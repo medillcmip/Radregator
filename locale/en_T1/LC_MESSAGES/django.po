@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-18 09:47-0600\n"
+"POT-Creation-Date: 2010-11-18 10:31-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,4 +50,28 @@ msgstr ""
 msgid ""
 "There aren't any burning questions for this topic.  Be the first to <a href="
 "\"#\" class=\"askquestion\">ask one</a>."
+msgstr ""
+
+#: templates/core-topic.html:335
+msgid ""
+"These are the answers that have gotten the most positive feedback from the "
+"community."
+msgstr ""
+
+#: templates/core-topic.html:336
+msgid ""
+"Hmmm.  There aren't any popular answers for this topic.  Maybe you've got "
+"the answer?."
+msgstr ""
+
+#: templates/core-topic.html:346
+msgid ""
+"These are the questions and answers that have gotten the most positive "
+"feedback from the community."
+msgstr ""
+
+#: templates/core-topic.html:347
+msgid ""
+"Did you know you can vote on which questions are the most important and "
+"which answers are the most helpful?"
 msgstr ""
