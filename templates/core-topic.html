@@ -157,6 +157,7 @@
 
 
                     <li id="comment-{{question.id}}">
+                        <a name="comment-{{question.id}}"></a>
                         <div class = "comment question">
                         <div class='qflag'>Q</div>
                             <div title="{% blocktrans count question.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good question. Do you? {% plural %} {{ num_upvotes }} people think this is a good question. Do you? {% endblocktrans %}" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
@@ -197,6 +198,7 @@
                         {% for answer in answers %}
                         {% with answer|first as theanswer %}
                             <li id="comment-{{theanswer.id}}">
+                                <a name="comment-{{theanswer.id}}"></a>
                             	 <div class='aflag'></div>
                                 <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
@@ -242,6 +244,7 @@
                                 {% with replyset|first as reply %}
 
                                 <li id="comment-{{reply.id}}">
+                                 <a name="comment-{{reply.id}}"></a>
                             	 <div class='aflag'></div>
                                  <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
@@ -328,27 +331,37 @@
                     {% endfor %}
 				</ol>
                 {% else %}
-                <p>{% blocktrans  %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
+                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
                 {% endif %}
 			</div>
 		
             <!--
 			<div id="topanswers" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
+                <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                {% if topic.top_answers %}
 				<ol class="top5">
-                    {% for topq in topqs %}
-					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% for answer in topic.top_answers %}
+					<li><p>{{answer.text}} <a href="#comment-{{answer.id}}" id="seeanswer-{{answer.id}}">See the answer</a></p></li>
                     {% endfor %}
 				</ol>
+                {% else %}
+                <p>{% blocktrans  %}Hmmm.  There aren't any popular answers for this topic.  Maybe you've got the answer?.{% endblocktrans %}</p>
+                {% endif %}
 			</div>
 			
 			<div id="mostpopular" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/qbubbles.png" class="paneicon"><h2>Most Popular</h2>
+                <a title="{% blocktrans %}These are the questions and answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                {% if topic.popular_comments %}
 				<ol class="top5">
-                    {% for topq in topqs %}
-					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% for comment in topic.popular_comments %}
+					<li><p>{{comment.text}} <a href="#comment-{{comment.id}}">{% trans "Check it out" %}</a></p></li>
                     {% endfor %}
 				</ol>
+                {% else %}
+                <p>{% blocktrans  %}Did you know you can vote on which questions are the most important and which answers are the most helpful?{% endblocktrans %}</p>
+                {% endif %}
 			</div>
             -->
 
