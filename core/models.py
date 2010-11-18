@@ -144,6 +144,47 @@ class Topic(models.Model):
             questions = self.get_questions()
             total_positive_responses = 0
 
+            if questions.count() > 0:
+                # HACK ALERT: This is a very naive approach to figuring out
+                # these averages.  I imagine there's a way to do this using
+                # Django's ORM and aggregation.  However, it's non-trivial,
+                # so I'm doing it this way to get things working.
+                # - Geoff <geoffhing@gmail.com> 2010-11-18
+
+                # We're going to calculate the average positive responses to
+                # all of the answers.  First, we have to find all the answers.
+                num_answers = 0
+                total_positive_responses = 0
+
+                for question in questions:
+                    answers = question.get_answers()
+                    num_answers += answers.count()
+
+                    for answer in answers:
+                        answer.num_positive_responses = \
+                            answer.num_responses("concur")
+                        total_positive_responses += \
+                            answer.num_positive_responses
+
+                # Get average number of positive responses (be sure to cast to 
+                # a float)
+                avg_positive_responses = \
+                    total_positive_responses / float(num_answers)
+
+                # Now that we have the average, let's see if the answers are
+                # above average. We have to loop through and re-get the response
+                # counts for each question again.
+                for question in questions:
+                    answers = question.get_answers()
+                    num_answers += answers.count()
+
+                    for answer in answers:
+                        if answer.num_positive_responses > 0 and \
+                        answer.num_positive_responses >= avg_positive_respones:
+                            answer.is_top_answer = True
+                            top_answers.append(answer)
+                            top_answer_ids.append(answer.id)
+
             self._top_answers = top_answers
             self._top_answer_ids = top_answer_ids
 
@@ -198,9 +239,18 @@ class Comment(models.Model):
     def num_upvotes(self):
         return self.num_responses("concur")
 
-    def num_related(self, relation_type):
+    def get_related(self, relation_type):
+        """Return a queryset of related comments of a specified type.""" 
         return CommentRelation.objects.filter(right_comment=self, \
-            relation_type=relation_type).count()
+            relation_type=relation_type)
+
+    def get_answers(self):
+        """Return a queryset of answers for this comment (if it's a question)"""
+        # TODO: Make the comment relation a constant or something.
+        return self.get_related("reply")
+
+    def num_related(self, relation_type):
+        return self.get_related(relation_type).count()
 
     def num_answers(self):
         # TODO: Make the comment relation a constant or something.
