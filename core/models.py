@@ -128,7 +128,7 @@ class Topic(models.Model):
 
         return self._burning_question_ids
 
-    def is_burning(self, question):
+    def question_is_burning(self, question):
         """ Test whether a question is burning. """
         if not ("_burning_questions" in self.__dict__):
             # We haven't calculated our burning questions yet.  Do this.
