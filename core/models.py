@@ -168,8 +168,9 @@ class Topic(models.Model):
 
                 # Get average number of positive responses (be sure to cast to 
                 # a float)
-                avg_positive_responses = \
-                    total_positive_responses / float(num_answers)
+                if num_answers > 0:
+                    avg_positive_responses = \
+                        total_positive_responses / float(num_answers)
 
                 # Now that we have the average, let's see if the answers are
                 # above average. We have to loop through and re-get the response
