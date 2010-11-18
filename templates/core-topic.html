@@ -350,12 +350,15 @@
 			<div id="mostpopular" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/qbubbles.png" class="paneicon"><h2>Most Popular</h2>
                 <a title="{% blocktrans %}These are the questions and answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
-                <p>{% blocktrans  %}Did you know you can vote on which questions are the most important and which answers are the most helpful?{% endblocktrans %}</p>
+                {% if topic.popular_comments %}
 				<ol class="top5">
-                    {% for topq in topqs %}
-					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% for comment in topic.popular_comments %}
+					<li><p>{{comment.text}} <a href="#comment-{{comment.id}}">{% trans "Check it out" %}</a></p></li>
                     {% endfor %}
 				</ol>
+                {% else %}
+                <p>{% blocktrans  %}Did you know you can vote on which questions are the most important and which answers are the most helpful?{% endblocktrans %}</p>
+                {% endif %}
 			</div>
 
 {% endblock %}
