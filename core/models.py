@@ -158,13 +158,11 @@ class Topic(models.Model):
 
                 for question in questions:
                     answers = question.get_answers()
-                    num_answers += answers.count()
+                    num_answers += len(answers)
 
                     for answer in answers:
-                        answer.num_positive_responses = \
-                            answer.num_responses("concur")
                         total_positive_responses += \
-                            answer.num_positive_responses
+                            answer.num_responses("concur")
 
                 # Get average number of positive responses (be sure to cast to 
                 # a float)
@@ -177,11 +175,11 @@ class Topic(models.Model):
                 # counts for each question again.
                 for question in questions:
                     answers = question.get_answers()
-                    num_answers += answers.count()
 
                     for answer in answers:
-                        if answer.num_positive_responses > 0 and \
-                        answer.num_positive_responses >= avg_positive_respones:
+                        num_positive_responses = answer.num_responses("concur")
+                        if num_positive_responses > 0 and \
+                        num_positive_responses >= avg_positive_respones:
                             answer.is_top_answer = True
                             top_answers.append(answer)
                             top_answer_ids.append(answer.id)
@@ -241,17 +239,21 @@ class Comment(models.Model):
         return self.num_responses("concur")
 
     def get_related(self, relation_type):
-        """Return a queryset of related comments of a specified type.""" 
-        return CommentRelation.objects.filter(right_comment=self, \
-            relation_type=relation_type)
+        """Return a list of related comments of a specified type.""" 
+        related_comments = []
+        for relation in CommentRelation.objects.filter(right_comment=self, \
+            relation_type=relation_type):
+            related_comments.append(relation.left_comment)
+
+        return related_comments
 
     def get_answers(self):
-        """Return a queryset of answers for this comment (if it's a question)"""
+        """Return a list of answers for this comment (if it's a question)"""
         # TODO: Make the comment relation a constant or something.
         return self.get_related("reply")
 
     def num_related(self, relation_type):
-        return self.get_related(relation_type).count()
+        return len(self.get_related(relation_type))
 
     def num_answers(self):
         # TODO: Make the comment relation a constant or something.
