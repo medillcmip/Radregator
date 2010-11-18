@@ -76,5 +76,5 @@ if DEBUG and ENABLE_FIREPYTHON:
 if DEBUG:
     DEBUG_PROPAGATE_EXCEPTIONS = False 
 
-SITE_NAME = 'Querity Evanston Testing 2'
+SITE_NAME = 'Sourcerer Evanston Testing 2'
 SITE_BODY_CLASSES = 'evanston'
