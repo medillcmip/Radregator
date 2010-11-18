@@ -214,7 +214,7 @@ class BurningQuestionsTestCase(QuestionTestCase):
         self.assertEqual(question.id, burning_questions[0].id)
 
 class TopAnswersTestCase(QuestionTestCase):
-    def test_top_answers_one_question_no_answers(self):
+    def test_one_question_no_answers(self):
         topic = self._topic
 
         user1_profile = UserProfile.objects.get(user__username="user1")
@@ -225,6 +225,26 @@ class TopAnswersTestCase(QuestionTestCase):
 
         question = self._ask_question(topic=topic, text="How many wards is Chinatown in?", \
             user_profile=user1_profile)
+
+        top_answers = topic.top_answers()
+        
+        self.assertEqual(len(top_answers), 0);
+
+    def test_one_question_one_answer_no_upvotes(self):
+        topic = self._topic
+
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        question = self._ask_question(topic=topic, text="How many wards is Chinatown in?", \
+            user_profile=user1_profile)
+        self._answer_question(user_profile=user2_profile, question=question, \
+            clip_url="http://chicagojournal.com/news/04-28-2010/Boundary_lines", \
+            clip_text="Chinatown, Bridgeport and McKinley Park - home to much of the city's Chinese-descended and immigrant populations - are politically fragmented, split between four city wards, four state representative districts, three state senate districts and three U.S. congressional districts.", \
+            comment_text="Chinatown is split between four wards.")
 
         top_answers = topic.top_answers()
         
