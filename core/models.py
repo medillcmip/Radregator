@@ -136,6 +136,19 @@ class Topic(models.Model):
 
         return question.id in self._burning_question_ids
 
+    def top_answers(self):
+        """Return a list of top answers for a topic."""
+        if not ("_top_answers" in self.__dict__):
+            top_answers = [] 
+            top_answer_ids = []
+            questions = self.get_questions()
+            total_positive_responses = 0
+
+            self._top_answers = top_answers
+            self._top_answer_ids = top_answer_ids
+
+        return self._top_answers
+
 
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
