@@ -326,19 +326,22 @@
                     {% endfor %}
 				</ol>
                 {% else %}
-                <p>{% blocktrans  %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
+                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
                 {% endif %}
 			</div>
 			
 			<div id="topanswers" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
                 <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
-                <p>{% blocktrans  %}Hmmm.  There aren't any popular answers for this topic.  Maybe you've got the answer?.{% endblocktrans %}</p>
+                {% if topic.top_answers %}
 				<ol class="top5">
-                    {% for topq in topqs %}
-					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% for answer in topic.top_answers %}
+					<li><p>{{answer.text}} <a href="#" id="seeanswer-{{answer.id}}">See the answer</a></p></li>
                     {% endfor %}
 				</ol>
+                {% else %}
+                <p>{% blocktrans  %}Hmmm.  There aren't any popular answers for this topic.  Maybe you've got the answer?.{% endblocktrans %}</p>
+                {% endif %}
 			</div>
 			
 			<div id="mostpopular" class="toppanes">
