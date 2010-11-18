@@ -199,7 +199,6 @@ def commentdelete_logic(form, userprofile):
     
     for comment in form.cleaned_data['comments']:
        # We don't want to actually delete the comment.
-       print comment
        comment.is_deleted = True
        comment.save()
 
@@ -329,8 +328,7 @@ def frontpage(request):
         return render_to_response('core-frontpage.html', context_instance=RequestContext(request))  
 
 def topic(request, whichtopic=1):
-    """ Front page demo"""
-    print whichtopic
+    """ Display a topic page for a given topic. """
 
     clipper_url_form = UrlSubmitForm()
     
@@ -398,7 +396,6 @@ def topic(request, whichtopic=1):
     template_dict['topics'] = topics
     try: 
         template_dict['topic'] = Topic.objects.get(id=whichtopic)
-        print template_dict['topic'].comments_to_show()
     except: 
         # No topic loaded
         pass
@@ -408,7 +405,6 @@ def topic(request, whichtopic=1):
     template_dict['clipper_url_form'] = clipper_url_form
     template_dict['fb_app_id']=settings.FB_API_ID
     template_dict['is_reporter'] = is_reporter
-    print is_reporter
         
     template_dict.update(csrf(request)) # Required for csrf system
 

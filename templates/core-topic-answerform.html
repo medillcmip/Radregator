@@ -5,10 +5,10 @@ $(document).ready( function () {
 </script>
 
 
-				<form action = "/clipper/{{question.id}}/" method="post" class="answerform" id="answerform-{{question.id}}">
-          <h4>Enter your thoughts...</h4>
-          {{clipper_url_form.user_comments}}<BR>
-					<label>Enter a URL: </label>
+				<form action = "/clipper/{{question.id}}/{{topic.id}}/" method="post" class="answerform" id="answerform-{{question.id}}">
+          <h4>Answer this question:</h4>
+          {{clipper_url_form.user_comments}}
+					<label>Cite the source for this answer (enter a URL): </label>
 					{{clipper_url_form.url_field}}
 		<!--			<input type="hidden" value="3" name="comment_type_str">
 					<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->

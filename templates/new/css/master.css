@@ -507,6 +507,8 @@ ul.masterlist li div.answer {
 	border: 1px solid #ccc;
 	background-color: #f4f4f4;
 	margin-bottom: 17px;
+	position: relative;
+	padding-left: 14px;
 }
 
 ul.masterlist li div.answer div.qabox {
@@ -561,6 +563,25 @@ ul.masterlist li ul li ul li div.answer {
 ul.masterlist li ul li ul li ul li div.answer {
 	margin-left: 180px;
 	margin-bottom: 17px;
+}
+
+
+/* ANSWER FLAGS */
+.earmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 14px;
+	display: block;
+	background: url(../img/backs/accepted.png) repeat-y;
+}
+
+.accepted {
+	
+}
+
+.moderator {
+	
 }
 
 

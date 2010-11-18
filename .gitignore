@@ -9,3 +9,9 @@ settings_local.py
 
 # Ignore rope refactoring tool project directory
 .ropeproject
+
+# Ignore sqlite3 database for my netbook development version.
+radregator.db
+
+# Ignore compiled message files.
+*.mo

@@ -1,13 +1,25 @@
 {% extends "base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block addscripts %}
 	<script type="text/javascript">
 		$(document).ready( function () {
 			$( ".gotabs" ).tabs();
-	
-			$( ".gotabscollapse" ).tabs({collapsible: true,});			
+			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'fast' }});
 
-            $('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
+            if (!userIsAuthenticated()) {
+                // If the user isn't logged in disabled the 
+                // "ask a question ..." tab.
+                $(".qaoptions").tabs("option", "disabled", [1]);
+
+                // Also show an error message if they try to click on the tab
+                $(".qaoptions a.asktab").click(function() {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                });
+            }
+
+            //$('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
             $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
             $('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
 			//$('#logoutlink').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
@@ -23,24 +35,20 @@
             //$('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
-            $('.replyformtoggle').click(function () {
-                var id = $(this).attr("id");
-                var formid = id.replace('toggle', '');
-                $('#' + formid).toggle();
-                return false;
+            
+            // SET UP ANSWER/REPLY DROPDOWN DRAWERS
+            answerdrawers();
 
-            });
-            $('.answerformtoggle').click(function () {
-                var id = $(this).attr("id");
-                var formid = id.replace('toggle', '');
-                $('#' + formid).toggle();
-                return false;
-
-            });
-            $('.replyform').hide();
-            $('.answerform').hide();
-            $('#clipperform').hide();
-
+			// HANDLE CONTEXT MORE/LESS
+			contextexpander();
+			
+			// HANDLE EARMARK HEIGHTS, LABELS and COLORS
+			earmarksetup();
+			
+			// SET UP Q/A COLLAPSING
+			hideanswers();
+			
+			
         });
 	</script>
 {% endblock %}
@@ -64,21 +72,23 @@
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
 				<h1>{{topic.title}}</h1>
-					<div id="contextintro" class="topic-summary">
+					<p id="contextintro" class="topic-summary">
                     {{topic.summary.text|safe}}
-                    </div>
+                    </p>
         {% if is_reporter %}
         {% include "core-topic-update_summary_form.html" %}
         {% endif %}
-            <div class="hidden">
-			<a class="hidden expanderbut lightback" href="#">more <span class="hidden downarrow"></span></a>
-            </div>
+        
+		<div class="contextbot"><a class="expanderbut lightback" href="#">
+			<span class="more"><span class="downarrow"></span>more </span>
+			<span class="less"><span class="uparrow"></span>less </span>
+		</a></div>
 			</div>
 		
 		
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
-				<a class="hidden expanderbut lightback" href="#">more <span class="downarrow"></span></a>
+				<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
 			</div>
 		
         {% if is_reporter %}
@@ -90,9 +100,10 @@
 				<div class="qaoptions gotabscollapse">
 					<div id="optselect">
 						<ul class="tabs">
-							<li class="nullpane hidden" style="display:none;"><a href="#"></a></li>
-							<li class="lightback"><a href="#askquestion">Ask a question about this topic <span class="downarrow"></span></a></li>
-							<li class="lightback hidden"><a href="#filterqas">Filter Q&As <span class="downarrow"></span></a></li>
+							<li class="nullpane" style="display:none;"><a href="#"></a></li>
+
+							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
+							<li class="lightback hidden"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
 						</ul>
 							
 						<p class="viewby hidden">Viewing by: <label>Popularity</label></p>
@@ -132,13 +143,14 @@
 
 
                     <li id="comment-{{question.id}}">
-                        <div class = "comment question" >
-                            <div class = "votebox burningq">
+                        <div class = "comment question">
+                        <div class='qflag'>Q</div>
+                            <div title="{% blocktrans count question.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good question. Do you? {% plural %} {{ num_upvotes }} people think this is a good question. Do you? {% endblocktrans %}" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
                                 <p class="count">{{question.num_upvotes}}</p>
-                                <p class="countsub">thumbs up</p>
+                              <!--  <p class="countsub">thumbs up</p> -->
                                 <a href="#" class="thumbsup" id="thumbsup-{{question.id}}">
                                         <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                        <span>thumbs up!</span>
+                                        <span>{% trans "Good Question!" %}</span>
                                     </a>
                             </div>
 
@@ -147,6 +159,7 @@
                                 <p class="userinfo"><span class="username">{{question.user}}</span> on <span class="date">{{question.date_created}}</span>
                                 <!--START ANSWER FORM CONTROLS -->
                                 <a href="#" class="answerthis answerformtoggle" id="answerformtoggle-{{question.id}}">Answer this</a>
+                                <a href="#" class="answerthis collapseanswers">Hide answers</a>
                                 {% if is_reporter %}
                                 <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
                                 <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>
@@ -170,13 +183,15 @@
                         {% for answer in answers %}
                         {% with answer|first as theanswer %}
                             <li id="comment-{{theanswer.id}}">
+                            	 <div class='aflag'></div>
                                 <div class = "comment answer">
-                                    <div class = "votebox">
+									<div class="earmark olvl0"><span class="textspan"></span></div>
+                                    <div title="{% blocktrans count theanswer.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                                         <p class="count">{{theanswer.num_upvotes}}</p>
-                                        <p class="countsub">thumbs up</p>
+                                       <!-- <p class="countsub">thumbs up</p>-->
                                         <a href="#" class="thumbsup" id="thumbsup-{{theanswer.id}}">
                                                 <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                                <span>thumbs up!</span>
+                                                <span></span>
                                         </a>
                                     </div>
 
@@ -190,7 +205,7 @@
 
                                         {% endfor %}
                                         <p class="userinfo"><span class="username">{{theanswer.user}}</span> on <span class="date">{{theanswer.date_created}}</span>
-                                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a>
+                                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" class="flagasopinion">Flag this as opinion</a>
                                         {% if is_reporter %}
                                         <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{theanswer.id}}">Delete Answer</a>
                                         <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
@@ -213,13 +228,15 @@
                                 {% with replyset|first as reply %}
 
                                 <li id="comment-{{reply.id}}">
-                                    <div class = "comment answer">
-                                        <div class = "votebox">
+                            	 <div class='aflag'></div>
+                                 <div class = "comment answer">
+									<div class="earmark olvl0"><span class="textspan"></span></div>
+                                        <div title="{% blocktrans count reply.num_upvotes as num_upvotes %} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                                             <p class="count">{{reply.num_upvotes}}</p>
-                                            <p class="countsub">thumbs up</p>
+<!--                                            <p class="countsub">thumbs up</p>-->
                                             <a href="#" class="thumbsup" id="thumbsup-{{reply.id}}">
                                                     <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                                    <span>thumbs up!</span>
+                                                    <span></span>
                                             </a>
                                         </div>
 
@@ -238,7 +255,7 @@
                                             <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{reply.id}}">Remove Reply from Topic</a>
 
                                             {% endif %}
-                                            <a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
+                                            <a href="#" class="flagasopinion">Flag this as opinion</a></p>
                                             </p>
                                         </div>
                                     </div>
@@ -277,16 +294,28 @@
 {% endblock %}
 
 {% block sidebar %}
-			<div class="topqas gotabs hidden">
+			<div class="topqas gotabs">
 			<p class="toplabel">Top:</p>
 			<ul class="sidetabs">
 				<li><a href="#burningqs"><img src="{{ MEDIA_URL }}img/icns/flame-sm.png"></a></li>
+                <!--
 				<li><a href="#topanswers"><img src="{{ MEDIA_URL }}img/icns/check-sm.png"></a></li>
 				<li><a href="#mostpopular"><img src="{{ MEDIA_URL }}img/icns/qbubbles-sm.png"></a></li>
+                -->
 			</ul>
 			
 			<div id="burningqs" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/flame.png" class="paneicon"><h2>Burning Questions</h2>
+				<ol class="top5">
+                    {% for question in topic.burning_questions %}
+					<li><p>{{question.text}} <a href="#" id="answerthis-{{question.id}}">Answer this</a></p></li>
+                    {% endfor %}
+				</ol>
+			</div>
+		
+            <!--
+			<div id="topanswers" class="toppanes">
+				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
 				<ol class="top5">
                     {% for topq in topqs %}
 					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
@@ -294,12 +323,14 @@
 				</ol>
 			</div>
 			
-			<div id="topanswers" class="toppanes">
-				TOP ANSWERS
-			</div>
-			
 			<div id="mostpopular" class="toppanes">
-				MOST POPULAR
+				<img src="{{ MEDIA_URL }}img/icns/qbubbles.png" class="paneicon"><h2>Most Popular</h2>
+				<ol class="top5">
+                    {% for topq in topqs %}
+					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% endfor %}
+				</ol>
 			</div>
+            -->
 
 {% endblock %}
