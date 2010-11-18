@@ -128,13 +128,69 @@ class Topic(models.Model):
 
         return self._burning_question_ids
 
-    def is_burning(self, question):
+    def question_is_burning(self, question):
         """ Test whether a question is burning. """
         if not ("_burning_questions" in self.__dict__):
             # We haven't calculated our burning questions yet.  Do this.
             self.burning_questions()
 
         return question.id in self._burning_question_ids
+
+    def top_answers(self):
+        """Return a list of top answers for a topic."""
+        if not ("_top_answers" in self.__dict__):
+            top_answers = [] 
+            top_answer_ids = []
+            questions = self.get_questions()
+            total_positive_responses = 0
+
+            if questions.count() > 0:
+                # HACK ALERT: This is a very naive approach to figuring out
+                # these averages.  I imagine there's a way to do this using
+                # Django's ORM and aggregation.  However, it's non-trivial,
+                # so I'm doing it this way to get things working.
+                # - Geoff <geoffhing@gmail.com> 2010-11-18
+
+                # We're going to calculate the average positive responses to
+                # all of the answers.  First, we have to find all the answers.
+                num_answers = 0
+                total_positive_responses = 0
+
+                for question in questions:
+                    answers = question.get_answers()
+                    num_answers += len(answers)
+
+                    for answer in answers:
+                        total_positive_responses += \
+                            answer.num_responses("concur")
+
+                # Get average number of positive responses (be sure to cast to 
+                # a float)
+                avg_positive_responses = 0
+                if num_answers > 0:
+                    avg_positive_responses = \
+                        total_positive_responses / float(num_answers)
+
+                # Now that we have the average, let's see if the answers are
+                # above average. We have to loop through and re-get the response
+                # counts for each question again.
+                for question in questions:
+                    answers = question.get_answers()
+
+                    for answer in answers:
+                        num_positive_responses = answer.num_responses("concur")
+
+                        if num_positive_responses > 0 and \
+                        num_positive_responses > avg_positive_responses:
+                            answer.is_top_answer = True
+                            top_answers.append(answer)
+                            top_answer_ids.append(answer.id)
+
+            self._top_answers = top_answers
+            self._top_answer_ids = top_answer_ids
+
+
+        return self._top_answers
 
 
 class Comment(models.Model):
@@ -185,9 +241,22 @@ class Comment(models.Model):
     def num_upvotes(self):
         return self.num_responses("concur")
 
+    def get_related(self, relation_type):
+        """Return a list of related comments of a specified type.""" 
+        related_comments = []
+        for relation in CommentRelation.objects.filter(right_comment=self, \
+            relation_type=relation_type):
+            related_comments.append(relation.left_comment)
+
+        return related_comments
+
+    def get_answers(self):
+        """Return a list of answers for this comment (if it's a question)"""
+        # TODO: Make the comment relation a constant or something.
+        return self.get_related("reply")
+
     def num_related(self, relation_type):
-        return CommentRelation.objects.filter(left_comment=self, \
-            relation_type=relation_type).count()
+        return len(self.get_related(relation_type))
 
     def num_answers(self):
         # TODO: Make the comment relation a constant or something.

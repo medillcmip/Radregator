@@ -183,6 +183,13 @@ def dev_loaddata():
     local("echo 'DELETE FROM auth_group_permissions; DELETE FROM auth_permission; DELETE FROM django_admin_log; DELETE FROM django_content_type;' | ./manage.py dbshell")
     local("./manage.py loaddata ./fixtures/starting_data.json")
 
+def compilemessages():
+    require("hosts", provided_by=[staging, production, testing])
+    require("base_dir", provided_by=[staging, production, testing])
+    require("instance", provided_by=[staging, production, testing])
+    with cd("%s/radregator" % (env.base_dir)):
+        run("workon %s; ./manage.py compilemessages" % (env.instance))
+
 def drop_tables():
     require("hosts", provided_by=[staging, production, testing])
     require("base_dir", provided_by=[staging, production, testing])

@@ -18,6 +18,7 @@
 	<link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" type="text/css" />
 	<link href="{{ MEDIA_URL }}css/master.css" rel="stylesheet" type="text/css" /> 
 	<link href="{{ MEDIA_URL }}css/master-evanston.css" rel="stylesheet" type="text/css" /> 
+	<link href="{{ MEDIA_URL }}css/jquery.tooltip.css" rel="stylesheet" type="text/css" /> 
 	<link href="{{ MEDIA_URL }}css/colorbox.css" rel="stylesheet" type="text/css" /> 
 
     {% block addstyles %}
@@ -26,6 +27,7 @@
 	<script src="{{ MEDIA_URL }}js/jquery.tools.min.js"></script>
 	<script src="{{ MEDIA_URL }}js/functions.js"></script>
 	<script src="{{ MEDIA_URL }}js/jquery.colorbox-min.js"></script>
+	<script href="{{ MEDIA_URL }}css/jquery.tooltip.js"></script>
 	<script src="{{ MEDIA_URL }}js/jquery.rotate.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js"></script>
     {% if is_reporter %}
@@ -60,7 +62,8 @@
             });
             {% endif %}
 
-            
+            // Set the tooltips
+            $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         });
     </script>
 
@@ -98,7 +101,9 @@
                     {% endif %}
 				</ul>
 				
-				<h1 class="logo">{{ site_name }}</h1>
+				
+				<!--<h1 class="logo">{{ site_name }}</h1>-->
+				<h1 class="templogo"><span>Source</span>rer</h1>
 				<p id="greetuser">Hello, {{user.username}}. <a href="/logout" id="logoutlink">Log out</a>?</p>
 								
 			</div> 
@@ -121,7 +126,10 @@
 				</form>
 				
 				
-				<h1 class="logo">Querity</h1>
+				
+
+				<!--<h1 class="logo">Querity</h1>-->
+				<h1 class="templogo"><span>Source</span>rer</h1>
 				<a href="/register" id="greetsignup">Signup</a>
 								
 		</div>

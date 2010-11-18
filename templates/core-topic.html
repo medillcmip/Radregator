@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block addscripts %}
 	<script type="text/javascript">
@@ -46,6 +48,20 @@
 			
 			// SET UP Q/A COLLAPSING
 			hideanswers();
+
+            // Handler for ask a question links in sidebar
+            $(".topqas a.askquestion").click(function() {
+                if (!userIsAuthenticated()) {
+                    // Show an error message if they try to click on the link 
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+                else {
+                    // User is authenticated.  Show the form.
+                    $("#qas .qaoptions").tabs("option", "selected", 1);
+                }
+
+                return false;
+            });
 			
 			
         });
@@ -142,14 +158,15 @@
 
 
                     <li id="comment-{{question.id}}">
+                        <a name="comment-{{question.id}}"></a>
                         <div class = "comment question">
                         <div class='qflag'>Q</div>
-                            <div class = "votebox{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
+                            <div title="{% blocktrans count question.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good question. Do you? {% plural %} {{ num_upvotes }} people think this is a good question. Do you? {% endblocktrans %}" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
                                 <p class="count">{{question.num_upvotes}}</p>
-                                <p class="countsub">thumbs up</p>
+                              <!--  <p class="countsub">thumbs up</p> -->
                                 <a href="#" class="thumbsup" id="thumbsup-{{question.id}}">
                                         <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                        <span>thumbs up!</span>
+                                        <span>{% trans "Good Question!" %}</span>
                                     </a>
                             </div>
 
@@ -183,15 +200,16 @@
                         {% for answer in answers %}
                         {% with answer|first as theanswer %}
                             <li id="comment-{{theanswer.id}}">
+                                <a name="comment-{{theanswer.id}}"></a>
                             	 <div class='aflag'></div>
                                 <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
-                                    <div class = "votebox">
+                                    <div title="{% blocktrans count theanswer.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                                         <p class="count">{{theanswer.num_upvotes}}</p>
-                                        <p class="countsub">thumbs up</p>
+                                       <!-- <p class="countsub">thumbs up</p>-->
                                         <a href="#" class="thumbsup" id="thumbsup-{{theanswer.id}}">
                                                 <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                                <span>thumbs up!</span>
+                                                <span></span>
                                         </a>
                                     </div>
 
@@ -229,15 +247,16 @@
                                 {% with replyset|first as reply %}
 
                                 <li id="comment-{{reply.id}}">
+                                 <a name="comment-{{reply.id}}"></a>
                             	 <div class='aflag'></div>
                                  <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
-                                        <div class = "votebox">
+                                        <div title="{% blocktrans count reply.num_upvotes as num_upvotes %} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                                             <p class="count">{{reply.num_upvotes}}</p>
-                                            <p class="countsub">thumbs up</p>
+<!--                                            <p class="countsub">thumbs up</p>-->
                                             <a href="#" class="thumbsup" id="thumbsup-{{reply.id}}">
                                                     <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                                    <span>thumbs up!</span>
+                                                    <span></span>
                                             </a>
                                         </div>
 
@@ -306,24 +325,36 @@
 			
 			<div id="burningqs" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/flame.png" class="paneicon"><h2>Burning Questions</h2>
+                <a title="{% blocktrans %}A burning question is a popular question that hasn't been answered.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                {% if topic.burning_questions %}
 				<ol class="top5">
                     {% for question in topic.burning_questions %}
 					<li><p>{{question.text}} <a href="#" id="answerthis-{{question.id}}">Answer this</a></p></li>
                     {% endfor %}
 				</ol>
+                {% else %}
+                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
+                {% endif %}
 			</div>
 			
 			<div id="topanswers" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
+                <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                {% if topic.top_answers %}
 				<ol class="top5">
-                    {% for topq in topqs %}
-					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% for answer in topic.top_answers %}
+					<li><p>{{answer.text}} <a href="#comment-{{answer.id}}" id="seeanswer-{{answer.id}}">See the answer</a></p></li>
                     {% endfor %}
 				</ol>
+                {% else %}
+                <p>{% blocktrans  %}Hmmm.  There aren't any popular answers for this topic.  Maybe you've got the answer?.{% endblocktrans %}</p>
+                {% endif %}
 			</div>
 			
 			<div id="mostpopular" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/qbubbles.png" class="paneicon"><h2>Most Popular</h2>
+                <a title="{% blocktrans %}These are the questions and answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                <p>{% blocktrans  %}Did you know you can vote on which questions are the most important and which answers are the most helpful?{% endblocktrans %}</p>
 				<ol class="top5">
                     {% for topq in topqs %}
 					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>

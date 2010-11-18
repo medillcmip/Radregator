@@ -12,3 +12,6 @@ settings_local.py
 
 # Ignore sqlite3 database for my netbook development version.
 radregator.db
+
+# Ignore compiled message files.
+*.mo
