@@ -180,7 +180,7 @@ class Topic(models.Model):
                     for answer in answers:
                         num_positive_responses = answer.num_responses("concur")
                         if num_positive_responses > 0 and \
-                        num_positive_responses >= avg_positive_responses:
+                        num_positive_responses > avg_positive_responses:
                             answer.is_top_answer = True
                             top_answers.append(answer)
                             top_answer_ids.append(answer.id)
