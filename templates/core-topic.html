@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block addscripts %}
 	<script type="text/javascript">
@@ -143,12 +145,12 @@
                     <li id="comment-{{question.id}}">
                         <div class = "comment question">
                         <div class='qflag'>Q</div>
-                            <div title="{{question.num_upvotes}} people think that this is a good question. Do you?" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
+                            <div title="{% blocktrans count question.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good question. Do you? {% plural %} {{ num_upvotes }} people think this is a good question. Do you? {% endblocktrans %}" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
                                 <p class="count">{{question.num_upvotes}}</p>
                               <!--  <p class="countsub">thumbs up</p> -->
                                 <a href="#" class="thumbsup" id="thumbsup-{{question.id}}">
                                         <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                        <span></span>
+                                        <span>{% trans "Good Question!" %}</span>
                                     </a>
                             </div>
 
@@ -184,7 +186,7 @@
                             	 <div class='aflag'></div>
                                 <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
-                                    <div title="{{theanswer.num_upvotes}} people think that this is a good answer. Do you?" class = "votebox tooltipper">
+                                    <div title="{% blocktrans count theanswer.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                                         <p class="count">{{theanswer.num_upvotes}}</p>
                                        <!-- <p class="countsub">thumbs up</p>-->
                                         <a href="#" class="thumbsup" id="thumbsup-{{theanswer.id}}">
@@ -229,7 +231,7 @@
                             	 <div class='aflag'></div>
                                  <div class = "comment answer">
 									<div class="earmark olvl0"><span class="textspan"></span></div>
-                                        <div title="{{reply.num_upvotes}} people think that this is a good answer. Do you?" class = "votebox tooltipper">
+                                        <div title="{% blocktrans count reply.num_upvotes as num_upvotes %} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                                             <p class="count">{{reply.num_upvotes}}</p>
 <!--                                            <p class="countsub">thumbs up</p>-->
                                             <a href="#" class="thumbsup" id="thumbsup-{{reply.id}}">
