@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Count
-from utils import comment_cmp_default, comment_cmp_date_first
+from utils import get_logger, comment_cmp_default, comment_cmp_date_first
 from django.contrib.sites.models import Site
 from clipper.models import Article
 from tagger.models import Tag
@@ -49,14 +49,21 @@ class Topic(models.Model):
         return self.title
 
     def recursive_traverse(self, comment, level = 1, cmp=comment_cmp_default):
+        #logger = get_logger()
+        #logger.debug("entering function recursive_traverse()")
+        #logger.debug(cmp)
+
         # Pass through comment replies, showing
         retlist = [comment]
-        for child in sorted(comment.comment_set.filter(is_deleted=False, is_parent=True, topics=self), cmp=comment_cmp_default):
+        for child in sorted(comment.comment_set.filter(is_deleted=False, is_parent=True, topics=self), cmp=cmp):
             retlist += [self.recursive_traverse(child, level+1, cmp)]
         return retlist
 
-#    def comments_to_show(self, cmp=comment_cmp_default):
-    def comments_to_show(self, cmp=comment_cmp_date_first):
+    def comments_to_show(self, cmp=comment_cmp_default):
+        #logger = get_logger()
+        #logger.debug("entering function comments_to_show()")
+        #logger.debug(cmp)
+
         # Comment refers to the parent
         rootset = sorted(self.comments.filter(is_deleted=False, is_parent=True, related=None), cmp=cmp)
 
