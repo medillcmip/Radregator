@@ -69,9 +69,6 @@ def comment_cmp_default(comm1, comm2):
     return comment_cmp_stack(comm1, comm2, \
                              (comment_cmp_is_reporter, comment_cmp_clips, \
                               comment_cmp_upvotes, comment_cmp_date_desc))
-                              
-    
-    # Then comments with more upvotes
 
 
 def slugify(s):
