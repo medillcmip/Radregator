@@ -70,6 +70,14 @@ def comment_cmp_default(comm1, comm2):
                              (comment_cmp_is_reporter, comment_cmp_clips, \
                               comment_cmp_upvotes, comment_cmp_date_desc))
 
+def comment_cmp_date_first(comm1, comm2):
+    """
+    Compare comments by created date first, then by some other stuff.
+
+    """
+    return comment_cmp_stack(comm1, comm2, \
+                             (comment_cmp_date_desc, comment_cmp_is_reporter, \
+                              comment_cmp_clips, comment_cmp_upvotes))
 
 def slugify(s):
     p = re.compile('\W') # match non-alphanumeric characters 
