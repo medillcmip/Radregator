@@ -55,9 +55,9 @@ class Topic(models.Model):
             retlist += [self.recursive_traverse(child, level+1)]
         return retlist
 
-    def comments_to_show(self):
+    def comments_to_show(self, cmp_function=comment_cmp):
         # Comment refers to the parent
-        rootset = sorted(self.comments.filter(is_deleted=False, is_parent=True, related=None), cmp=comment_cmp)
+        rootset = sorted(self.comments.filter(is_deleted=False, is_parent=True, related=None), cmp=cmp_function)
 
 
         treemap = {}
