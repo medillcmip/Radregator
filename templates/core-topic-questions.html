@@ -1,0 +1,161 @@
+{% load i18n %}
+
+<!-- START ACTUAL Q&As -->
+<ul class="masterlist">
+    {% for questionset in topic.comments_to_show %}
+
+    {% with questionset|first as question %}
+
+
+    <li id="comment-{{question.id}}">
+        <a name="comment-{{question.id}}"></a>
+        <div class = "comment question">
+        <div class='qflag'>Q</div>
+            <div title="{% blocktrans count question.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good question. Do you? {% plural %} {{ num_upvotes }} people think this is a good question. Do you? {% endblocktrans %}" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
+                <p class="count">{{question.num_upvotes}}</p>
+              <!--  <p class="countsub">thumbs up</p> -->
+                <a href="#" class="thumbsup" id="thumbsup-{{question.id}}">
+                        <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
+                        <span>{% trans "Good Question!" %}</span>
+                    </a>
+            </div>
+
+            <div class="qabox">
+                <p class="qa">{{question.text}}</p>
+                <p class="userinfo"><span class="username">{{question.user}}</span> on <span class="date">{{question.date_created}}</span>
+                <!--START ANSWER FORM CONTROLS -->
+                <a href="#" class="answerthis answerformtoggle" id="answerformtoggle-{{question.id}}">Answer this</a>
+                <a href="#" class="answerthis collapseanswers">Hide answers</a>
+                {% if is_reporter %}
+                <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
+                <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>
+                <!--END ANSWER FORM CONTROLS -->
+
+                {% endif %}
+                </p>
+
+                {% include "core-topic-answerform.html" %}
+                
+            </div>
+        </div>
+        {% endwith %}
+        <!-- answers -->
+
+        {% with questionset|slice:"1:" as answers %}
+
+        {% if answers %}
+        <ul class = "answers">
+
+        {% for answer in answers %}
+        {% with answer|first as theanswer %}
+            <li id="comment-{{theanswer.id}}">
+                <a name="comment-{{theanswer.id}}"></a>
+                 <div class='aflag'></div>
+                <div class = "comment answer">
+                    <div class="earmark olvl0"><span class="textspan"></span></div>
+                    <div title="{% blocktrans count theanswer.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
+                        <p class="count">{{theanswer.num_upvotes}}</p>
+                       <!-- <p class="countsub">thumbs up</p>-->
+                        <a href="#" class="thumbsup" id="thumbsup-{{theanswer.id}}">
+                                <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
+                                <span></span>
+                        </a>
+                    </div>
+
+                    <div class="qabox">
+                        <p class="qa">{{theanswer.text}}</p>
+                        {% for clip in theanswer.clips.all %}
+                        <div class = "answerclip">
+                            <p class="cliptext">{{clip.text}}</p>
+                            <p class="clipcitation">Citation: "<a href="{{clip.article.url}}" class="articlelink">{{clip.article.title}}</a>" on {{clip.article.date_published}} at <a href="{{clip.article.source.url}}" class="publink"> </a> </p>
+                        </div>
+
+                        {% endfor %}
+                        <p class="userinfo"><span class="username">{{theanswer.user}}</span> on <span class="date">{{theanswer.date_created}}</span>
+                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" id="flagasopinion-{{theanswer.id}}" class="flagasopinion">Flag this as opinion</a>
+                        {% if is_reporter %}
+                        <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{theanswer.id}}">Delete Answer</a>
+                        <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
+
+                        {% endif %}
+
+                        </p>
+
+                {% include "core-topic-replyform.html" %}
+
+
+                        </div>
+                    </div>
+                {% with answer|slice:"1:" as replies %}
+
+                {% if replies %}
+                <ul class = "answers">
+
+                {% for replyset in replies %}
+                {% with replyset|first as reply %}
+
+                <li id="comment-{{reply.id}}">
+                 <a name="comment-{{reply.id}}"></a>
+                 <div class='aflag'></div>
+                 <div class = "comment answer">
+                    <div class="earmark olvl0"><span class="textspan"></span></div>
+                        <div title="{% blocktrans count reply.num_upvotes as num_upvotes %} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
+                            <p class="count">{{reply.num_upvotes}}</p>
+<!--                                            <p class="countsub">thumbs up</p>-->
+                            <a href="#" class="thumbsup" id="thumbsup-{{reply.id}}">
+                                    <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
+                                    <span></span>
+                            </a>
+                        </div>
+
+                        <div class="qabox">
+                            <p class="qa">{{reply.text}}</p>
+                            {% for clip in reply.clips.all %}
+                            <div class = "answerclip">
+                                <p class="cliptext">{{clip.text}}</p>
+                                <p class="clipcitation">Citation: "<a href="{{clip.article.url}}" class="articlelink">{{clip.article.title}}</a>" on {{clip.article.date_published}} at <a href="{{clip.article.source.url}}" class="publink"> </a> </p>
+                            </div>
+
+                            {% endfor %}
+                            <p class="userinfo"><span class="username">{{reply.user}}</span> on <span class="date">{{reply.date_created}}</span>
+                            {% if is_reporter %}
+                            <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{reply.id}}">Delete Reply</a>
+                            <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{reply.id}}">Remove Reply from Topic</a>
+
+                            {% endif %}
+                            <a href="#" id="flagasopinion-{{reply.id}}" class="flagasopinion">Flag this as opinion</a></p>
+                            </p>
+                        </div>
+                    </div>
+
+                </li>
+                {% endwith %}
+                {% endfor %}
+                </ul>
+
+                {% endif %}
+                {% endwith %}
+
+        
+
+    
+    </li>
+    {% endwith %}
+
+    {% endfor %}
+    </ul>
+
+    {% endif %}
+
+    {% endwith %}
+
+    </li>
+
+    {% endfor %}
+
+    
+    
+</ul>
+
+<!-- END Q&As --> 
+
