@@ -13,25 +13,65 @@ def build_readable_errors(errordict):
 
     return retstr
         
+def comment_cmp_date_desc(comm1, comm2):
+    if comm1.date_created > comm2.date_created:
+        return -1
+    elif comm1.date_created < comm2.date_created:
+        return 1
+    else:
+        return 0
 
-def comment_cmp_default(comm1, comm2):
-    
-    # Reporter comments take priority
+def comment_cmp_date_asc(comm1, comm2):
+    if comm1.date_created > comm2.date_created:
+        return 1
+    elif comm1.date_created < comm2.date_created:
+        return -1
+    else:
+        return 0
 
+def comment_cmp_is_reporter(comm1, comm2):
     if comm1.user.is_reporter() and not comm2.user.is_reporter():
         return -1
-
-    if comm2.user.is_reporter() and not comm1.user.is_reporter():
+    elif comm2.user.is_reporter() and not comm1.user.is_reporter():
         return 1
+    else: 
+        return 0
 
-    # Then comments with clips
-    if comm1.clips and not comm2.clips: return -1
-    
-    if comm2.clips and not comm1.clips: return 1
-    
-    # Then comments with more upvotes
+def comment_cmp_clips(comm1, comm2):
+    if comm1.clips and not comm2.clips: 
+        return -1
+    elif comm2.clips and not comm1.clips: 
+        return 1
+    else:
+        return 0
+
+def comment_cmp_upvotes(comm1, comm2):
     return cmp(comm2.responses.count(), comm1.responses.count())
 
+def comment_cmp_stack(comm1, comm2, cmp_functions):
+    for cmp_function in cmp_functions:
+        cmp_val = cmp_function(comm1, comm2)
+        if cmp_val != 0:
+            return cmp_val
+
+def comment_cmp_default(comm1, comm2):
+    """ 
+    Default comparison function for comments. 
+    
+    It compares comments based on these factors (from most important to
+    least important):
+
+    1. Whether the comment poster was a reporter.
+    2. The number of clips attached to a comment.
+    3. The number of upvotes on a comment.
+    4. The date the comment was created.
+    """
+    return comment_cmp_stack(comm1, comm2, \
+                             (comment_cmp_is_reporter, comment_cmp_clips, \
+                              comment_cmp_upvotes, comment_cmp_date_desc))
+                              
+    
+    # Then comments with more upvotes
 
 
 def slugify(s):
