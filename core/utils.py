@@ -14,7 +14,7 @@ def build_readable_errors(errordict):
     return retstr
         
 
-def comment_cmp(comm1, comm2):
+def comment_cmp_default(comm1, comm2):
     
     # Reporter comments take priority
 
