@@ -221,7 +221,7 @@
 
                                         {% endfor %}
                                         <p class="userinfo"><span class="username">{{theanswer.user}}</span> on <span class="date">{{theanswer.date_created}}</span>
-                                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" class="flagasopinion">Flag this as opinion</a>
+                                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" id="flagasopinion-{{theanswer.id}}" class="flagasopinion">Flag this as opinion</a>
                                         {% if is_reporter %}
                                         <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{theanswer.id}}">Delete Answer</a>
                                         <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
@@ -272,7 +272,7 @@
                                             <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{reply.id}}">Remove Reply from Topic</a>
 
                                             {% endif %}
-                                            <a href="#" class="flagasopinion">Flag this as opinion</a></p>
+                                            <a href="#" id="flagasopinion-{{reply.id}}" class="flagasopinion">Flag this as opinion</a></p>
                                             </p>
                                         </div>
                                     </div>
