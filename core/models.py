@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Count
-from utils import comment_cmp_default
+from utils import comment_cmp_default, comment_cmp_date_first
 from django.contrib.sites.models import Site
 from clipper.models import Article
 from tagger.models import Tag
@@ -55,7 +55,8 @@ class Topic(models.Model):
             retlist += [self.recursive_traverse(child, level+1, cmp)]
         return retlist
 
-    def comments_to_show(self, cmp=comment_cmp_default):
+#    def comments_to_show(self, cmp=comment_cmp_default):
+    def comments_to_show(self, cmp=comment_cmp_date_first):
         # Comment refers to the parent
         rootset = sorted(self.comments.filter(is_deleted=False, is_parent=True, related=None), cmp=cmp)
 
@@ -66,7 +67,7 @@ class Topic(models.Model):
         indentlist = []
 
         for comment in rootset:
-            indentlist += [self.recursive_traverse(comment)]
+            indentlist += [self.recursive_traverse(comment, cmp=cmp)]
 
         return indentlist
 
