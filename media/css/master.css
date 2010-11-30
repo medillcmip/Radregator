@@ -13,6 +13,10 @@ a:hover {
 	text-decoration: underline;
 }
 
+a.blackback { color: #fff; background-color: #323232; }
+a.blackback:hover { text-decoration: none; background-color: #232323; }
+a.blackback:active { text-decoration: none; background-color: #111; }
+
 div#wrapper {
 	padding-top: 68px;
 }
@@ -78,6 +82,7 @@ div#header a#greetsignup {
 	height: 24px;
 	-moz-border-radius: 15px;
 	border-radius: 15px;
+	-webkit-border-radius: 15px;
 	margin-left: 12px;
 	font-size: 0.9em;
 	letter-spacing: 0.05em;
@@ -251,33 +256,25 @@ span.uparrow, a.uparrow {
     position: fixed;
     top: 48px;
     left: 0;
-
     height: 29px;
     width: 100%;
-
     z-index: 1000;
-
 	background-color: #620505;
 }
 
 #messages {
     position: relative;
-
     margin: 0 auto;
-
     height: 29px;
     line-height: 29px;
-
     color: white;
     font-size: 0.9em;
     font-weight: bold;
-
     text-align: center;
 }
 
 #messages #hidemessages {
     position: absolute;
-
     top: 0px;
     right: 0px;
 }
@@ -291,16 +288,169 @@ span.uparrow, a.uparrow {
     text-decoration: underline;
 }
 
+/* HOMEPAGE */
+
+div#hometimeline {
+	
+}
+
+p#timelineflag {
+	
+}
+
+div#timelinecontainer {
+	width: 562px;
+	height: 36px;
+	border: 0;
+}
+
+div#timelinecontainer canvas {
+	border: 0;
+}
+
+ul.topicinfo {
+	float: right;
+	margin-top: 15px;
+}
+
+ul.topicinfo li {
+	float: left;
+	height: 24px;
+	min-width: 40px;
+	padding: 0 15px;
+	width: auto;
+	text-align: center;
+	line-height: 24px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border: 1px solid #bfbfbf;
+	font-size: 0.9em;
+	font-weight: normal;
+}
+
+ul.topicinfo li.topictitle {
+	z-index: 3;
+	position: relative;
+	left: 40px;
+	color: #666;
+	background-color: #e5e5e5;
+	border-color: #999;
+}
+
+ul.topicinfo li.answercount {
+	z-index: 2;
+	position: relative;
+	left: 20px;
+	background-color: #009933;
+	border-color: #005500;
+	color: #fff;
+	padding-left: 30px;
+}
+
+ul.topicinfo li.askercount {
+	z-index: 1;
+	position: relative;
+	background-color: #666;
+	color: #fff;
+	border-color: #222;
+	padding-left: 30px;
+}
+
+/* MAIN SPOT HEADLINE */
+
+div.featspot {
+	height: 180px;
+	padding: 40px 0 30px 0;
+}
+
+h2.featquestion {
+
+}
+
+h2.featquestion span {
+	font-size: 18px;
+	margin-left: 4px;
+	color: #999;
+}
+
+/* HOMEPAGE INTERACTIONS */
+
+div.featinteractions {
+	width: 570px;
+	height: 82px;
+	margin: 0 auto 60px auto;
+	position: relative;
+	left: 15px;
+}
+
+div.featinteractions a.button {
+	display: block;
+	width: 300px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	background: #50b332 url(../img/backs/answerthis.png) repeat-x;
+	height: 80px;
+	border: 1px solid #339900;
+	font-size: 34px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 80px;
+	color: #fff;
+	text-shadow: 2px 2px 1px #333;
+	float: left;
+	z-index: 2;
+	position: relative;
+}
+
+div.featinteractions a.button:hover {
+	text-decoration: none;
+	background-color: #339900;
+}
+
+div.featinteractions a.button:active {
+	text-decoration: none;
+	background-color: #117700;
+}
+
+div.featinteractions ul.interactionslist {
+	width: 210px;
+	padding-left: 40px;
+	position: relative;
+	left:-30px;
+	height: 77px;
+	float: left;
+	padding-top: 3px;
+	z-index: 1;
+	background-color: #eee;
+	border:1px solid #bbb;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+
+div.featinteractions ul.interactionslist li {
+	width: 200px;
+	height: 20px;
+	margin: 3px 0 0 0;
+	font-weight: bold;
+	line-height: 20px;
+}
+
+
 /* LEFT CONTENT ON TOPIC/CONTENT PAGES */
 
 div#leftcontent {
 	padding: 4px 0 10px 0;
 }
 
-h3.nodestamp {
+h3.nodestamp, .nodestamp {
 	background-color: #e5e5e5;
 	height: 24px;
-	width: 80px;
+	min-width: 60px;
+	padding: 0 10px;
+	width: auto;
 	text-align: center;
 	line-height: 24px;
 	-moz-border-radius: 15px;
@@ -937,7 +1087,7 @@ div.toppanes ol.top5 li p a {
 }
 
 
-/* TOOLTIP STYLE */
+/* TOOLTIP */
 #tooltip, .tooltip {
 	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 	font-size: 0.8em;
@@ -950,3 +1100,123 @@ div.toppanes ol.top5 li p a {
 	background: url('../img/backs/trans-dark.png');
 }
 #tooltip h3, #tooltip div, .tooltip h3, .tooltip div { margin: 0; }
+
+
+
+/* FOOTER */
+div#footerwrap {
+	background: #50b332 url(../img/backs/green.png) repeat;
+	height: auto;
+	width: 100%;
+	overflow: auto;
+	border-top: 1px solid #323232;
+	padding-bottom: 50px;
+}
+
+div#footer {
+	padding-top: 40px;
+	height: auto;
+	overflow: auto;
+	padding-bottom: 25px;
+}
+
+div#footer .footertabs {
+	height: 30px;
+}
+
+div#footer .footertabs li {
+	-moz-border-radius: 10px 10px 0 0;
+	border-radius: 10px 10px 0 0;
+	-webkit-border-radius: 10px 10px 0 0;
+	padding: 0 10px;
+	height: 30px;
+	line-height: 30px;
+	font-size: 16px;
+	font-weight: bold;
+	background-color: #66cc66;
+	float: left;
+	margin-right: 4px;
+}
+
+div#footer .footertabs li.ui-state-active { background-color: #323232; }
+div#footer .footertabs li a { color: #323232; }
+div#footer .footertabs li a:hover { text-decoration: none; }
+div#footer .footertabs li.ui-state-active a { color: #fff; }
+div#footer .footertabs li a:hover { text-decoration: none; }
+
+div#footer form.footerinput {
+	height: auto;
+	overflow: auto;
+	margin-bottom: 50px;
+}
+
+div#footer form.footerinput input {
+	width: 770px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 24px;
+	font-weight: bold;
+	border: 2px #323232 solid;
+	padding: 0 10px;
+	float: left;
+	margin-right: 10px;
+	color: #888;
+}
+
+div#footer form.footerinput .footersubmit {
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	height: 44px;
+	line-height: 44px;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	display: block;
+	float: left;
+	width: 140px;
+}
+
+div#footer h4 {
+	font-size: 2.5em;
+	font-weight: bold;
+	padding-bottom: 12px;
+	margin-bottom: 15px;
+	border-bottom: 1px solid #478c32;
+}
+
+div#footer ul#footer3col {
+	width: auto;
+	height: auto;
+	overflow: visible;
+}
+
+div#footer ul#footer3col li.footercol {
+	overflow: auto;
+	height: auto;
+	padding-bottom: 20px;
+	margin-bottom: 30px;
+}
+
+div#footer ul#footer3col li.footercol ul.footerlist {
+	width: auto;
+	height: auto;
+	overflow: auto;
+	list-style: disc;
+	padding-left: 20px;
+}
+
+div#footer ul#footer3col li.footercol ul.footerlist li {
+	margin-bottom: 12px;
+	font-size: 1.1em;
+}
+
+div#footer ul#footer3col li.footercol ul.footerlist li a {
+	color: #fff;
+}
+
+div#footer p.footerline {
+	text-align: center;
+	font-size: 0.9em;
+}
+

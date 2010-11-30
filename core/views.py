@@ -314,18 +314,8 @@ def frontpage(request):
     """
     template_dict = { 'site_name':settings.SITE_NAME, \
         'body_classes':settings.SITE_BODY_CLASSES }
-
-    if Topic.objects.filter(is_deleted=False).count() > 0:
-        # There is at least one topic to display. 
-
-        # Get the first topic
-        topic = Topic.objects.filter(is_deleted=False)[0]
-        topic_url = '/topic/%s/' % (topic.id) 
-
-        return HttpResponseRedirect(topic_url)
-
-    else:
-        return render_to_response('core-frontpage.html', context_instance=RequestContext(request))  
+    
+    return render_to_response('frontpage.html', context_instance=RequestContext(request))  
 
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """

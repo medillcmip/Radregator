@@ -3,9 +3,6 @@
 {% block addscripts %}
 	<script type="text/javascript">
 		$(document).ready( function () {
-			$( ".gotabs" ).tabs();
-			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'fast' }});
-
             if (!userIsAuthenticated()) {
                 // If the user isn't logged in disabled the 
                 // "ask a question ..." tab.
@@ -46,12 +43,14 @@
 			// SET UP Q/A COLLAPSING
 			hideanswers();
 			
-			
+            // Set the tooltips
+           // $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         });
 	</script>
 {% endblock %}
 
-{% block leftcontent %}
+{% block pagecontent %}
+	<div id="leftcontent" class="grid_8">
 			<h3 class="nodestamp">topic</h3>
 			
 			<!--V2!
@@ -289,9 +288,10 @@
 				
 				<!-- END Q&As --> 
 			</div>
-{% endblock %}
+	</div>
 
-{% block sidebar %}
+
+	<div id="sidebar" class="grid_4">
 			<div class="topqas gotabs">
 			<p class="toplabel">Top:</p>
 			<ul class="sidetabs">
@@ -326,5 +326,5 @@
                     {% endfor %}
 				</ol>
 			</div>
-
+	</div>
 {% endblock %}

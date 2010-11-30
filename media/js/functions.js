@@ -634,3 +634,29 @@ function hideanswers () {
 		return false;
 	});
 }
+
+
+
+
+// RESIZABLE FONT ON HOMEPAGE AND ELSEWHERE
+$.fn.fontfit = function(max) {
+	var max_size = 50;
+	if (typeof(max) == "undefined")
+		max = max_size;
+	$(this).wrapInner('<div id="fontfit"></div>');
+	var dheight = $(this).height();
+	var cheight = $("#fontfit").height();
+	var fsize = (($(this).css("font-size")).slice(0,-2))*1;
+	while(cheight<dheight && fsize<max) {
+		fsize+=1;
+		$(this).css("font-size",fsize+"px");
+		cheight = $("#fontfit").height();
+	}
+	while(cheight>dheight || fsize>max) {
+		fsize-=1;
+		$(this).css("font-size",fsize+"px");
+		cheight = $("#fontfit").height();
+	}
+	$("#fontfit").replaceWith($("#fontfit").html());
+	return this;
+}
