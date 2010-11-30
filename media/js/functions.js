@@ -90,6 +90,7 @@ function closeReplyform (replytype,parentid) {
 	});
 }
 
+
 			
 // OPEN REPLY FUNCTION
 function openReplyform (replytype,parentid) {				
@@ -143,6 +144,34 @@ function handleReplyform() {
         return false;
     }
 }
+
+// GET TOPICS VIA API
+
+function getTopics(){
+    $.ajax({
+        type: "get",
+        url : "/api/json/topics/",
+        data : {},
+        
+
+        success : function(data){
+            $.each(data,function(index, topic)
+            {
+                var pk = topic.pk;
+                var title = topic.fields.title;
+                $('#toptopicslist').append("<li><a href='/topic/"+pk+"/'>"+title+"</a></li>");
+                $('#activetopicslist').append("<li><a href='/topic/"+pk+"/'>"+title+"</a></li>");
+            });
+            
+
+        
+        },
+        error: {
+        // Show to user?
+        }
+    });
+}
+
 
 
 function handleCommentSubmit(){
@@ -661,4 +690,30 @@ function hideanswers () {
 		}
 		return false;
 	});
+}
+
+
+
+
+// RESIZABLE FONT ON HOMEPAGE AND ELSEWHERE
+$.fn.fontfit = function(max) {
+	var max_size = 50;
+	if (typeof(max) == "undefined")
+		max = max_size;
+	$(this).wrapInner('<div id="fontfit"></div>');
+	var dheight = $(this).height();
+	var cheight = $("#fontfit").height();
+	var fsize = (($(this).css("font-size")).slice(0,-2))*1;
+	while(cheight<dheight && fsize<max) {
+		fsize+=1;
+		$(this).css("font-size",fsize+"px");
+		cheight = $("#fontfit").height();
+	}
+	while(cheight>dheight || fsize>max) {
+		fsize-=1;
+		$(this).css("font-size",fsize+"px");
+		cheight = $("#fontfit").height();
+	}
+	$("#fontfit").replaceWith($("#fontfit").html());
+	return this;
 }

@@ -1,197 +1,62 @@
 {% extends "base.html" %}
 
-{% block pagetitle %}
-	Questions Interaction v0.1
-{% endblock %}
-
-{% block addstyles %}
-<link href="{{ MEDIA_URL }}css/admin.css" rel="stylesheet" type="text/css" /> 
-{% endblock %}
-
 {% block addscripts %}
-{% if is_reporter %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/functions-admin.js"></script>
-{% endif %}
 <script type="text/javascript">
-	
-		$(document).ready(function() {
-			$('a.commenttabs').unbind('click', handleReplyform).bind('click', handleReplyform); 
-            $('.youagree a').unbind('click', handleResponseLink).bind('click', handleResponseLink);
-            $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
-            $('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
-            $('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
-            $('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
-            $('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
-            $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
+	$(document).ready( function() {
+		$("div.featspot").fontfit("146");
+		$("div.featspot h2").valign();
+		
+		
+		//DRAW TIMELINE
+		var timeline = Raphael("timelinecontainer", 561, 36, {stroke: "#fff"});
+//		timeline.attr("stroke-width", "0");
+		var backdrop = timeline.rect(1, 1, 560, 18);
+		//backdrop.attr("fill", "#111");
+		backdrop.attr("border","0");
+		
+		//var slices = timeline.rect(1, 1, 20, 18);
+		//slices.attr("fill", "#009933");
+		
+		// THIS WILL HAVE TO COUNT THE NUMBER OF RETURNED OBJECTS AND LOOP THROUGH THEM, SETTING WIDTHS APPROPRIATELY
+		var slicecount = 20;
+		
+		for(var i = 0; i < slicecount+1; i+=1) {  
+			var segmentlength = (560 / slicecount);
+			var multiplier = i * segmentlength;
+			if (i % 2 == 0) {
+				timeline.rect(multiplier - segmentlength, 0, segmentlength, 18).attr({fill: '#009933'}).attr("stroke-width",0);
+			} else {
+				timeline.rect(multiplier - segmentlength, 0, segmentlength, 18).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.9);
+			}			
+		}  
 
-			
-			// DEAL WITH INDENTED COMMENTS
-			$('li.comment-level2').before('<li class="childcomment"></li>');
-			$('li.comment-level3').before('<li class="childcomment indent1"></li>');
-			$('li.comment-level4').before('<li class="childcomment indent2"></li>');
-		});
+
+	});
 </script>
 {% endblock %}
 
-
-
-
-
-{% block body %}
-	<div id="introblurb">
-		<h3>Welcome</h3>
-	</div>	
-	
-    {% if is_reporter %}
-        {% include "core-frontpage-addtopic.html" %}
-
-        {% include "core-frontpage-addsource.html" %}
-    {% endif %}
-
-	<ul class="tabs">
-		{% for topic in topics.all %}
-			<li><a href="#" class="switchtab" id="topic-{{ topic.id }}">{{ topic.title }}</a></li>
-		{% endfor %}
+{% block pagecontent %}
+	<ul class="topicinfo">
+		<li class="topictitle nodestamp">Topic: Rahm Emanuel</li>
+		<li class="answercount">0 answers</li>
+		<li class="askercount">4 askers</li>	
 	</ul>
 	
-
-	<div class="panes">
+	<div id="hometimeline">
+		<p id="timelineflag">Featured questions</p>
+		<div id="timelinecontainer"></div>
+	</div>
 	
-	{% for thetopic in topics.all %}
-	<div id="topic-{{ thetopic.id }}" class="topic">
-		<h2>{{ thetopic.title }}</h2>
-        {% if is_reporter %}
-        {% include "core-frontpage-topic_tools.html" %}
-        {% endif %}
-		
-		<div class="topic-summary">{{ thetopic.summary.text|safe }}</div>
-        {% if is_reporter %}
-        {% include "core-frontpage-update_summary_form.html" %}
-        {% endif %}
-			
-		<h4>Local Coverage</h4>
-		
-		
-		<ul class="coverage">
-		{% for article in thetopic.articles.all %}
-			<li>
-				<a href="{{ article.url }}">{{ article.title }}</a>
-			</li>
-		{% endfor %}
+	<div class="featspot container_12">
+		<h2 class="featquestion">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+	</div>
+	<div class="featinteractions">
+		<a class="button big" href="#">Answer this</a>
+		<ul class="interactionslist">
+			<li>Jump to this <a href="#">topic page</a></li>
+			<li><a href="#">Browse</a> all topics</li>
+			<li><a href="#">Learn more about Sourcerer</a></li>
 		</ul>
-			
-
-
-
-			
-	{% include "form.html" %}				
-	
-	<h2>Recent Questions</h2>
-		<ul class="recentquestcons">
-			{% for comment, indentlevel in thetopic.comments_to_show %}
-				<li class="comment comment-level{{indentlevel}} {{comment.comment_type.name|lower}} {{comment.user.is_reporter|yesno:"reportercomment,usercomment"}} topic-{{thetopic.id}} " id="comment-{{comment.id}}">
-					<ul class="commentguts">
-						<li class="bbq"><p class="valign">{{ comment.text }}</p></li>
-						<li class="youagree"><a href="#">Me too!</a></li>
-						<li class="response-counter"><span class="count">{{ comment.responses.count }}</span><span class="description">Ask this too</span></li>
-						<li class="chef">by <span>{{ comment.user }}</span></li>
-                        {% if comment.sources.all %}
-                        <li class = "attribution">According to 
-                        {% for source in comment.sources.all %}
-                        {{ source }}</li>
-                        {% endfor %}
-
-                        {% endif %}
-                        {% if is_reporter %}
-                        <li>
-                            <a href="#" class="deletecommentlink commenttabs">Delete Comment</a>
-                            <a href="#" class="disassociatecommentlink commenttabs">Remove Comment from Topic</a>
-                        {% endif %}
-					    <a href="#" class="attach commenttabs">Attach an article</a>
-					    <a href="#" class="reply commenttabs">Reply</a>
-                        </li>
-					</ul>
-                    {% if is_reporter %}
-
-                        <p><br>
-                        <label>Copy to another topic: </label>
-                        <select class = "copytotopic">
-                            <option selected="selected">-----</option>
-                            {% for atopic in topics.all %}
-                            {% if atopic != thetopic %}
-
-                            <option value="{{ atopic.id }}">{{ atopic.title }} </option>
-                            {% endif %}
-
-                        {% endfor %}
-                        </select>
-                        
-                    </p>
-                    {% endif %}
-					<div class="replydiv replyinputdiv"></div>
-					<div class="attachdiv replyinputdiv"></div>
-				</li>
-                    {% if comment.clips.all %}
-                    {% for clip in comment.clips.all %}
-                    <li class="comment comment-level{{indentlevel|add:"1"}} {{comment.comment_type.name|lower}} {{clip.user.is_reporter|yesno:"reportercomment,usercomment"}}" id="comment-{{comment.id}}-clip-{{clip.id}}">
-                        <ul class="commentguts">
-                            <li class="bbq"><blockquote> {{clip.user_comments}} </blockquote> </li>
-                            <li class="bbq"><p class='valign'>"{{ clip.text }}"  </p>
-                            <p>
-                            <a href="{{ clip.article.url }}"> link</a></p>
-                            </li>
-                            <li class="chef"><p class='valign'> Posted by: {{ clip.user}}</p></li>
-                        </ul>
-                    </li>
-                    {% endfor %}
-                    {% endif %}
-			{% empty %}
-    			<li><p class="bbq">This topic has no related questions, yet.</p></li>
-			{% endfor %}
-		</ul>
-	
-	
-		<!--<div class="moreline">
-			<a href="#">( prev )</a> <a href="#">( next )</a>
-		</div>-->
-	
-		<div class="formcache">
-            {% if reply_form %}
-		    <div id="replyform" class="replyform">
-			    <form action = "/api/json/comments/submit/" method="post" class="authcheck">
-			   <!-- {{ reply_form.as_p }} -->
-			    <label>Reply: </label>
-				{{comment_form.text}}
-				<input type="hidden" value="3" name="comment_type_str">
-				<input type="hidden" value="3" name="in_reply_to" id="id_in_reply_to">
-				<input type="hidden" value="" name="topic" class="topic">
-                {% if is_reporter %}
-                <br> Attribute to (optional): {{comment_form.sources}} <br>
-                {% endif %}
-				{% csrf_token %}
-				<input type="submit" name="submit" class="replysubmit" value="Submit" />
-			    </form>
-		    </div>
-            {% endif %} 
-		    
-		    <div id="attachform">
-				<form action = "/clipper/" method="post" class="authcheck">
-					<label>Enter a URL: </label>
-					{{clipper_url_form.url_field}}
-		<!--			<input type="hidden" value="3" name="comment_type_str">
-					<input type="hidden" value="3" name="id_in_reply_to" id="id_in_reply_to"> -->
-					{% csrf_token %}
-					<input type="submit" name="submit" class="attachsubmit" value="Submit" />
-			    </form>    
-		   </div>
-		</div>
-	
 	</div>
 
-{% endfor %}
-</div><!--END PANES CONTAINER-->
-
 {% endblock %}
-
-

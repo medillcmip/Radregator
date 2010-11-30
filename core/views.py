@@ -314,18 +314,8 @@ def frontpage(request):
     """
     template_dict = { 'site_name':settings.SITE_NAME, \
         'body_classes':settings.SITE_BODY_CLASSES }
-
-    if Topic.objects.filter(is_deleted=False).count() > 0:
-        # There is at least one topic to display. 
-
-        # Get the first topic
-        topic = Topic.objects.filter(is_deleted=False)[0]
-        topic_url = '/topic/%s/' % (topic.id) 
-
-        return HttpResponseRedirect(topic_url)
-
-    else:
-        return render_to_response('core-frontpage.html', context_instance=RequestContext(request))  
+    
+    return render_to_response('frontpage.html', context_instance=RequestContext(request))  
 
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """
@@ -594,6 +584,35 @@ def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
     return response
 
 
+def api_topics(request, output_format="json"):
+    
+    try:
+        if output_format != 'json':
+            raise UnknownOutputFormat("Unknown output format '%s'" % \
+                                              (output_format))
+
+        topics = Topic.objects.filter(is_deleted=False)
+
+        # Serialize the data
+        # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
+        # TODO: It might make sense to implement natural keys in order
+        # to pass through useful user data.
+        # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
+
+        data = serializers.serialize('json', topics,
+                                     fields=('id', 'title', 'slug','summary'),
+                                     use_natural_keys=True)
+
+    except UnknownOutputFormat:
+        pass
+        # TODO: Handle this exception
+        # QUESTION: What is the best way to return errors in JSON?
+    except ObjectDoesNotExist:
+        pass
+        # TODO: Handle this exception
+
+    return HttpResponse(data, mimetype='application/json') 
+        
 def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     """Return a paginated list of comments for a particular topic. """
     # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
