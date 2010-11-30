@@ -3,8 +3,8 @@
 {% block addscripts %}
 <script type="text/javascript">
 	$(document).ready( function() {
-		$("div.featspot").fontfit("146");
-		$("div.featspot h2").valign();
+		$("ul.featspotul li").fontfit("146");
+		// $("ul.featspotul li h2").valign();
 		
 		
 		//DRAW TIMELINE
@@ -29,6 +29,10 @@
 				timeline.rect(multiplier - segmentlength, 0, segmentlength, 18).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.9);
 			}			
 		}  
+		
+		// Set up "Browse" link
+		$("a#browsetopics").colorbox({width:"800px", height:"500px",inline:true, href:"#browseoverlay"});
+
 
 
 	});
@@ -47,16 +51,54 @@
 		<div id="timelinecontainer"></div>
 	</div>
 	
-	<div class="featspot container_12">
-		<h2 class="featquestion">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+	<div class="featspot">
+		<ul class="featspotul container_12">
+			<!-- THIS NEEDS TO BE POPULATED BY QUESTION LISTS -->
+			
+			<li>
+				<h2 class="featquestion">1. What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+			</li>
+			<li>
+				<h2 class="featquestion">2. What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+			</li>
+			<li>
+				<h2 class="featquestion">3. What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+			</li>
+			<li>
+				<h2 class="featquestion">4. What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+			</li>	
+		</ul>
 	</div>
 	<div class="featinteractions">
 		<a class="button big" href="#">Answer this</a>
 		<ul class="interactionslist">
 			<li>Jump to this <a href="#">topic page</a></li>
-			<li><a href="#">Browse</a> all topics</li>
+			<li><a href="#" id="browsetopics">Browse</a> all topics</li>
 			<li><a href="#">Learn more about Sourcerer</a></li>
 		</ul>
+	</div>
+
+
+
+	<div style="display:none;">
+		<div id="browseoverlay">
+			<h3>Topics map</h3>
+			<!-- ADD FILTER CONTROLS AND A SORT FEATURE! -->
+			<ul>
+				<li><a href="#topic">Topic Example #1</a></li>
+				<li><a href="#topic">Topic Example #2</a></li>
+				<li><a href="#topic">Topic Example #3</a></li>
+				<li><a href="#topic">Topic Example #4</a></li>
+				<li><a href="#topic">Topic Example #5</a></li>
+				<li><a href="#topic">Topic Example #6</a></li>
+				<li><a href="#topic">Topic Example #7</a></li>
+				<li><a href="#topic">Topic Example #8</a></li>
+				<li><a href="#topic">Topic Example #9</a></li>
+				<li><a href="#topic">Topic Example #10</a></li>
+				<li><a href="#topic">Topic Example #11</a></li>
+				<li><a href="#topic">Topic Example #12</a></li>
+			</ul>
+		</div>
 	</div>
 
 {% endblock %}
