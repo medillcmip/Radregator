@@ -539,9 +539,8 @@ div#leftcontent {
 h3.nodestamp, .nodestamp {
 	background-color: #e5e5e5;
 	height: 24px;
-	min-width: 60px;
+	width: 60px;
 	padding: 0 10px;
-	width: auto;
 	text-align: center;
 	line-height: 24px;
 	-moz-border-radius: 15px;
