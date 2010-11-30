@@ -192,6 +192,20 @@ class Topic(models.Model):
 
         return self._top_answers
 
+    def popular_comments(self, num=5):
+        """
+        Return a queryset containing the num most popular comments.
+
+        This includes questions, answers and replies.  Most popular means the
+        number of responses.
+
+        """
+        #condition = {'responses__type': "'concur'"}
+        #return self.comments.annotate(\
+            #num_responses=CountIf('responses', condition=condition)).order_by('-num_responses')[:num]
+        return self.comments.annotate(\
+            num_responses=Count('responses')).order_by('-num_responses')[:num]
+
 
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
