@@ -5,9 +5,6 @@
 {% block addscripts %}
 	<script type="text/javascript">
 		$(document).ready( function () {
-			$( ".gotabs" ).tabs();
-			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'fast' }});
-
             if (!userIsAuthenticated()) {
                 // If the user isn't logged in disabled the 
                 // "ask a question ..." tab.
@@ -29,6 +26,7 @@
             //$('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
             {% if is_reporter %}
             $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
+            $('a.favoritecommentlink').unbind('click', handleFavoriteCommentLink).bind('click', handleFavoriteCommentLink);
             $('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
             {% endif %}
             //$('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
@@ -62,12 +60,14 @@
                 return false;
             });
 			
-			
+            // Set the tooltips
+           // $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         });
 	</script>
 {% endblock %}
 
-{% block leftcontent %}
+{% block pagecontent %}
+	<div id="leftcontent" class="grid_8">
 			<h3 class="nodestamp">topic</h3>
 			
 			<!--V2!
@@ -152,9 +152,10 @@
                 {% include "core-topic-questions.html" %}
 				
 			</div>
-{% endblock %}
+	</div>
 
-{% block sidebar %}
+
+	<div id="sidebar" class="grid_4">
 			<div class="topqas gotabs">
 			<p class="toplabel">Top:</p>
 			<ul class="sidetabs">
@@ -204,5 +205,5 @@
                 <p>{% blocktrans  %}Did you know you can vote on which questions are the most important and which answers are the most helpful?{% endblocktrans %}</p>
                 {% endif %}
 			</div>
-
+	</div>
 {% endblock %}

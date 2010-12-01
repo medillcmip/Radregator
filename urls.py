@@ -51,6 +51,8 @@ urlpatterns = patterns('',
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/$', \
         'core.views.api_topic'),
 
+    (r'^api/(?P<output_format>json)/topics/$', 'core.views.api_topics'),
+
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/summary/$', \
         'core.views.api_topic_summary'),
 
@@ -70,6 +72,12 @@ urlpatterns = patterns('',
 
     (r'^api/(?P<output_format>json)/comments/$',
      'core.views.api_commentsubmission'),
+
+    (r'^api/(?P<output_format>json)/comments/tag/$',
+     'core.views.api_comment_tag'),
+
+    (r'^api/(?P<output_format>json)/topics/tag/$',
+     'core.views.api_topic_tag'),
 
     (r'^api/(?P<output_format>json)/comments/submit',
      'core.views.api_commentsubmission'),
