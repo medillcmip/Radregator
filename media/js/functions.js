@@ -1,5 +1,13 @@
 var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/register/">register</a> to do this!'; 
 
+
+// TOPIC DROP ON "ASK" FORM IN FOOTER
+// Implement "ask" in footer (and header?)
+function topicsDropShow() {
+	$("#asktopicsdrop").css("display","block");
+}
+
+
 // VARIABLE VERTICAL ALIGNMENT
 (function ($) {
 	$.fn.valign = function() {
@@ -717,3 +725,7 @@ $.fn.fontfit = function(max) {
 	$("#fontfit").replaceWith($("#fontfit").html());
 	return this;
 }
+
+
+
+

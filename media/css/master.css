@@ -1279,13 +1279,17 @@ div#footer .footertabs li a:hover { text-decoration: none; }
 div#footer .footertabs li.ui-state-active a { color: #fff; }
 div#footer .footertabs li a:hover { text-decoration: none; }
 
+div#footer div#askdiv {
+	position: relative;
+}
+
 div#footer form.footerinput {
 	height: auto;
 	overflow: auto;
 	margin-bottom: 50px;
 }
 
-div#footer form.footerinput input {
+div#footer form.footerinput input.footerinput {
 	width: 770px;
 	height: 40px;
 	line-height: 40px;
@@ -1310,6 +1314,38 @@ div#footer form.footerinput .footersubmit {
 	display: block;
 	float: left;
 	width: 140px;
+}
+
+div#footer div#asktopicsdrop {
+	padding: 15px;
+	height: auto;
+	overflow: auto;
+	width: 762px;
+	position: relative;
+	top: -1px;
+	background-color: #323232;
+	color: #fff;
+	-moz-border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 10px;
+	-webkit-border-radius: 0 0 10px 10px;
+	display: none;
+}
+
+div#footer div#asktopicsdrop h3 {
+	margin: 0 6px 12px 6px;
+	font-size: 1.3em;
+	color: #50b332;
+}
+
+div#footer div#asktopicsdrop ul li {
+	width: 30%;
+	margin-right: 3%;
+	margin-bottom: 10px;
+	float: left;
+}
+
+div#footer div#asktopicsdrop ul li input {
+	margin-right: 5px;
 }
 
 div#footer h4 {

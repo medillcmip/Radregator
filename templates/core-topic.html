@@ -46,22 +46,9 @@
 			// SET UP Q/A COLLAPSING
 			hideanswers();
 
-            // Handler for ask a question links in sidebar
-            $(".topqas a.askquestion").click(function() {
-                if (!userIsAuthenticated()) {
-                    // Show an error message if they try to click on the link 
-                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-                }
-                else {
-                    // User is authenticated.  Show the form.
-                    $("#qas .qaoptions").tabs("option", "selected", 1);
-                }
-
-                return false;
-            });
 			
             // Set the tooltips
-           // $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
+            $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         });
 	</script>
 {% endblock %}

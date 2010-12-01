@@ -21,16 +21,16 @@
 	<link href="{{ MEDIA_URL }}css/jquery.tooltip.css" rel="stylesheet" type="text/css" /> 
 	<link href="{{ MEDIA_URL }}css/colorbox.css" rel="stylesheet" type="text/css" /> 
 
-    {% block addstyles %}
-    {% endblock %}
-
 	<script src="{{ MEDIA_URL }}js/jquery.js"></script>
 	<script src="{{ MEDIA_URL }}js/functions.js"></script>
 	<script src="{{ MEDIA_URL }}js/jquery.colorbox-min.js"></script>
-	<script href="{{ MEDIA_URL }}js/jquery.tooltip.js"></script>
 	<script src="{{ MEDIA_URL }}js/jquery.rotate.js"></script>
 	<script src="{{ MEDIA_URL }}js/jquery-ui.min.js"></script>
 	<script src="{{ MEDIA_URL }}js/raphael-min.js"></script>
+
+    {% block addstyles %}
+    {% endblock %}
+
     {% if is_reporter %}
     <script type="text/javascript" src="{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/functions-admin.js"></script>
@@ -59,31 +59,15 @@
             setUserAuthenticated(); 
 
             // Handler for ask a question button in top bar
-            $("#usercontrols a.askquestion").click(function() {
-                // TODO: Show a more advanced dialog that let's user ask 
-                // questions across lots of topics.  For now, just 
-                // show the current topic's form.
-                $("#qas .qaoptions").tabs("option", "selected", 1);
-            });
-            
-            // Implement "ask" in footer (and header?)
-            $("a#asksubmit").click(function() {
-            	var thisquestion = $("input#askinput").val();
-            	$("div#askoverlay p#yourquestion span").html(thisquestion);
-            	$.colorbox({width:"600px", height:"200px",inline:true, href:"#askoverlay"});
-            });
-            
-            $("select#topicselect").change(function() {
-				var thisvalue = $("#topicselect").val();
-				if (thisvalue == "New topic...") {
-					$("input#newtopic").css("display","block");
-				} else {
-					$("input#newtopic").css("display","none");
-				}
+          
+            {% endif %}
+			
+			$("#usercontrols a.askquestion").click(function() {
+				$("div#footer").css("height","800px");
+				$.scrollTo( 'div#footer', 300, {offset: {top:-35, left:0} } );
+				return false;
 			});
             
-            {% endif %}
-
         getTopics();
    
         // Implement error on "ask" in footer
@@ -194,20 +178,41 @@
 		<div class="gotabs">
 			<ul class="footertabs">
 				<li><a href="#askdiv">Ask a question</a></li>
-				<li><a href="#searchdiv">Search</a></li>
+				<!--<li><a href="#searchdiv">Search</a></li>-->
 			</ul>
 			<div class="footerpanes" id="askdiv">
 				<form id="askfooter" class="footerinput">
-					<input type="text" id="askinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
+					<input type="text" id="askinput" class="footerinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';topicsDropShow();">
+					
+					
 					<a href="javascript:;" id="asksubmit" class="footersubmit blackback">Ask</a>
+					
+					
+					<div id="asktopicsdrop">
+						<h3>Choose a topic:</h3>
+						<ul>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example"><input name="newtopic" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';"></li>
+						</ul>
+					</div>
 				</form>
 			</div>
-			<div class="footerpanes" id="searchdiv">
+			<!--<div class="footerpanes" id="searchdiv">
 				<form id="searchfooter" class="footerinput">
-					<input type="text" id="searchinput" name="searchstring" value="Search questions, answers and topics" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
+					<input type="text" id="searchinput" class="footerinput" name="searchstring" value="Search questions, answers and topics" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
 					<a href="javascript:;" id="searchsubmit" class="footersubmit blackback">Search</a>
 				</form>
-			</div>
+			</div>-->
 		</div>
 		<!--END FOOTER ASK/SEARCH INPUT-->
 		<!--START THREE-COLUMN "TOP" SECTION-->
