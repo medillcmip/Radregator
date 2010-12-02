@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-11-18 16:59-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: templates/core-topic.html:163
+#, python-format
+msgid " %(num_upvotes)s person thinks this is a good question. Do you? "
+msgid_plural " %(num_upvotes)s people think this is a good question. Do you? "
+msgstr[0] " %(num_upvotes)s person thinks this is a good question. Do you? "
+msgstr[1] " %(num_upvotes)s people think this is a good question. Do you? "
+
+#: templates/core-topic.html:168
+msgid "Good Question!"
+msgstr " "
+
+#: templates/core-topic.html:205
+#, python-format
+msgid " %(num_upvotes)s person thinks this is a good answer.  Do you? "
+msgid_plural " %(num_upvotes)s people think this is a good answer. Do you? "
+msgstr[0] " %(num_upvotes)s person thinks this is a good answer.  Do you? "
+msgstr[1] " %(num_upvotes)s people think this is a good answer. Do you? "
+
+#: templates/core-topic.html:251
+#, python-format
+msgid " person thinks this is a good answer.  Do you? "
+msgid_plural " %(num_upvotes)s people think this is a good answer. Do you? "
+msgstr[0] " person thinks this is a good answer.  Do you? "
+msgstr[1] " %(num_upvotes)s people think this is a good answer. Do you? "
+
+#: templates/core-topic.html:324
+msgid "A burning question is a popular question that hasn't been answered."
+msgstr ""
+
+#: templates/core-topic.html:332
+msgid ""
+"There aren't any burning questions for this topic.  Be the first to <a href="
+"\"#\" class=\"askquestion\">ask one</a>."
+msgstr ""
+
+#: templates/core-topic.html:338
+msgid ""
+"These are the answers that have gotten the most positive feedback from the "
+"community."
+msgstr ""
+
+#: templates/core-topic.html:346
+msgid ""
+"Hmmm.  There aren't any popular answers for this topic.  Maybe you've got "
+"the answer?."
+msgstr ""
+
+#: templates/core-topic.html:352
+msgid ""
+"These are the questions and answers that have gotten the most positive "
+"feedback from the community."
+msgstr ""
+
+#: templates/core-topic.html:356
+msgid "Check it out"
+msgstr ""
+
+#: templates/core-topic.html:360
+msgid ""
+"Did you know you can vote on which questions are the most important and "
+"which answers are the most helpful?"
+msgstr ""

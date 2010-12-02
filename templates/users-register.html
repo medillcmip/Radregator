@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
-{% block leftcontent %}
-<!-- http://docs.djangoproject.com/en/dev/topics/forms/?from=olddocs#customizing-the-form-template -->
-<form method="POST" action="register">
-    {{form.as_p}} 
-    {% csrf_token %}
-    <input type="submit" class="btn" value="Go!" />
-</form>
+{% block pagecontent %}
+	<div id="leftcontent" class="grid_8">
+		<!-- http://docs.djangoproject.com/en/dev/topics/forms/?from=olddocs#customizing-the-form-template -->
+		<form method="POST" action="register">
+		    {{form.as_p}} 
+		    {% csrf_token %}
+		    <input type="submit" class="btn" value="Go!" />
+		</form>
+	</div>
 {% endblock %}

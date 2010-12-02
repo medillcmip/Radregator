@@ -90,6 +90,7 @@ function closeReplyform (replytype,parentid) {
 	});
 }
 
+
 			
 // OPEN REPLY FUNCTION
 function openReplyform (replytype,parentid) {				
@@ -143,6 +144,34 @@ function handleReplyform() {
         return false;
     }
 }
+
+// GET TOPICS VIA API
+
+function getTopics(){
+    $.ajax({
+        type: "get",
+        url : "/api/json/topics/",
+        data : {},
+        
+
+        success : function(data){
+            $.each(data,function(index, topic)
+            {
+                var pk = topic.pk;
+                var title = topic.fields.title;
+                $('#toptopicslist').append("<li><a href='/topic/"+pk+"/'>"+title+"</a></li>");
+                $('#activetopicslist').append("<li><a href='/topic/"+pk+"/'>"+title+"</a></li>");
+            });
+            
+
+        
+        },
+        error: {
+        // Show to user?
+        }
+    });
+}
+
 
 
 function handleCommentSubmit(){
@@ -268,7 +297,7 @@ function handleReplySubmit(){
 function handleOpinionLink () {
 	 var thiscomment = $(this).closest('.comment'); 
 	 var thiscomment_id = 
-		  thiscomment.attr('id').replace('comment-', '');
+		  $(this).attr('id').replace('flagasopinion-', '');
 	 var response_type = 'opinion';
 	 
 	 $.ajax({
@@ -285,23 +314,14 @@ function handleOpinionLink () {
 
 				if (errorNum == "401") {
 					 // User isn't logged in
-					 var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-					 thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-					 $('a.login').bind('click', launchLogin);
+					 var errorMsg = LOGIN_REQUIRED_MESSAGE; 
+                     displayMessage(errorMsg, 'error');
 				} 
 				else if (errorNum == "403") {
 					 // User has already responded
 					 var errorMsg = response_data.error; 
-					 thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                     displayMessage(errorMsg, 'error');
 				}
-
-				error_message = thiscomment.children('.error-message');
-				error_message.css('display','block');
-
-				$('.error-message').click(function() {
-					 $(this).remove();
-				});
-
 		  }
 	 });
 
@@ -488,7 +508,7 @@ function contextexpander() {
 	function()
 	{
 		$('#context').animate({
-		height: fullheight-20, 
+		height: fullheight+10, 
 		overflow: "auto",
 		}, 500);
 		$(".contextbot .more").css("display","none");
@@ -519,4 +539,181 @@ function displayMessage(message, level) {
 // Hide the message bar
 function hideMessages() {
     $('#messagewrap').hide();
+}
+
+// Set up earmarks on the answers (and other answer layout elements)
+function earmarksetup() {
+	$('.earmark').each(function(index) {
+		var thisheight = $(this).closest(".answer").height();
+		$(this).height(thisheight);
+		
+		// If "accepted"
+		if ($(this).hasClass('accepted')) { $(this).children('.textspan').html('Accepted'); }
+		
+		// If "moderator"
+		if ($(this).hasClass('moderator')) { $(this).children('.textspan').html('Moderator'); }
+
+		// Get the "truthiness" and set background color accordingly
+		var classstring = $(this).attr("class");
+		var olevel = classstring.replace(/[a-zA-Z ]/g, '');
+		
+		// SET HOW EACH DOWNVOTE WEIGHS ON THE COLORING
+		var gval = 153 - (olevel * 8);
+		
+		var bground = "rgb(31,"+gval+",31)";
+		
+		$(this).css("background-color",bground);		
+		
+		
+		// REMOVE THE MARGIN ON THE BOTTOM ANSWER
+		$("ul.answers li:last div.comment").css("margin-bottom","0");
+		
+		
+		// SET THE HEIGHT OF THE "CONNECTOR"
+		var halfheight = (thisheight / 2);
+		$(this).closest("li").children("div.aflag").height(halfheight).css("top",halfheight+"px");
+		
+		// REMOVE MARGIN FROM BOTTOM OF ANY ANSWERED QUESTIONS
+		$("ul.answers li").has("ul.answers").children("div.comment").css("margin-bottom","0");
+ 	});
+}
+
+// REFRESH THE HEIGHT OF THE EARMARK
+function earmarkrefresh(toggler) {
+	var newheight = $(toggler).closest("div.comment").height();
+	var newhalfheight = (newheight / 2);
+	// alert(newheight);
+	$(toggler).closest("div.comment").children("div.earmark").height(newheight);
+	$(toggler).closest("li").children("div.aflag").height(newhalfheight).css("top",newhalfheight+"px");
+}
+
+// ANSWER/REPLY DRAWERS
+function answerdrawers() {
+	$('.replyformtoggle').click(function () {
+
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+                    // Also toggle the link text
+                    if ($(this).html() == "Reply") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Reply");
+                    }
+                    $('#' + formid).toggle();
+                    // reset earmark+connector height
+                    earmarkrefresh(this);
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+                return false;
+            });
+            $('.answerformtoggle').click(function () {
+                if (userIsAuthenticated()) {
+                    var id = $(this).attr("id");
+                    var formid = id.replace('toggle', '');
+
+                    // Also toggle the link text
+                    if ($(this).html() == "Answer this") {
+                        $(this).html("Hide this");
+                    }
+                    else {
+                        $(this).html("Answer this");
+                    }
+                    $('#' + formid).toggle();
+                    earmarkrefresh(this);
+                }
+                else {
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+
+                return false;
+            });
+            $('.replyform').hide();
+            $('.answerform').hide();
+            $('#clipperform').hide();
+}
+
+function handleFavoriteCommentLink() {
+    var thiscomment_id = $(this).attr('id').replace('favoritecommentlink-', '');
+    var tag = '_favorite';
+    alert(tag);
+    
+    $.ajax({
+        type: "post",
+        url: "/api/json/comments/tag/",
+        data: { comment : thiscomment_id,
+        tags: tag },
+        success: function(data){
+            
+        },
+        error: function (requestError, status, errorResponse) {
+            var response_text = requestError.responseText;
+            var response_data = $.parseJSON(response_text);
+            var errorNum = requestError.status;
+
+            if (errorNum == "401") {
+                // User isn't logged in
+                var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
+                thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+                $('a.login').bind('click', launchLogin);
+            } 
+
+            error_message = thiscomment.children('.error-message');
+            error_message.css('display','block');
+
+            $('.error-message').click(function() {
+                $(this).remove();
+            });
+
+        }
+    });
+
+    return false;
+}
+
+// SET UP "HIDE ANWERS"
+function hideanswers () {
+	// IF THERE ARE ANSWERS, SHOW BUTTON
+	$("ul.masterlist li").has("ul.answers").children("div.comment").children("div.qabox").children("p.userinfo").children("a.collapseanswers").css("display","inline");
+	
+	// THEN ARM BUTTON
+	$("a.collapseanswers").click( function() {
+		$(this).closest("li").children("ul.answers").slideToggle();
+		if ($(this).html() == "Hide answers") {
+			$(this).html("Show answers");
+		}
+		else {
+			$(this).html("Hide answers");
+		}
+		return false;
+	});
+}
+
+
+
+
+// RESIZABLE FONT ON HOMEPAGE AND ELSEWHERE
+$.fn.fontfit = function(max) {
+	var max_size = 50;
+	if (typeof(max) == "undefined")
+		max = max_size;
+	$(this).wrapInner('<div id="fontfit"></div>');
+	var dheight = $(this).height();
+	var cheight = $("#fontfit").height();
+	var fsize = (($(this).css("font-size")).slice(0,-2))*1;
+	while(cheight<dheight && fsize<max) {
+		fsize+=1;
+		$(this).css("font-size",fsize+"px");
+		cheight = $("#fontfit").height();
+	}
+	while(cheight>dheight || fsize>max) {
+		fsize-=1;
+		$(this).css("font-size",fsize+"px");
+		cheight = $("#fontfit").height();
+	}
+	$("#fontfit").replaceWith($("#fontfit").html());
+	return this;
 }
