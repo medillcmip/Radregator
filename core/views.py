@@ -473,6 +473,42 @@ def api_topic(request, topic_slug_or_id=None, output_format="json"):
     return response
 
 
+
+
+def api_get_feedback_loop(request, question_id, output_format="json"):
+    """
+    
+    """
+    data = {} # Data we'll eventually return as JSON
+    status = 200 # HTTP response status.  Be optimistic
+    response = None
+
+    try:
+        if request.method == 'POST':
+            thiscomment = Comments.objects.get(id=question_id)
+            users = ''
+            for items in thiscomment.responses.all():
+                users += items.user.username
+            response = users
+                
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." %\
+                request.method)
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = "Comment with id %s does not exist" % \
+            (topic_slug_or_id)
+
+    except MethodUnsupported, e:
+        status = 405 
+        data['error'] = "%s" % e
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+
 @ajax_login_required
 def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
     data = {} # Data we'll eventually return as JSON
