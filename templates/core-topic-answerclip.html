@@ -1,0 +1,9 @@
+<div class = "answerclip"django templates>
+{% with clip.article.date_published as date_published %}
+{% with clip.article.source as source %}
+    <p class="clipcitation">According to {% if source.name %}{% if source.url %}<a href="{{source.url}}" class="publink">{{ source.name }}</a>{% else %}{{ source.name }}{% endif %} in{% endif %} "<a href="{{clip.article.url}}" class="articlelink">{{clip.article.title}}</a>"{% if clip.article.date_published %} on {{clip.article.date_published}}{% endif %} :</p>
+
+    <p class="cliptext">{{clip.text}}</p>
+{% endwith %}
+{% endwith %}
+</div>

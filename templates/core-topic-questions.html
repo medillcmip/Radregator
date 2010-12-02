@@ -65,11 +65,7 @@
                     <div class="qabox">
                         <p class="qa">{{theanswer.text}}</p>
                         {% for clip in theanswer.clips.all %}
-                        <div class = "answerclip">
-                            <p class="cliptext">{{clip.text}}</p>
-                            <p class="clipcitation">Citation: "<a href="{{clip.article.url}}" class="articlelink">{{clip.article.title}}</a>" on {{clip.article.date_published}} at <a href="{{clip.article.source.url}}" class="publink"> </a> </p>
-                        </div>
-
+                        {% include "core-topic-answerclip.html" %}
                         {% endfor %}
                         <p class="userinfo"><span class="username">{{theanswer.user}}</span> on <span class="date">{{theanswer.date_created}}</span>
                         <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" id="flagasopinion-{{theanswer.id}}" class="flagasopinion">Flag this as opinion</a>
@@ -111,11 +107,7 @@
                         <div class="qabox">
                             <p class="qa">{{reply.text}}</p>
                             {% for clip in reply.clips.all %}
-                            <div class = "answerclip">
-                                <p class="cliptext">{{clip.text}}</p>
-                                <p class="clipcitation">Citation: "<a href="{{clip.article.url}}" class="articlelink">{{clip.article.title}}</a>" on {{clip.article.date_published}} at <a href="{{clip.article.source.url}}" class="publink"> </a> </p>
-                            </div>
-
+                            {% include "core-topic-answerclip.html" %}
                             {% endfor %}
                             <p class="userinfo"><span class="username">{{reply.user}}</span> on <span class="date">{{reply.date_created}}</span>
                             {% if is_reporter %}
