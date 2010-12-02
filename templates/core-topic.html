@@ -86,12 +86,9 @@
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
 				<h1>{{topic.title}}</h1>
-					<p id="contextintro" class="topic-summary">
+					<div id="contextintro" class="topic-summary">
                     {{topic.summary.text|safe}}
-                    </p>
-        {% if is_reporter %}
-        {% include "core-topic-update_summary_form.html" %}
-        {% endif %}
+                    </div>
         
 		<div class="contextbot"><a class="expanderbut lightback" href="#">
 			<span class="more"><span class="downarrow"></span>more </span>
@@ -100,6 +97,9 @@
 			</div>
 		
 		
+        {% if is_reporter %}
+        {% include "core-topic-update_summary_form.html" %}
+        {% endif %}
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
 				<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
