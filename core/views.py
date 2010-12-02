@@ -385,7 +385,10 @@ def topic(request, whichtopic=1):
 
     template_dict['topics'] = topics
     try: 
-        template_dict['topic'] = Topic.objects.get(id=whichtopic)
+        topic =  Topic.objects.get(id=whichtopic)
+        template_dict['topic'] = topic 
+        template_dict['comments_to_show'] = topic.comments_to_show()
+        # BOOKMARK
     except: 
         # No topic loaded
         pass
