@@ -29,9 +29,9 @@
 	
 			$( ".gotabscollapse" ).tabs({collapsible: true,});			
 
-            $('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
-            $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
-            $('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
+            //$('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
+            //$('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
+            //$('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
 
             // TK - placeholders, we may rebind these 
             //$('#addtopicform').unbind('submit', handleNewTopicForm).bind('submit', handleNewTopicForm);
@@ -41,10 +41,21 @@
             //$('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             //$('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
-            $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
-
+          //  $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
+			earmarkheight();
 		});
 		
+		
+		function earmarkheight() {
+				
+			$('.earmark').each(function(index) {
+				var thisheight = $(this).closest("li").height();
+				console.log(thisheight);
+				$(".earmark").height(thisheight);
+	  		});
+		
+		}
+
 	</script>
 	
 </head> 
@@ -208,7 +219,7 @@
 										<div class="answerclip">
 											<p class="cliptext">Cras malesuada c ursus massa vel ultricies. In hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim. On hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>											<p class="clipcitation">Citation: "<a href="#" class="articlelink">This is an article name</a>" on 9/12/09 at <a href="#" class="publink">WSJ.com</a></p>
 										</div>
-									<p class="userinfo"><span class="username">WellReadDudette</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
+									<p class="userinfo"><span class="username">WellReadDudette</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this as opinion</a></p>
 									
 									<!--<a class="expanderbut lightback" href="#">more <span class="downarrow"></span></a>-->
 									</div>
@@ -235,7 +246,7 @@
 											<p class="cliptext">Proin a sapien in sem tristique dignissim. On hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>											<p class="clipcitation">Citation: According to the Emanuel campaign on 11/20/10.</p>
 										</div>
 										
-										<p class="userinfo"><span class="username">WellReadDudette</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
+										<p class="userinfo"><span class="username">WellReadDudette</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this as opinion</a></p>
 										
 									</div>
 								</div>
@@ -261,7 +272,7 @@
 											<p class="cliptext">Proin hac habitasse platea dictumst. Proin a sapien in sem tristique dignissim.</p>											<p class="clipcitation">Citation: "<a href="#" class="articlelink">This is an article name</a>" on 9/12/09 at <a href="#" class="publink">UntrustworthyBlog.com</a></p>
 										</div>
 										
-										<p class="userinfo"><span class="username">Opinionation</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
+										<p class="userinfo"><span class="username">Opinionation</span> on <span class="date">February 27, 2010</span> @ <span class="time">5:30pm</span><a href="#" class="answerthis">Reply</a><a href="#" class="flagasopinion">Flag this as opinion</a></p>
 										
 									</div>
 								</div>

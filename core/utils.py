@@ -3,6 +3,7 @@
 import re
 import logging
 from django.conf import settings
+from django.db import models
 
 def build_readable_errors(errordict):
     """ Translate an error dictionary into HTML, to return to Ajax code """
@@ -68,3 +69,21 @@ def get_logger():
         logger.setLevel(logging.DEBUG) 
 
     return logger
+
+# Implement a conditional aggregate
+# Via http://paste.pocoo.org/show/123690/ and
+# http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django
+
+#class SQLCountIf(models.sql.aggregates.Aggregate):
+    #is_ordinal = True
+    #sql_function = 'COUNT'
+    #sql_template= '%(function)s(CASE %(condition)s WHEN true THEN 1 ELSE NULL END)'
+#
+#class CountIf(models.Aggregate):
+    #name = 'COUNT'
+#
+    #def add_to_query(self, query, alias, col, source, is_summary):
+        #sql, params = query.model._default_manager.filter(**self.extra['condition']).query.where.as_sql()
+        #self.extra['condition'] = sql % tuple(params)
+        #aggregate = SQLCountIf(col, source=source, is_summary=is_summary, **self.extra)
+        #query.aggregates[alias] = aggregate

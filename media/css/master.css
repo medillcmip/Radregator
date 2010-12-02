@@ -13,6 +13,10 @@ a:hover {
 	text-decoration: underline;
 }
 
+a.blackback { color: #fff; background-color: #323232; }
+a.blackback:hover { text-decoration: none; background-color: #232323; }
+a.blackback:active { text-decoration: none; background-color: #111; }
+
 div#wrapper {
 	padding-top: 68px;
 }
@@ -47,7 +51,22 @@ div#header h1.logo {
 	width: 122px;
 	height: 29px;
 	text-indent: -8000px;
-	;
+	overflow: hidden;
+}
+
+div#header h1.templogo {
+	display: block;
+	float: left;
+	width: 130px;
+	height: 2em;
+	font-size: 2em;
+	font-weight: bold;
+	position: relative;
+	top: -3px;
+}
+
+div#header h1.templogo span {
+	color: #0f9d2e;
 }
 
 /* IF LOGGED OUT */
@@ -63,6 +82,7 @@ div#header a#greetsignup {
 	height: 24px;
 	-moz-border-radius: 15px;
 	border-radius: 15px;
+	-webkit-border-radius: 15px;
 	margin-left: 12px;
 	font-size: 0.9em;
 	letter-spacing: 0.05em;
@@ -225,7 +245,6 @@ span.uparrow, a.uparrow {
 	position: relative;
 	top: 8px;
 	margin: 0 4px;
-	float: right;
 }
 
 .darkback span.downarrow, .darkback span.uparrow {
@@ -237,33 +256,25 @@ span.uparrow, a.uparrow {
     position: fixed;
     top: 48px;
     left: 0;
-
     height: 29px;
     width: 100%;
-
     z-index: 1000;
-
 	background-color: #620505;
 }
 
 #messages {
     position: relative;
-
     margin: 0 auto;
-
     height: 29px;
     line-height: 29px;
-
     color: white;
     font-size: 0.9em;
     font-weight: bold;
-
     text-align: center;
 }
 
 #messages #hidemessages {
     position: absolute;
-
     top: 0px;
     right: 0px;
 }
@@ -277,16 +288,169 @@ span.uparrow, a.uparrow {
     text-decoration: underline;
 }
 
+/* HOMEPAGE */
+
+div#hometimeline {
+	
+}
+
+p#timelineflag {
+	
+}
+
+div#timelinecontainer {
+	width: 562px;
+	height: 36px;
+	border: 0;
+}
+
+div#timelinecontainer canvas {
+	border: 0;
+}
+
+ul.topicinfo {
+	float: right;
+	margin-top: 15px;
+}
+
+ul.topicinfo li {
+	float: left;
+	height: 24px;
+	min-width: 40px;
+	padding: 0 15px;
+	width: auto;
+	text-align: center;
+	line-height: 24px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border: 1px solid #bfbfbf;
+	font-size: 0.9em;
+	font-weight: normal;
+}
+
+ul.topicinfo li.topictitle {
+	z-index: 3;
+	position: relative;
+	left: 40px;
+	color: #666;
+	background-color: #e5e5e5;
+	border-color: #999;
+}
+
+ul.topicinfo li.answercount {
+	z-index: 2;
+	position: relative;
+	left: 20px;
+	background-color: #009933;
+	border-color: #005500;
+	color: #fff;
+	padding-left: 30px;
+}
+
+ul.topicinfo li.askercount {
+	z-index: 1;
+	position: relative;
+	background-color: #666;
+	color: #fff;
+	border-color: #222;
+	padding-left: 30px;
+}
+
+/* MAIN SPOT HEADLINE */
+
+div.featspot {
+	height: 180px;
+	padding: 40px 0 30px 0;
+}
+
+h2.featquestion {
+
+}
+
+h2.featquestion span {
+	font-size: 18px;
+	margin-left: 4px;
+	color: #999;
+}
+
+/* HOMEPAGE INTERACTIONS */
+
+div.featinteractions {
+	width: 570px;
+	height: 82px;
+	margin: 0 auto 60px auto;
+	position: relative;
+	left: 15px;
+}
+
+div.featinteractions a.button {
+	display: block;
+	width: 300px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	background: #50b332 url(../img/backs/answerthis.png) repeat-x;
+	height: 80px;
+	border: 1px solid #339900;
+	font-size: 34px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 80px;
+	color: #fff;
+	text-shadow: 2px 2px 1px #333;
+	float: left;
+	z-index: 2;
+	position: relative;
+}
+
+div.featinteractions a.button:hover {
+	text-decoration: none;
+	background-color: #339900;
+}
+
+div.featinteractions a.button:active {
+	text-decoration: none;
+	background-color: #117700;
+}
+
+div.featinteractions ul.interactionslist {
+	width: 210px;
+	padding-left: 40px;
+	position: relative;
+	left:-30px;
+	height: 77px;
+	float: left;
+	padding-top: 3px;
+	z-index: 1;
+	background-color: #eee;
+	border:1px solid #bbb;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+
+div.featinteractions ul.interactionslist li {
+	width: 200px;
+	height: 20px;
+	margin: 3px 0 0 0;
+	font-weight: bold;
+	line-height: 20px;
+}
+
+
 /* LEFT CONTENT ON TOPIC/CONTENT PAGES */
 
 div#leftcontent {
 	padding: 4px 0 10px 0;
 }
 
-h3.nodestamp {
+h3.nodestamp, .nodestamp {
 	background-color: #e5e5e5;
 	height: 24px;
-	width: 80px;
+	min-width: 60px;
+	padding: 0 10px;
+	width: auto;
 	text-align: center;
 	line-height: 24px;
 	-moz-border-radius: 15px;
@@ -362,7 +526,7 @@ div.qaoptions {
 	height: auto;
 	overflow: auto;
 	width: 620px;
-	margin-bottom: 12px;
+	margin-bottom: 0;
 }
 
 div.qaoptions div#optselect {
@@ -507,16 +671,17 @@ ul.masterlist li div.votebox {
 	float: right;
 	background-color: #e5e5e5;
 	text-align: center;
+	position: relative;
 }
 
 ul.masterlist li div.burningq {
-	background: #e5e5e5 url(../img/icns/flame.png) no-repeat 26px 1px;
+	background: #e5e5e5 url(../img/icns/flame.png) no-repeat 26px 7px;
 }
 
 ul.masterlist li div.votebox p.count {
 	font-size: 22px;
 	font-weight: bold;
-	margin: 3px 0 2px 0;
+	margin: 8px 0 2px 0;
 }
 
 ul.masterlist li div.burningq p.count {
@@ -534,12 +699,20 @@ ul.masterlist li div.votebox p.countsub {
 ul.masterlist li div.votebox a.thumbsup {
 	display: block;
 	text-decoration: none;
-	margin-top: 3px;
-	padding: 2px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	color: #fff;
+	background-color: #323232;
+	width: 60px;
+	margin: 8px auto 3px auto;
+	padding: 4px 2px 6px 2px;
+	position: absolute;
+	bottom: 9px;
+	left: 9px;
 }
 
 ul.masterlist li div.votebox a.thumbsup:hover {
-	background-color: #c5c5c5;
+	background-color: #339933;
 }
 
 ul.masterlist li div.votebox a.thumbsup img {
@@ -554,9 +727,10 @@ ul.masterlist li div.votebox a.thumbsup img {
 
 ul.masterlist li div.votebox a.thumbsup span {
 	font-size: 0.6em;
-	color: #323232;
+	color: #fff;
 	margin-top:0;
 }
+
 
 
 
@@ -569,7 +743,7 @@ ul.masterlist li div.question {
 	overflow: auto;
 	border: 1px solid #ccc;
 	background-color: #f4f4f4;
-	margin-bottom: 17px;
+	margin-top: 17px;
 }
 
 ul.masterlist li div.question div.qabox {
@@ -579,11 +753,13 @@ ul.masterlist li div.question div.qabox {
 	overflow: auto;
 	position: relative;
 	min-height: 56px;
+	z-index: 99;
 }
 
 ul.masterlist li div.question div.qabox p.qa {
 	margin-bottom: 20px;
 	font-size: 1.1em;
+	z-index: 100;
 }
 
 ul.masterlist li div.question div.qabox p.userinfo, ul.masterlist li div.answer div.qabox p.userinfo {
@@ -591,6 +767,7 @@ ul.masterlist li div.question div.qabox p.userinfo, ul.masterlist li div.answer 
 	bottom: 8px;
 	left: 10px;
 	font-size: 0.8em;
+	z-index: 100;
 }
 
 ul.masterlist li div.question div.qabox p.userinfo span.username, ul.masterlist li div.answer div.qabox p.userinfo span.username {
@@ -600,6 +777,10 @@ ul.masterlist li div.question div.qabox p.userinfo span.username, ul.masterlist 
 ul.masterlist li div.question div.qabox a.answerthis, ul.masterlist li div.answer div.qabox a.answerthis {
 	margin-left: 10px;
 	font-weight: bold;
+}
+
+ul.masterlist li div.question div.qabox a.collapseanswers {
+	display: none;
 }
 
 
@@ -613,6 +794,8 @@ ul.masterlist li div.answer {
 	border: 1px solid #ccc;
 	background-color: #f4f4f4;
 	margin-bottom: 17px;
+	padding-left: 14px;
+	position: relative;
 }
 
 ul.masterlist li div.answer div.qabox {
@@ -627,6 +810,7 @@ ul.masterlist li div.answer div.qabox {
 ul.masterlist li div.answer div.qabox p.qa {
 	margin-bottom: 15px;
 	font-size: 1.1em;
+	z-index: 100;
 }
 
 ul.masterlist li div.answer div.qabox div.answerclip {
@@ -634,6 +818,7 @@ ul.masterlist li div.answer div.qabox div.answerclip {
 	background-color: #e5e5e5;
 	padding: 10px;
 	font-size:0.9em;
+	z-index: 100;
 }
 
 ul.masterlist li div.answer div.qabox div.answerclip p.cliptext {
@@ -654,21 +839,84 @@ ul.masterlist li div.answer a.flagasopinion {
 }
 
 /* HANDLE NESTED ANSWERS WITH INDENTS */
+ul.masterlist li ul.answers {
+	margin-left: 29px;
+	border-left: 1px solid #ccc;
+	margin-bottom: 12px;
+	padding-top: 17px;
+}
+
 ul.masterlist li ul li div.answer {
-	margin-left: 60px;
+	margin-left: 15px;
 	margin-bottom: 17px;
 }
 
 ul.masterlist li ul li ul li div.answer {
-	margin-left: 120px;
+	margin-left: 15px;
 	margin-bottom: 17px;
 }
 
 ul.masterlist li ul li ul li ul li div.answer {
-	margin-left: 180px;
+	margin-left: 15px;
 	margin-bottom: 17px;
 }
 
+
+/* DEAL WITH THE Question: / Answer: */
+/*
+span.qaflag {
+	font-size: 0.8em;
+	line-height: 0.8em;
+	font-weight: bold;
+	padding: 0.1em 0.5em;
+	background: #323232;
+	color: #fff;
+	position: relative;
+	top: -1px;
+	margin-right: 3px;
+}
+*/
+div.qflag {
+	font-size: 5.5em;
+	color: #e3e3e3;
+	font-weight: bolder;
+	position: absolute;
+	left: -10px;
+	top:6px;
+	z-index: 1;
+}
+/* THIS IS FOR ARROWS
+div.aflag {
+	font-size: 5.5em;
+	height: 0;
+	width: 0;
+	border-left: 12px solid #ddd;
+	border-top: 18px solid transparent;
+	border-bottom: 18px solid transparent;
+	line-height: 0;
+	font-size: 0;
+	position: relative;
+	top: 7px;
+	margin: 0 4px;
+	float: right;
+	position: absolute;
+	left: -4px;
+	top:2px;
+	z-index: 1;
+}
+*/
+
+div.aflag {
+	width: 15px;
+	background: transparent;
+	border-top: 1px solid #ccc;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 1;
+}
+
+}
 
 
 /* ANSWER FORM DROPDOWN */
@@ -727,6 +975,38 @@ ul.masterlist li ul li ul li ul li form.replyform textarea, ul.masterlist li ul 
 form.answerform input.attachsubmit, form.replyform input.attachsubmit, ul.masterlist li ul li form.replyform input.attachsubmit, ul.masterlist li ul li ul li form.replyform input.attachsubmit, ul.masterlist li ul li ul li form.replyform input.attachsubmit {
 	width: 100px;
 	margin-bottom: 0;
+}
+
+/* ANSWER FLAGS */
+.earmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 14px;
+	display: block;
+	background: url(../img/backs/opinion-shading.png) repeat-y;
+	font-size: 0.7em;
+	color: #fff;
+	font-weight: bold;
+}
+
+.earmark .textspan {
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	position: relative;
+	left: -1.6em;
+	top: 2.2em;
+}
+
+/* My Comment */
+
+.accepted {
+	background-color: #339933;
+}
+
+.moderator {
+	/* background-color: #006699; */
 }
 
 
@@ -806,5 +1086,153 @@ div.toppanes ol.top5 li p a {
 	font-weight: bold;
 }
 
+.hidden {
+    display: none;
+}
 
+/* TOOLTIP */
+#tooltip, .tooltip {
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	font-size: 0.8em;
+	position: absolute;
+	z-index: 3000;
+	border: 1px solid #0F9D2E;
+	color: #fff;
+	padding: 5px 8px;
+	opacity: 0.85;
+	background: url('../img/backs/trans-dark.png');
+}
+#tooltip h3, #tooltip div, .tooltip h3, .tooltip div { margin: 0; }
+
+/* WHAT'S THIS TOOLTIP LINK STYLE */
+/* Right now I'm using this to give a little bit of explaination to */
+/* the burning questions list in the sidebar, but I imagine we might use this */
+/* site-wide in the future. */
+.whatsthis {
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* STYLES FOR SIDEBAR */
+#sidebar .ui-tabs-panel p {
+    margin-top: 5px;
+}
+
+
+/* FOOTER */
+div#footerwrap {
+	background: #50b332 url(../img/backs/green.png) repeat;
+	height: auto;
+	width: 100%;
+	overflow: auto;
+	border-top: 1px solid #323232;
+	padding-bottom: 50px;
+}
+
+div#footer {
+	padding-top: 40px;
+	height: auto;
+	overflow: auto;
+	padding-bottom: 25px;
+}
+
+div#footer .footertabs {
+	height: 30px;
+}
+
+div#footer .footertabs li {
+	-moz-border-radius: 10px 10px 0 0;
+	border-radius: 10px 10px 0 0;
+	-webkit-border-radius: 10px 10px 0 0;
+	padding: 0 10px;
+	height: 30px;
+	line-height: 30px;
+	font-size: 16px;
+	font-weight: bold;
+	background-color: #66cc66;
+	float: left;
+	margin-right: 4px;
+}
+
+div#footer .footertabs li.ui-state-active { background-color: #323232; }
+div#footer .footertabs li a { color: #323232; }
+div#footer .footertabs li a:hover { text-decoration: none; }
+div#footer .footertabs li.ui-state-active a { color: #fff; }
+div#footer .footertabs li a:hover { text-decoration: none; }
+
+div#footer form.footerinput {
+	height: auto;
+	overflow: auto;
+	margin-bottom: 50px;
+}
+
+div#footer form.footerinput input {
+	width: 770px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 24px;
+	font-weight: bold;
+	border: 2px #323232 solid;
+	padding: 0 10px;
+	float: left;
+	margin-right: 10px;
+	color: #888;
+}
+
+div#footer form.footerinput .footersubmit {
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	height: 44px;
+	line-height: 44px;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	display: block;
+	float: left;
+	width: 140px;
+}
+
+div#footer h4 {
+	font-size: 2.5em;
+	font-weight: bold;
+	padding-bottom: 12px;
+	margin-bottom: 15px;
+	border-bottom: 1px solid #478c32;
+}
+
+div#footer ul#footer3col {
+	width: auto;
+	height: auto;
+	overflow: visible;
+}
+
+div#footer ul#footer3col li.footercol {
+	overflow: auto;
+	height: auto;
+	padding-bottom: 20px;
+	margin-bottom: 30px;
+}
+
+div#footer ul#footer3col li.footercol ul.footerlist {
+	width: auto;
+	height: auto;
+	overflow: auto;
+	list-style: disc;
+	padding-left: 20px;
+}
+
+div#footer ul#footer3col li.footercol ul.footerlist li {
+	margin-bottom: 12px;
+	font-size: 1.1em;
+}
+
+div#footer ul#footer3col li.footercol ul.footerlist li a {
+	color: #fff;
+}
+
+div#footer p.footerline {
+	text-align: center;
+	font-size: 0.9em;
+}
 

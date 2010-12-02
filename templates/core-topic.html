@@ -1,11 +1,10 @@
 {% extends "base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block addscripts %}
 	<script type="text/javascript">
 		$(document).ready( function () {
-			$( ".gotabs" ).tabs();
-			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'slow' }});
-
             if (!userIsAuthenticated()) {
                 // If the user isn't logged in disabled the 
                 // "ask a question ..." tab.
@@ -27,61 +26,48 @@
             //$('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
             {% if is_reporter %}
             $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
+            $('a.favoritecommentlink').unbind('click', handleFavoriteCommentLink).bind('click', handleFavoriteCommentLink);
             $('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
             {% endif %}
             //$('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             //$('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
-            $('.replyformtoggle').click(function () {
+            
+            // SET UP ANSWER/REPLY DROPDOWN DRAWERS
+            answerdrawers();
 
-                if (userIsAuthenticated()) {
-                    var id = $(this).attr("id");
-                    var formid = id.replace('toggle', '');
-                    // Also toggle the link text
-                    if ($(this).html() == "Reply") {
-                        $(this).html("Hide this");
-                    }
-                    else {
-                        $(this).html("Reply");
-                    }
-                    $('#' + formid).toggle();
-                }
-                else {
-                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-                }
-                return false;
-            });
-            $('.answerformtoggle').click(function () {
-                if (userIsAuthenticated()) {
-                    var id = $(this).attr("id");
-                    var formid = id.replace('toggle', '');
-
-                    // Also toggle the link text
-                    if ($(this).html() == "Answer this") {
-                        $(this).html("Hide this");
-                    }
-                    else {
-                        $(this).html("Answer this");
-                    }
-                    $('#' + formid).toggle();
-                }
-                else {
-                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-                }
-
-                return false;
-            });
-            $('.replyform').hide();
-            $('.answerform').hide();
-            $('#clipperform').hide();
-
+			// HANDLE CONTEXT MORE/LESS
 			contextexpander();
+			
+			// HANDLE EARMARK HEIGHTS, LABELS and COLORS
+			earmarksetup();
+			
+			// SET UP Q/A COLLAPSING
+			hideanswers();
+
+            // Handler for ask a question links in sidebar
+            $(".topqas a.askquestion").click(function() {
+                if (!userIsAuthenticated()) {
+                    // Show an error message if they try to click on the link 
+                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+                }
+                else {
+                    // User is authenticated.  Show the form.
+                    $("#qas .qaoptions").tabs("option", "selected", 1);
+                }
+
+                return false;
+            });
+			
+            // Set the tooltips
+           // $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         });
 	</script>
 {% endblock %}
 
-{% block leftcontent %}
+{% block pagecontent %}
+	<div id="leftcontent" class="grid_8">
 			<h3 class="nodestamp">topic</h3>
 			
 			<!--V2!
@@ -100,12 +86,9 @@
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
 				<h1>{{topic.title}}</h1>
-					<p id="contextintro" class="topic-summary">
+					<div id="contextintro" class="topic-summary">
                     {{topic.summary.text|safe}}
-                    </p>
-        {% if is_reporter %}
-        {% include "core-topic-update_summary_form.html" %}
-        {% endif %}
+                    </div>
         
 		<div class="contextbot"><a class="expanderbut lightback" href="#">
 			<span class="more"><span class="downarrow"></span>more </span>
@@ -114,6 +97,9 @@
 			</div>
 		
 		
+        {% if is_reporter %}
+        {% include "core-topic-update_summary_form.html" %}
+        {% endif %}
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
 				<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
@@ -131,10 +117,10 @@
 							<li class="nullpane" style="display:none;"><a href="#"></a></li>
 
 							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
-							<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
+							<li class="lightback hidden"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
 						</ul>
 							
-						<p class="viewby">Viewing by: <label>Popularity</label></p>
+						<p class="viewby hidden">Viewing by: <label>Popularity</label></p>
 					</div>
 					
 					<div id="askquestion" class="optionsdrop">
@@ -162,183 +148,70 @@
 					</div>
 					
 				</div>
+
+                {% include "core-topic-questions.html" %}
 				
-				<!-- START ACTUAL Q&As -->
-				<ul class="masterlist">
-                    {% for questionset in topic.comments_to_show %}
-
-                    {% with questionset|first as question %}
-
-
-                    <li id="comment-{{question.id}}">
-                        <div class = "comment question" >
-                            <div class = "votebox burningq">
-                                <p class="count">{{question.num_upvotes}}</p>
-                                <p class="countsub">thumbs up</p>
-                                <a href="#" class="thumbsup" id="thumbsup-{{question.id}}">
-                                        <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                        <span>thumbs up!</span>
-                                    </a>
-                            </div>
-
-                            <div class="qabox">
-                                <p class="qa">{{question.text}}</p>
-                                <p class="userinfo"><span class="username">{{question.user}}</span> on <span class="date">{{question.date_created}}</span>
-                                <!--START ANSWER FORM CONTROLS -->
-                                <a href="#" class="answerthis answerformtoggle" id="answerformtoggle-{{question.id}}">Answer this</a>
-                                {% if is_reporter %}
-                                <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
-                                <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>
-                                <!--END ANSWER FORM CONTROLS -->
-
-                                {% endif %}
-                                </p>
-
-                                {% include "core-topic-answerform.html" %}
-                                
-                            </div>
-                        </div>
-                        {% endwith %}
-                        <!-- answers -->
-
-                        {% with questionset|slice:"1:" as answers %}
-
-                        {% if answers %}
-                        <ul class = "answers">
-
-                        {% for answer in answers %}
-                        {% with answer|first as theanswer %}
-                            <li id="comment-{{theanswer.id}}">
-                                <div class = "comment answer">
-                                    <div class = "votebox">
-                                        <p class="count">{{theanswer.num_upvotes}}</p>
-                                        <p class="countsub">thumbs up</p>
-                                        <a href="#" class="thumbsup" id="thumbsup-{{theanswer.id}}">
-                                                <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                                <span>thumbs up!</span>
-                                        </a>
-                                    </div>
-
-                                    <div class="qabox">
-                                        <p class="qa">{{theanswer.text}}</p>
-                                        {% for clip in theanswer.clips.all %}
-                                        <div class = "answerclip">
-                                            <p class="cliptext">{{clip.text}}</p>
-                                            <p class="clipcitation">Citation: "<a href="{{clip.article.url}}" class="articlelink">{{clip.article.title}}</a>" on {{clip.article.date_published}} at <a href="{{clip.article.source.url}}" class="publink"> </a> </p>
-                                        </div>
-
-                                        {% endfor %}
-                                        <p class="userinfo"><span class="username">{{theanswer.user}}</span> on <span class="date">{{theanswer.date_created}}</span>
-                                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" class="flagasopinion">Flag this citation as opinion</a>
-                                        {% if is_reporter %}
-                                        <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{theanswer.id}}">Delete Answer</a>
-                                        <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
-
-                                        {% endif %}
-
-                                        </p>
-
-                                {% include "core-topic-replyform.html" %}
-
-
-                                        </div>
-                                    </div>
-                                {% with answer|slice:"1:" as replies %}
-
-                                {% if replies %}
-                                <ul class = "answers">
-
-                                {% for replyset in replies %}
-                                {% with replyset|first as reply %}
-
-                                <li id="comment-{{reply.id}}">
-                                    <div class = "comment answer">
-                                        <div class = "votebox">
-                                            <p class="count">{{reply.num_upvotes}}</p>
-                                            <p class="countsub">thumbs up</p>
-                                            <a href="#" class="thumbsup" id="thumbsup-{{reply.id}}">
-                                                    <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
-                                                    <span>thumbs up!</span>
-                                            </a>
-                                        </div>
-
-                                        <div class="qabox">
-                                            <p class="qa">{{reply.text}}</p>
-                                            {% for clip in reply.clips.all %}
-                                            <div class = "answerclip">
-                                                <p class="cliptext">{{clip.text}}</p>
-                                                <p class="clipcitation">Citation: "<a href="{{clip.article.url}}" class="articlelink">{{clip.article.title}}</a>" on {{clip.article.date_published}} at <a href="{{clip.article.source.url}}" class="publink"> </a> </p>
-                                            </div>
-
-                                            {% endfor %}
-                                            <p class="userinfo"><span class="username">{{reply.user}}</span> on <span class="date">{{reply.date_created}}</span>
-                                            {% if is_reporter %}
-                                            <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{reply.id}}">Delete Reply</a>
-                                            <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{reply.id}}">Remove Reply from Topic</a>
-
-                                            {% endif %}
-                                            <a href="#" class="flagasopinion">Flag this citation as opinion</a></p>
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                </li>
-                                {% endwith %}
-                                {% endfor %}
-                                </ul>
-
-                                {% endif %}
-                                {% endwith %}
-
-                        
-
-                    
-                    </li>
-                    {% endwith %}
-
-                    {% endfor %}
-                    </ul>
-
-                    {% endif %}
-
-                    {% endwith %}
-
-                    </li>
-
-                    {% endfor %}
-
-					
-					
-				</ul>
-				
-				<!-- END Q&As --> 
 			</div>
-{% endblock %}
+	</div>
 
-{% block sidebar %}
+<div id="sidebar" class="grid_4"> 
+
 			<div class="topqas gotabs">
 			<p class="toplabel">Top:</p>
 			<ul class="sidetabs">
 				<li><a href="#burningqs"><img src="{{ MEDIA_URL }}img/icns/flame-sm.png"></a></li>
+                <!--
 				<li><a href="#topanswers"><img src="{{ MEDIA_URL }}img/icns/check-sm.png"></a></li>
 				<li><a href="#mostpopular"><img src="{{ MEDIA_URL }}img/icns/qbubbles-sm.png"></a></li>
+                -->
 			</ul>
 			
 			<div id="burningqs" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/flame.png" class="paneicon"><h2>Burning Questions</h2>
+                <a title="{% blocktrans %}A burning question is a popular question that hasn't been answered.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                {% if topic.burning_questions %}
 				<ol class="top5">
-                    {% for topq in topqs %}
-					<li><p>{{topq.text}} <a href="#" id="answerthis-{{topq.id}}">Answer this</a></p></li>
+                    {% for question in topic.burning_questions %}
+					<li><p>{{question.text}} <a href="#" id="answerthis-{{question.id}}">Answer this</a></p></li>
                     {% endfor %}
 				</ol>
+                {% else %}
+                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
+                {% endif %}
 			</div>
-			
+		
+        </div>
+{% block sidebar %}
+            <!--
 			<div id="topanswers" class="toppanes">
-				TOP ANSWERS
+				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
+                <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                {% if topic.top_answers %}
+				<ol class="top5">
+                    {% for answer in topic.top_answers %}
+					<li><p>{{answer.text}} <a href="#comment-{{answer.id}}" id="seeanswer-{{answer.id}}">See the answer</a></p></li>
+                    {% endfor %}
+				</ol>
+                {% else %}
+                <p>{% blocktrans  %}Hmmm.  There aren't any popular answers for this topic.  Maybe you've got the answer?.{% endblocktrans %}</p>
+                {% endif %}
 			</div>
 			
 			<div id="mostpopular" class="toppanes">
-				MOST POPULAR
+				<img src="{{ MEDIA_URL }}img/icns/qbubbles.png" class="paneicon"><h2>Most Popular</h2>
+                <a title="{% blocktrans %}These are the questions and answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
+                {% if topic.popular_comments %}
+				<ol class="top5">
+                    {% for comment in topic.popular_comments %}
+					<li><p>{{comment.text}} <a href="#comment-{{comment.id}}">{% trans "Check it out" %}</a></p></li>
+                    {% endfor %}
+				</ol>
+                {% else %}
+                <p>{% blocktrans  %}Did you know you can vote on which questions are the most important and which answers are the most helpful?{% endblocktrans %}</p>
+                {% endif %}
 			</div>
+	</div>
+            -->
 
+{% endblock %}
 {% endblock %}

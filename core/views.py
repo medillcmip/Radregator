@@ -314,18 +314,8 @@ def frontpage(request):
     """
     template_dict = { 'site_name':settings.SITE_NAME, \
         'body_classes':settings.SITE_BODY_CLASSES }
-
-    if Topic.objects.filter(is_deleted=False).count() > 0:
-        # There is at least one topic to display. 
-
-        # Get the first topic
-        topic = Topic.objects.filter(is_deleted=False)[0]
-        topic_url = '/topic/%s/' % (topic.id) 
-
-        return HttpResponseRedirect(topic_url)
-
-    else:
-        return render_to_response('core-frontpage.html', context_instance=RequestContext(request))  
+    
+    return render_to_response('frontpage.html', context_instance=RequestContext(request))  
 
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """
@@ -395,7 +385,10 @@ def topic(request, whichtopic=1):
 
     template_dict['topics'] = topics
     try: 
-        template_dict['topic'] = Topic.objects.get(id=whichtopic)
+        topic =  Topic.objects.get(id=whichtopic)
+        template_dict['topic'] = topic 
+        template_dict['comments_to_show'] = topic.comments_to_show()
+        # BOOKMARK
     except: 
         # No topic loaded
         pass
@@ -472,6 +465,93 @@ def api_topic(request, topic_slug_or_id=None, output_format="json"):
         
     return response
 
+@ajax_login_required
+def api_comment_tag(request, output_format="json"):
+    data = {}
+    status = 200
+    response = None
+
+    try:
+        if request.method == 'POST':
+            tagname = request.POST['tags']
+
+            comment = Comment.objects.get(id=request.POST['comment'])
+
+            if tagname.startswith("_"):
+                tagname = tagname.replace("_", "_" + request.user.username +'_')
+            tag = Tag.objects.get_or_create(name=tagname)[0]
+
+            tag.save()
+
+            comment.tags.add(tag)
+
+            comment.save()
+
+            data = {'tags' : [tag.name for tag in comment.tags.all()] }
+
+
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." % request.method)
+
+
+    except MethodUnsupported, e:
+        status = 405
+        data['error'] = "%s" % e
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = 'Cmment does not exist'
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+
+@ajax_login_required
+def api_topic_tag(request, output_format="json"):
+    data = {}
+    status = 200
+    response = None
+
+    try:
+        if request.method == 'POST':
+            tagname = request.POST['tags']
+
+            topic = Topic.objects.get(id=request.POST['topic'])
+
+            if tagname.startswith("_"):
+                tagname = tagname.replace("_", "_" + request.user.username +'_')
+            tag = Tag.objects.get_or_create(name=tagname)[0]
+
+            tag.save()
+
+            topic.topic_tags.add(tag)
+
+            topic.save()
+
+            data['tags'] = [tag.name for tag in topic.topic_tags.all()]
+
+
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." % request.method)
+
+
+    except MethodUnsupported, e:
+        status = 405
+        data['error'] = "%s" % e
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = "Topic does not exist"
+            
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+        
+
+
 
 
 
@@ -543,6 +623,35 @@ def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
     return response
 
 
+def api_topics(request, output_format="json"):
+    
+    try:
+        if output_format != 'json':
+            raise UnknownOutputFormat("Unknown output format '%s'" % \
+                                              (output_format))
+
+        topics = Topic.objects.filter(is_deleted=False)
+
+        # Serialize the data
+        # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
+        # TODO: It might make sense to implement natural keys in order
+        # to pass through useful user data.
+        # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
+
+        data = serializers.serialize('json', topics,
+                                     fields=('id', 'title', 'slug','summary'),
+                                     use_natural_keys=True)
+
+    except UnknownOutputFormat:
+        pass
+        # TODO: Handle this exception
+        # QUESTION: What is the best way to return errors in JSON?
+    except ObjectDoesNotExist:
+        pass
+        # TODO: Handle this exception
+
+    return HttpResponse(data, mimetype='application/json') 
+        
 def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     """Return a paginated list of comments for a particular topic. """
     # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
