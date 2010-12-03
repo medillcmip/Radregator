@@ -368,15 +368,15 @@ class QuestionResponseTestCase(QuestionTestCase):
     def _create_upvote(self, question, user_profile):
         return self._create_response(question, user_profile, 'concur')
 
-    def test_user_voted_comments_no_votes(self):
+    def test_user_voted_comment_ids_no_votes(self):
         topic = self._topic
         user2_profile = UserProfile.objects.get(user__username="user2")
 
-        user_voted_comments = topic.user_voted_comments(user2_profile)
-        self.assertEqual(len(user_voted_comments), 0)
+        user_voted_comment_ids = topic.user_voted_comment_ids(user2_profile)
+        self.assertEqual(len(user_voted_comment_ids), 0)
         
 
-    def test_user_voted_comments_one_vote(self):
+    def test_user_voted_comment_ids_one_vote(self):
         topic = self._topic
         user1_profile = UserProfile.objects.get(user__username="user1")
         user2_profile = UserProfile.objects.get(user__username="user2")
@@ -389,5 +389,6 @@ class QuestionResponseTestCase(QuestionTestCase):
         # And give it one vote
         self._create_upvote(question, user2_profile)
 
-        user_voted_comments = topic.user_voted_comments(user2_profile)
-        self.assertEqual(len(user_voted_comments), 1)
+        user_voted_comment_ids = topic.user_voted_comment_ids(user2_profile)
+        self.assertEqual(len(user_voted_comment_ids), 1)
+        self.assertEqual(user_voted_comment_ids[0], question.id)
