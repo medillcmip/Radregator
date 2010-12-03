@@ -395,7 +395,10 @@ def topic(request, whichtopic=1):
         topic =  Topic.objects.get(id=whichtopic)
         template_dict['topic'] = topic 
         template_dict['comments_to_show'] = topic.comments_to_show()
-        
+       
+        # TODO: Uncomment these lines when I've implemented 
+        # Topic.user_voted_comments
+        # - Geoff Hing <geoffhing@gmail.com> 2010-12-02
         # Get a list of comments that a user has voted on. 
 #        if request.user.is_anonymous():
 #            template_dict['user_voted_comments'] = None
