@@ -317,19 +317,27 @@ def frontpage_questions(count=10):
 
 
     """
-    return Comment.objects.filter(is_deleted=False, \
-        comment_type__name="Question").order_by('-pub_date')[:count]
+
+    questions = Comment.objects.filter(is_deleted=False, \
+        comment_type__name="Question").order_by('-date_created')[:count]
+
+
+    return questions
 
 def frontpage(request):
     """Front page view."""
+    logger = core.utils.get_logger()
 
     questions = frontpage_questions()
 
+    logger.debug(questions)
+
     template_dict = { 'site_name': settings.SITE_NAME, \
         'body_classes': settings.SITE_BODY_CLASSES, \
-        'questions': questions}
+        'questions': questions }
     
-    return render_to_response('frontpage.html', context_instance=RequestContext(request))  
+    return render_to_response('frontpage.html', template_dict, \
+        context_instance=RequestContext(request))  
 
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """

@@ -34,9 +34,13 @@
 	<div class="featspot">
 		<ul class="featspotul container_12">
             {% for question in questions %}
-			<li class="answercount-12 askcount-4 topicid-7 anchornum-21">
+            {% with question.topics.all|first as topic %}
+			<li class="answercount-{{ question.get_answers|length }} askcount-{{ question.num_upvotes }} topicid-{{ topic.id }} anchornum-{{ question.id }}">
 				<h2 class="featquestion">{{ question.text }}<span>asked 3 hours ago.</span></h2>
+
+                <span class="topic-name hidden" style="display: none;">{{ topic.title }}</span>
 			</li>
+            {% endwith %}
             {% endfor %}
 		</ul>
 	</div>
