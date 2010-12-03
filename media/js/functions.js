@@ -5,6 +5,12 @@ var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/register/">register
 // Implement "ask" in footer (and header?)
 function topicsDropShow() {
 	$("#asktopicsdrop").css("display","block");
+	//Character counter
+	$("#askinput").charCount({
+		allowed: 140,		
+		warning: 20,
+		counterText: 'Characters remaining: '	
+	});
 }
 
 
@@ -347,11 +353,17 @@ function handleResponseLink() {
         url: "/api/json/comments/" + thiscomment_id + "/responses/",
         data: { type : response_type },
         success: function(data){
-            // Update counter
+            // Update counter and tooltip
             var count = thiscomment.children(".votebox").children(".count");
             count_val = count.text();
             count_val++;
             count.text(count_val);
+            if (thiscomment.hasClass("answer")) {
+            	thiscomment.children(".votebox").attr("title","You've marked this as a good answer!");
+            } else {
+            	thiscomment.children(".votebox").attr("title","You've marked this as an important question!");
+            }
+			thiscomment.children(".votebox").tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         },
         error: function (requestError, status, errorResponse) {
             var response_text = requestError.responseText;
@@ -728,4 +740,91 @@ $.fn.fontfit = function(max) {
 
 
 
+//
+//
+// SET UP THE TIMELINE SLIDER
+//
+//
 
+function initiateTimeline() {
+	//DRAW TIMELINE
+	var timeline = Raphael("timelinecontainer", 561, 36);
+	var backdrop = timeline.rect(1, 1, 560, 26).attr("stroke-width","0");
+	
+	//var slices = timeline.rect(1, 1, 20, 26);
+	//slices.attr("fill", "#009933");
+	
+	// THIS WILL HAVE TO COUNT THE NUMBER OF RETURNED OBJECTS AND LOOP THROUGH THEM, SETTING WIDTHS APPROPRIATELY
+	var slicecount = $("ul.featspotul li").length;
+//		alert(slicecount);
+	var slices = new Array(slicecount);
+	var segmentlength = (560 / slicecount);
+	
+	for(var i = 0; i < slicecount+1; i+=1) {  
+		var multiplier = i * segmentlength;
+		if (i % 2 == 0) {
+			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.9);
+		} else {
+			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.8);
+		}
+		
+		// console.log(slices[i]);
+
+		slices[i].node.onmouseover = function() {  
+			this.style.cursor = 'pointer';  
+		}  
+		
+		slices[i].hover(function () {
+			this.attr({fill: "#007711"});
+		}, 
+		function () {
+			this.attr({fill: "#009933"});
+		});
+		
+		// CONNECT TIMELINE CLICKING TO HEADLINE SLIDER (& UPDATE THE "ANSWER THIS" LINK AND NODESTAMPS)
+		slices[i].click(function () {
+			// "SLIDE" THE MAIN SPOT
+			var xfactor = this.attr("x");
+			var slidevalue = -((xfactor/560)*(slicecount*961));
+			// alert(slidevalue);
+			$("ul.featspotul").animate({ left: slidevalue }, 600);
+		
+			// "SLIDE" THE ARROW
+			var arrowanchor = xfactor + (segmentlength / 2) - 6;
+			$("#timelinemarker").animate({ left: arrowanchor }, 600);
+		});
+		
+	}
+
+	// Place the arrow initially
+	var arrowstart = (segmentlength / 2) - 6;
+	$("#timelinemarker").animate({ left: arrowstart }, 600);		
+}
+	
+	
+
+function timedSlide() {
+	// Set up the timer for rotation through the timeline
+	// Get the current location
+	var slicecount = $("ul.featspotul li").length;
+	var segmentlength = (560 / slicecount);
+	
+	
+	var timelineloc = 0;
+	timelineloc = $("#timelinemarker").css("left");
+	timelineloc = parseInt(timelineloc.replace("px",""));
+	var timelinestep = ((timelineloc + 6) + (segmentlength / 2)) / segmentlength;
+	console.log(timelinestep);
+	
+	// Set up the new anchors values
+	var newtimelineloc = timelineloc + segmentlength;
+	var newslidevalue = -((timelinestep+1) * 961);
+	
+	// Slide 'em
+	$("#timelinemarker").animate({ left: newtimelineloc }, 600);
+	$("ul.featspotul").animate({ left: newslidevalue }, 600);
+}
+
+function initiateTimelineClock () {
+	setInterval('timedSlide()',10000);
+}

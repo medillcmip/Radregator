@@ -68,14 +68,14 @@
 				return false;
 			});
             
-        getTopics();
-   
-        // Implement error on "ask" in footer
-		if (!userIsAuthenticated()) {
-			$("a#asksubmit").click(function() {
-				displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-			});
-		}
+	        getTopics();
+	   
+	        // Implement error on "ask" in footer
+			if (!userIsAuthenticated()) {
+				$("a#asksubmit").click(function() {
+					displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+				});
+			}
 	
 	});
     
@@ -153,14 +153,14 @@
 		</div>
 
         <!-- MESSAGE BAR FOR MESSAGES/ERRORS -->
-        <div id="messageswrap">
+        <div id="messageswrap" style="display:none;">
             <div id="messages" class="container_12">
                 <p></p>
 
                 <div id="hidemessages">
                     <a href="#">
                         <span>Close</span>
-                        <span class="uparrow"></span>
+                        <!--<span class="uparrow"></span>-->
                     </a>
                 </div>
             </div>

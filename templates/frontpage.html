@@ -5,38 +5,9 @@
 	$(document).ready( function() {
 		$("ul.featspotul li").fontfit("146");
 		// $("ul.featspotul li h2").valign();
-		
-		
-		//DRAW TIMELINE
-		var timeline = Raphael("timelinecontainer", 561, 36);
-		var backdrop = timeline.rect(1, 1, 560, 18).attr("stroke-width","0");
-		
-		//var slices = timeline.rect(1, 1, 20, 18);
-		//slices.attr("fill", "#009933");
-		
-		// THIS WILL HAVE TO COUNT THE NUMBER OF RETURNED OBJECTS AND LOOP THROUGH THEM, SETTING WIDTHS APPROPRIATELY
-		var slicecount = 20;
-		var slices = new Array(20);
-		
-		for(var i = 0; i < slicecount+1; i+=1) {  
-			var segmentlength = (560 / slicecount);
-			var multiplier = i * segmentlength;
-			if (i % 2 == 0) {
-				slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 18).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.9);
-			} else {
-				slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 18).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.8);
-			}
-			
-			// console.log(slices[i]);
-			
-			slices[i].hover(function () {
-				this.attr({fill: "#007711"});
-			}, 
-			function () {
-				this.attr({fill: "#009933"});
-			});
-		}
 
+		initiateTimeline();
+		initiateTimelineClock();		
 		
 		// Set up "Browse" link
 		$("a#browsetopics").colorbox({width:"800px", height:"500px",inline:true, href:"#browseoverlay"});
@@ -57,6 +28,7 @@
 	<div id="hometimeline">
 		<p id="timelineflag">Featured questions</p>
 		<div id="timelinecontainer"></div>
+		<span class="uparrow" id="timelinemarker"></span>
 	</div>
 	
 	<div class="featspot">
@@ -64,16 +36,16 @@
 			<!-- THIS NEEDS TO BE POPULATED BY QUESTION LISTS -->
 			
 			<li>
-				<h2 class="featquestion answercount-12 askcount-4 topicid-4 anchornum-2">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+				<h2 class="featquestion answercount-12 askcount-4 topicid-7 anchornum-21">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
 			</li>
 			<li>
-				<h2 class="featquestion answercount-12 askcount-4 topicid-4 anchornum-2">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+				<h2 class="featquestion answercount-10 askcount-3 topicid-1 anchornum-4">Why does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
 			</li>
 			<li>
-				<h2 class="featquestion answercount-12 askcount-4 topicid-4 anchornum-2">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+				<h2 class="featquestion answercount-9 askcount-8 topicid-9 anchornum-7">How does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
 			</li>
 			<li>
-				<h2 class="featquestion answercount-12 askcount-4 topicid-4 anchornum-2">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+				<h2 class="featquestion answercount-5 askcount-2 topicid-2 anchornum-3">When does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
 			</li>	
 		</ul>
 	</div>

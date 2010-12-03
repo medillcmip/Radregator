@@ -80,7 +80,7 @@
         {% include "core-topic-update_summary_form.html" %}
         {% endif %}
         
-		<div class="contextbot"><a class="expanderbut lightback" href="#">
+		<div class="contextbot"><a class="expanderbut lightback" href="javascript:;">
 			<span class="more"><span class="downarrow"></span>more </span>
 			<span class="less"><span class="uparrow"></span>less </span>
 		</a></div>
@@ -89,7 +89,7 @@
 		
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
-				<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
+				<a class="expanderbut lightback" href="javascript:;"><span class="downarrow"></span>more </a>
 			</div>
 		
         {% if is_reporter %}
@@ -101,13 +101,13 @@
 				<div class="qaoptions gotabscollapse">
 					<div id="optselect">
 						<ul class="tabs">
-							<li class="nullpane" style="display:none;"><a href="#"></a></li>
+							<li class="nullpane" style="display:none;"><a href="javascript:;"></a></li>
 
 							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
-							<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
+							<!--<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>-->
 						</ul>
 							
-						<p class="viewby">Viewing by: <label>Popularity</label></p>
+						<!--<p class="viewby">Viewing by: <label>Popularity</label></p>-->
 					</div>
 					
 					<div id="askquestion" class="optionsdrop">
@@ -129,10 +129,11 @@
 						
 					</div>
 					
-					
+					<!--
 					<div id="filterqas" class="optionsdrop">
 						FILTER OPTIONS (by recency/popularity/default view & answered/unanswered/filter out opinion)
 					</div>
+					-->
 					
 				</div>
 
@@ -157,11 +158,11 @@
                 {% if topic.burning_questions %}
 				<ol class="top5">
                     {% for question in topic.burning_questions %}
-					<li><p>{{question.text}} <a href="#" id="answerthis-{{question.id}}">Answer this</a></p></li>
+					<li><p>{{question.text}} <a href="javascript:;" id="answerthis-{{question.id}}">Answer this</a></p></li>
                     {% endfor %}
 				</ol>
                 {% else %}
-                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
+                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="javascript:;" class="askquestion">ask one</a>.{% endblocktrans %}</p>
                 {% endif %}
 			</div>
 			
