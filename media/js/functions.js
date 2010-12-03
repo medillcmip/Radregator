@@ -746,17 +746,11 @@ $.fn.fontfit = function(max) {
 //
 //
 
-function initiateTimeline() {
-	//DRAW TIMELINE
+function initiateHomeTimeline() {
 	var timeline = Raphael("timelinecontainer", 561, 36);
 	var backdrop = timeline.rect(1, 1, 560, 26).attr("stroke-width","0");
 	
-	//var slices = timeline.rect(1, 1, 20, 26);
-	//slices.attr("fill", "#009933");
-	
-	// THIS WILL HAVE TO COUNT THE NUMBER OF RETURNED OBJECTS AND LOOP THROUGH THEM, SETTING WIDTHS APPROPRIATELY
 	var slicecount = $("ul.featspotul li").length;
-//		alert(slicecount);
 	var slices = new Array(slicecount);
 	var segmentlength = (560 / slicecount);
 	
@@ -768,14 +762,9 @@ function initiateTimeline() {
 			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.8);
 		}
 		
-		// console.log(slices[i]);
-
-		slices[i].node.onmouseover = function() {  
-			this.style.cursor = 'pointer';  
-		}  
-		
 		slices[i].hover(function () {
 			this.attr({fill: "#007711"});
+			this.node.style.cursor = 'pointer';  
 		}, 
 		function () {
 			this.attr({fill: "#009933"});
@@ -786,8 +775,11 @@ function initiateTimeline() {
 			// "SLIDE" THE MAIN SPOT
 			var xfactor = this.attr("x");
 			var slidevalue = -((xfactor/560)*(slicecount*961));
-			// alert(slidevalue);
 			$("ul.featspotul").animate({ left: slidevalue }, 600);
+		
+			// GET THE DATA FROM THE NEW LI CLASS AND UPDATE THE DIGITS
+			var timelinestep = ((-slidevalue+961) / 961);
+			updateDigits(timelinestep);
 		
 			// "SLIDE" THE ARROW
 			var arrowanchor = xfactor + (segmentlength / 2) - 6;
@@ -796,35 +788,70 @@ function initiateTimeline() {
 		
 	}
 
-	// Place the arrow initially
+	// Place the arrow initially and set initial digits
 	var arrowstart = (segmentlength / 2) - 6;
-	$("#timelinemarker").animate({ left: arrowstart }, 600);		
+	$("#timelinemarker").animate({ left: arrowstart }, 600);
+	updateDigits(1);	
 }
-	
-	
 
 function timedSlide() {
 	// Set up the timer for rotation through the timeline
 	// Get the current location
 	var slicecount = $("ul.featspotul li").length;
 	var segmentlength = (560 / slicecount);
-	
-	
-	var timelineloc = 0;
-	timelineloc = $("#timelinemarker").css("left");
+	var timelineloc = $("#timelinemarker").css("left");
 	timelineloc = parseInt(timelineloc.replace("px",""));
 	var timelinestep = ((timelineloc + 6) + (segmentlength / 2)) / segmentlength;
-	console.log(timelinestep);
 	
-	// Set up the new anchors values
+	
+	// Set up the new anchors values -- if the values exceed the width of the timeline, set back to first item
 	var newtimelineloc = timelineloc + segmentlength;
-	var newslidevalue = -((timelinestep+1) * 961);
+	var newslidevalue = 0;
+	if (newtimelineloc > 560) { newtimelineloc = (segmentlength / 2) - 6; } else { newslidevalue = -((timelinestep) * 961); }
 	
-	// Slide 'em
+	// Slide 'em and update digits
 	$("#timelinemarker").animate({ left: newtimelineloc }, 600);
 	$("ul.featspotul").animate({ left: newslidevalue }, 600);
+	
+	var newtimelinestep = ((newtimelineloc + 6) + (segmentlength / 2)) / segmentlength;
+	updateDigits(newtimelinestep);
 }
 
 function initiateTimelineClock () {
 	setInterval('timedSlide()',10000);
+}
+
+function updateDigits (timelinestep) {
+	var classstrings = $("ul.featspotul li:nth-child("+timelinestep+")").attr("class").split(/\s+/);
+	var classvals = new Array();
+	classstrings.forEach(function(classstring) {
+		var classpair = classstring.split("-");
+		classvals[classpair[0]] = parseInt(classpair[1]);
+	});
+	
+	// Grab the topic title (switch out for Ajax call later -- topicid unused now)
+	function grabTopicName (topicid) {
+		var topicname = $("ul.featspotul li:nth-child("+timelinestep+") span.topic-name").html();
+		return topicname; 
+	}
+	
+	// Add topic name to classvals array
+	classvals["topicname"] = grabTopicName(classvals['topicid']);
+	
+	// Now write the values to the proper spots, shortening topic name when appropriate
+	// options: answercount askcount topicid anchornum topicname
+	
+	$("ul.topicinfo li.answercount span").html(classvals['answercount']);
+	$("ul.topicinfo li.askercount span").html(classvals['askcount']);
+	
+if (classvals['topicname'].length > 17) {
+	var topictext = classvals['topicname'].slice(0, 17).replace(/^\s+|\s+$/g,"");
+	topictext = topictext + "...";
+} else {
+	var topictext = classvals['topicname'];
+}
+
+$("ul.topicinfo li.topictitle span").html(topictext);
+$("ul.topicinfo li.topictitle").attr("title",classvals['topicname']).tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
+
 }
