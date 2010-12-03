@@ -212,8 +212,8 @@ class Topic(models.Model):
         a user has responded in a certain way.
 
         """
-        # TODO: Implement this
-        return  None
+        return CommentResponse.objects.filter(user=user_profile, \
+            type=response_type).values_list('comment', flat=True)
 
     def user_voted_comments(self, user_profile):
         """ 
