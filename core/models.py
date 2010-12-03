@@ -221,7 +221,7 @@ class Topic(models.Model):
         user has voted.
         
         """
-        return self.user_responded_comments(response_type='concur')
+        return self.user_responded_comments(user_profile=user_profile, response_type='concur')
 
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
