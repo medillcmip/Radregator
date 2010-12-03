@@ -117,10 +117,10 @@
 							<li class="nullpane" style="display:none;"><a href="#"></a></li>
 
 							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
-							<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
+							<li class="lightback hidden"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
 						</ul>
 							
-						<p class="viewby">Viewing by: <label>Popularity</label></p>
+						<p class="viewby hidden">Viewing by: <label>Popularity</label></p>
 					</div>
 					
 					<div id="askquestion" class="optionsdrop">
@@ -154,14 +154,16 @@
 			</div>
 	</div>
 
+<div id="sidebar" class="grid_4"> 
 
-	<div id="sidebar" class="grid_4">
 			<div class="topqas gotabs">
 			<p class="toplabel">Top:</p>
 			<ul class="sidetabs">
 				<li><a href="#burningqs"><img src="{{ MEDIA_URL }}img/icns/flame-sm.png"></a></li>
+                <!--
 				<li><a href="#topanswers"><img src="{{ MEDIA_URL }}img/icns/check-sm.png"></a></li>
 				<li><a href="#mostpopular"><img src="{{ MEDIA_URL }}img/icns/qbubbles-sm.png"></a></li>
+                -->
 			</ul>
 			
 			<div id="burningqs" class="toppanes">
@@ -177,7 +179,10 @@
                 <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
                 {% endif %}
 			</div>
-			
+		
+        </div>
+{% block sidebar %}
+            <!--
 			<div id="topanswers" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
                 <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
@@ -206,4 +211,7 @@
                 {% endif %}
 			</div>
 	</div>
+            -->
+
+{% endblock %}
 {% endblock %}
