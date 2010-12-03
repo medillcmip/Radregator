@@ -306,14 +306,28 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
-def frontpage(request):
-    """ 
-    Front page view. 
+def frontpage_questions(count=10):
+    """Return a list of questions to be displayed on the front page.
 
-    This is a dummy view for now that just redirects to the first non-deleted topic. 
+    Currently it returns the most recent questions in reverse chronological
+    order.
+
+    Keyword arguments:
+    count -- Number fo questions to return (default 10)
+
+
     """
-    template_dict = { 'site_name':settings.SITE_NAME, \
-        'body_classes':settings.SITE_BODY_CLASSES }
+    return Comment.objects.filter(is_deleted=False, \
+        comment_type__name="Question").order_by('-pub_date')[:count]
+
+def frontpage(request):
+    """Front page view."""
+
+    questions = frontpage_questions()
+
+    template_dict = { 'site_name': settings.SITE_NAME, \
+        'body_classes': settings.SITE_BODY_CLASSES, \
+        'questions': questions}
     
     return render_to_response('frontpage.html', context_instance=RequestContext(request))  
 

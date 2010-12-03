@@ -33,20 +33,11 @@
 	
 	<div class="featspot">
 		<ul class="featspotul container_12">
-			<!-- THIS NEEDS TO BE POPULATED BY QUESTION LISTS -->
-			
-			<li>
-				<h2 class="featquestion answercount-12 askcount-4 topicid-7 anchornum-21">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+            {% for question in questions %}
+			<li class="answercount-12 askcount-4 topicid-7 anchornum-21">
+				<h2 class="featquestion">{{ question.text }}<span>asked 3 hours ago.</span></h2>
 			</li>
-			<li>
-				<h2 class="featquestion answercount-10 askcount-3 topicid-1 anchornum-4">Why does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
-			</li>
-			<li>
-				<h2 class="featquestion answercount-9 askcount-8 topicid-9 anchornum-7">How does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
-			</li>
-			<li>
-				<h2 class="featquestion answercount-5 askcount-2 topicid-2 anchornum-3">When does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
-			</li>	
+            {% endfor %}
 		</ul>
 	</div>
 	<div class="featinteractions">
