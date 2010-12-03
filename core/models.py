@@ -206,6 +206,22 @@ class Topic(models.Model):
         return self.comments.annotate(\
             num_responses=Count('responses')).order_by('-num_responses')[:num]
 
+    def user_responded_comments(self, user_profile, response_type):
+        """
+        Returns a queryset containing all comments for this topic for which 
+        a user has responded in a certain way.
+
+        """
+        # TODO: Implement this
+        return  None
+
+    def user_voted_comments(self, user_profile):
+        """ 
+        Returns a queryset containing all comments for this topic on which a
+        user has voted.
+        
+        """
+        return self.user_responded_comments(response_type='concur')
 
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
