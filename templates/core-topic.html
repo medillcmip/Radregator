@@ -46,22 +46,9 @@
 			// SET UP Q/A COLLAPSING
 			hideanswers();
 
-            // Handler for ask a question links in sidebar
-            $(".topqas a.askquestion").click(function() {
-                if (!userIsAuthenticated()) {
-                    // Show an error message if they try to click on the link 
-                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-                }
-                else {
-                    // User is authenticated.  Show the form.
-                    $("#qas .qaoptions").tabs("option", "selected", 1);
-                }
-
-                return false;
-            });
 			
             // Set the tooltips
-           // $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
+            $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         });
 	</script>
 {% endblock %}
@@ -90,7 +77,7 @@
                     {{topic.summary.text|safe}}
                     </div>
         
-		<div class="contextbot"><a class="expanderbut lightback" href="#">
+		<div class="contextbot"><a class="expanderbut lightback" href="javascript:;">
 			<span class="more"><span class="downarrow"></span>more </span>
 			<span class="less"><span class="uparrow"></span>less </span>
 		</a></div>
@@ -102,7 +89,7 @@
         {% endif %}
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
-				<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
+				<a class="expanderbut lightback" href="javascript:;"><span class="downarrow"></span>more </a>
 			</div>
 		
         {% if is_reporter %}
@@ -114,13 +101,15 @@
 				<div class="qaoptions gotabscollapse">
 					<div id="optselect">
 						<ul class="tabs">
-							<li class="nullpane" style="display:none;"><a href="#"></a></li>
+							<li class="nullpane" style="display:none;"><a href="javascript:;"></a></li>
 
 							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
-							<li class="lightback hidden"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
+
+							<!--<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>-->
 						</ul>
 							
-						<p class="viewby hidden">Viewing by: <label>Popularity</label></p>
+						<!--<p class="viewby">Viewing by: <label>Popularity</label></p>-->
+
 					</div>
 					
 					<div id="askquestion" class="optionsdrop">
@@ -142,10 +131,11 @@
 						
 					</div>
 					
-					
+					<!--
 					<div id="filterqas" class="optionsdrop">
 						FILTER OPTIONS (by recency/popularity/default view & answered/unanswered/filter out opinion)
 					</div>
+					-->
 					
 				</div>
 
@@ -155,15 +145,12 @@
 	</div>
 
 <div id="sidebar" class="grid_4"> 
-
-			<div class="topqas gotabs">
+        <div class="topqas gotabs">
 			<p class="toplabel">Top:</p>
 			<ul class="sidetabs">
 				<li><a href="#burningqs"><img src="{{ MEDIA_URL }}img/icns/flame-sm.png"></a></li>
-                <!--
 				<li><a href="#topanswers"><img src="{{ MEDIA_URL }}img/icns/check-sm.png"></a></li>
 				<li><a href="#mostpopular"><img src="{{ MEDIA_URL }}img/icns/qbubbles-sm.png"></a></li>
-                -->
 			</ul>
 			
 			<div id="burningqs" class="toppanes">
@@ -172,17 +159,14 @@
                 {% if topic.burning_questions %}
 				<ol class="top5">
                     {% for question in topic.burning_questions %}
-					<li><p>{{question.text}} <a href="#" id="answerthis-{{question.id}}">Answer this</a></p></li>
+					<li><p>{{question.text}} <a href="javascript:;" id="answerthis-{{question.id}}">Answer this</a></p></li>
                     {% endfor %}
 				</ol>
                 {% else %}
-                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
+                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="javascript:;" class="askquestion">ask one</a>.{% endblocktrans %}</p>
                 {% endif %}
 			</div>
 		
-        </div>
-{% block sidebar %}
-            <!--
 			<div id="topanswers" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
                 <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
@@ -211,7 +195,5 @@
                 {% endif %}
 			</div>
 	</div>
-            -->
-
-{% endblock %}
+</div>
 {% endblock %}

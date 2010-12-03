@@ -3,32 +3,15 @@
 {% block addscripts %}
 <script type="text/javascript">
 	$(document).ready( function() {
-		$("div.featspot").fontfit("146");
-		$("div.featspot h2").valign();
+		$("ul.featspotul li").fontfit("146");
+		// $("ul.featspotul li h2").valign();
+
+		initiateTimeline();
+		initiateTimelineClock();		
 		
-		
-		//DRAW TIMELINE
-		var timeline = Raphael("timelinecontainer", 561, 36, {stroke: "#fff"});
-//		timeline.attr("stroke-width", "0");
-		var backdrop = timeline.rect(1, 1, 560, 18);
-		//backdrop.attr("fill", "#111");
-		backdrop.attr("border","0");
-		
-		//var slices = timeline.rect(1, 1, 20, 18);
-		//slices.attr("fill", "#009933");
-		
-		// THIS WILL HAVE TO COUNT THE NUMBER OF RETURNED OBJECTS AND LOOP THROUGH THEM, SETTING WIDTHS APPROPRIATELY
-		var slicecount = 20;
-		
-		for(var i = 0; i < slicecount+1; i+=1) {  
-			var segmentlength = (560 / slicecount);
-			var multiplier = i * segmentlength;
-			if (i % 2 == 0) {
-				timeline.rect(multiplier - segmentlength, 0, segmentlength, 18).attr({fill: '#009933'}).attr("stroke-width",0);
-			} else {
-				timeline.rect(multiplier - segmentlength, 0, segmentlength, 18).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.9);
-			}			
-		}  
+		// Set up "Browse" link
+		$("a#browsetopics").colorbox({width:"800px", height:"500px",inline:true, href:"#browseoverlay"});
+
 
 
 	});
@@ -45,18 +28,57 @@
 	<div id="hometimeline">
 		<p id="timelineflag">Featured questions</p>
 		<div id="timelinecontainer"></div>
+		<span class="uparrow" id="timelinemarker"></span>
 	</div>
 	
-	<div class="featspot container_12">
-		<h2 class="featquestion">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+	<div class="featspot">
+		<ul class="featspotul container_12">
+			<!-- THIS NEEDS TO BE POPULATED BY QUESTION LISTS -->
+			
+			<li>
+				<h2 class="featquestion answercount-12 askcount-4 topicid-7 anchornum-21">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+			</li>
+			<li>
+				<h2 class="featquestion answercount-10 askcount-3 topicid-1 anchornum-4">Why does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+			</li>
+			<li>
+				<h2 class="featquestion answercount-9 askcount-8 topicid-9 anchornum-7">How does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+			</li>
+			<li>
+				<h2 class="featquestion answercount-5 askcount-2 topicid-2 anchornum-3">When does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
+			</li>	
+		</ul>
 	</div>
 	<div class="featinteractions">
 		<a class="button big" href="#">Answer this</a>
 		<ul class="interactionslist">
 			<li>Jump to this <a href="#">topic page</a></li>
-			<li><a href="#">Browse</a> all topics</li>
+			<li><a href="#" id="browsetopics">Browse</a> all topics</li>
 			<li><a href="#">Learn more about Sourcerer</a></li>
 		</ul>
+	</div>
+
+
+
+	<div style="display:none;">
+		<div id="browseoverlay">
+			<h3>Topics map</h3>
+			<!-- ADD FILTER CONTROLS AND A SORT FEATURE! -->
+			<ul>
+				<li><a href="#topic">Topic Example #1</a></li>
+				<li><a href="#topic">Topic Example #2</a></li>
+				<li><a href="#topic">Topic Example #3</a></li>
+				<li><a href="#topic">Topic Example #4</a></li>
+				<li><a href="#topic">Topic Example #5</a></li>
+				<li><a href="#topic">Topic Example #6</a></li>
+				<li><a href="#topic">Topic Example #7</a></li>
+				<li><a href="#topic">Topic Example #8</a></li>
+				<li><a href="#topic">Topic Example #9</a></li>
+				<li><a href="#topic">Topic Example #10</a></li>
+				<li><a href="#topic">Topic Example #11</a></li>
+				<li><a href="#topic">Topic Example #12</a></li>
+			</ul>
+		</div>
 	</div>
 
 {% endblock %}

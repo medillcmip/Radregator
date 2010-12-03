@@ -6,11 +6,10 @@
 
     {% with questionset|first as question %}
 
-
     <li id="comment-{{question.id}}">
         <a name="comment-{{question.id}}"></a>
         <div class = "comment question">
-        <div class='qflag'>Q</div>
+        <div class='qflag'>Q</div>        
             <div title="{% blocktrans count question.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good question. Do you? {% plural %} {{ num_upvotes }} people think this is a good question. Do you? {% endblocktrans %}" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
                 <p class="count">{{question.num_upvotes}}</p>
               <!--  <p class="countsub">thumbs up</p> -->
