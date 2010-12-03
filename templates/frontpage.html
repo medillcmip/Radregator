@@ -33,24 +33,15 @@
 	
 	<div class="featspot">
 		<ul class="featspotul container_12">
-			<!-- THIS NEEDS TO BE POPULATED BY QUESTION LISTS -->
-			
-			<li class="answercount-1 askcount-5 topicid-9 anchornum-13">
-				<h2 class="featquestion">What does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
-				<span class="topic-name hidden" style="display:none;">Rahm Emanuel</span>
+            {% for question in questions %}
+            {% with question.topics.all|first as topic %}
+			<li class="answercount-{{ question.get_answers|length }} askcount-{{ question.num_upvotes }} topicid-{{ topic.id }} anchornum-{{ question.id }}">
+				<h2 class="featquestion">{{ question.text }}<span>asked 3 hours ago.</span></h2>
+
+                <span class="topic-name hidden" style="display: none;">{{ topic.title }}</span>
 			</li>
-			<li class="answercount-2 askcount-6 topicid-10 anchornum-14">
-				<h2 class="featquestion">Why does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
-				<span class="topic-name hidden" style="display:none;">Judge Dredd</span>
-			</li>
-			<li class="answercount-3 askcount-7 topicid-11 anchornum-15">
-				<h2 class="featquestion">How does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
-				<span class="topic-name hidden" style="display:none;">Ren</span>
-			</li>
-			<li class="answercount-4 askcount-8 topicid-12 anchornum-16">
-				<h2 class="featquestion">When does Rahm Emanuel do for fun when he is bored?<span>asked 3 hours ago.</span></h2>
-				<span class="topic-name hidden" style="display:none;">Stimpy Stimpy Stimpy Stimpy Stimpy Stimpy Stimpy</span>
-			</li>	
+            {% endwith %}
+            {% endfor %}
 		</ul>
 	</div>
 	<div class="featinteractions">

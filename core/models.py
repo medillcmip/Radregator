@@ -55,9 +55,9 @@ class Topic(models.Model):
             retlist += [self.recursive_traverse(child, level+1)]
         return retlist
 
-    def comments_to_show(self):
+    def comments_to_show(self, cmp_function=comment_cmp):
         # Comment refers to the parent
-        rootset = sorted(self.comments.filter(is_deleted=False, is_parent=True, related=None), cmp=comment_cmp)
+        rootset = sorted(self.comments.filter(is_deleted=False, is_parent=True, related=None), cmp=cmp_function)
 
 
         treemap = {}
@@ -206,6 +206,26 @@ class Topic(models.Model):
         return self.comments.annotate(\
             num_responses=Count('responses')).order_by('-num_responses')[:num]
 
+    def user_responded_comment_ids(self, user_profile, response_type):
+        """
+        Returns a queryset containing all ids of comments for this topic for which 
+        a user has responded in a certain way.
+
+        """
+        comments = CommentResponse.objects.filter(user=user_profile, \
+            type=response_type).values_list('comment', flat=True)
+
+
+        return comments
+
+    def user_voted_comment_ids(self, user_profile):
+        """ 
+        Returns a queryset containing all comment ids for this topic on which a
+        user has voted.
+        
+        """
+        return self.user_responded_comment_ids(user_profile=user_profile, \
+            response_type='concur')
 
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,

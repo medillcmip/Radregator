@@ -306,21 +306,54 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
-def frontpage(request):
-    """ 
-    Front page view. 
+def frontpage_questions(count=10):
+    """Return a list of questions to be displayed on the front page.
 
-    This is a dummy view for now that just redirects to the first non-deleted topic. 
+    Currently it returns the most recent questions in reverse chronological
+    order.
+
+    Keyword arguments:
+    count -- Number fo questions to return (default 10)
+
+
     """
-    template_dict = { 'site_name':settings.SITE_NAME, \
-        'body_classes':settings.SITE_BODY_CLASSES }
+
+    questions = Comment.objects.filter(is_deleted=False, \
+        comment_type__name="Question").order_by('-date_created')[:count]
+
+
+    return questions
+
+def frontpage(request):
+    """Front page view."""
+    logger = core.utils.get_logger()
+
+    questions = frontpage_questions()
+
+    logger.debug(questions)
+
+    template_dict = { 'site_name': settings.SITE_NAME, \
+        'body_classes': settings.SITE_BODY_CLASSES, \
+        'questions': questions }
     
-    return render_to_response('frontpage.html', context_instance=RequestContext(request))  
+    return render_to_response('frontpage.html', template_dict, \
+        context_instance=RequestContext(request))  
 
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """
 
     clipper_url_form = UrlSubmitForm()
+
+    # Determine if there is an authenticated user and get a little information
+    # about that user.
+    if not request.user.is_anonymous():
+        # Logged in user
+        # Assumes consistency between users, UserProfiles
+        userprofile = UserProfile.objects.get(user = request.user) 
+
+        is_reporter = userprofile.is_reporter()
+    else:
+        is_reporter = False
     
     if request.method == 'POST':
         if request.user.is_anonymous():
@@ -336,8 +369,6 @@ def topic(request, whichtopic=1):
             # look up comment by name
             comment_type = form.cleaned_data['comment_type_str'] 
 
-            # Assumes consistency between users, UserProfiles
-            userprofile = UserProfile.objects.get(user = request.user) 
 
             comment = Comment(text = form.cleaned_data['text'], \
                               user = userprofile)
@@ -348,8 +379,9 @@ def topic(request, whichtopic=1):
 
             topic = form.cleaned_data['topic']
             in_reply_to = form.cleaned_data['in_reply_to']
-
-            comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
+            
+            # See forms for simplification possibilities
+            comment.topics = [Topic.objects.get(title=topic)] 
             if form.cleaned_data['sources']:
                 comment.sources = [form.cleaned_data['sources']]
             comment.save()
@@ -363,13 +395,10 @@ def topic(request, whichtopic=1):
                 reply_relation.save()
 
     else: 
-        form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
+        # Give them a new form if have either a valid submission, or no 
+        # submission
+        form = CommentSubmitForm() 
 
-    if not request.user.is_anonymous():
-        # Logged in user
-        is_reporter = UserProfile.objects.get(user = request.user).is_reporter()
-    else:
-        is_reporter = False
     
     if Comment.objects.count() > 0:
         reply_form = CommentSubmitForm(initial = { \
@@ -385,10 +414,22 @@ def topic(request, whichtopic=1):
 
     template_dict['topics'] = topics
     try: 
-        template_dict['topic'] = Topic.objects.get(id=whichtopic)
+        topic =  Topic.objects.get(id=whichtopic)
+        template_dict['topic'] = topic 
+        template_dict['comments_to_show'] = topic.comments_to_show()
+       
+        # - Geoff Hing <geoffhing@gmail.com> 2010-12-02
+        # Get a list of comment ids of comments that a user has voted on. 
+        if request.user.is_anonymous():
+            template_dict['user_voted_comment_ids'] = None
+        else:
+            template_dict['user_voted_comment_ids'] = \
+                topic.user_voted_comment_ids(user_profile)
+
     except: 
         # No topic loaded
         pass
+
     template_dict['comment_form'] = form
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}

@@ -73,12 +73,9 @@
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
 				<h1>{{topic.title}}</h1>
-					<p id="contextintro" class="topic-summary">
+					<div id="contextintro" class="topic-summary">
                     {{topic.summary.text|safe}}
-                    </p>
-        {% if is_reporter %}
-        {% include "core-topic-update_summary_form.html" %}
-        {% endif %}
+                    </div>
         
 		<div class="contextbot"><a class="expanderbut lightback" href="javascript:;">
 			<span class="more"><span class="downarrow"></span>more </span>
@@ -87,6 +84,9 @@
 			</div>
 		
 		
+        {% if is_reporter %}
+        {% include "core-topic-update_summary_form.html" %}
+        {% endif %}
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
 				<a class="expanderbut lightback" href="javascript:;"><span class="downarrow"></span>more </a>
@@ -104,10 +104,12 @@
 							<li class="nullpane" style="display:none;"><a href="javascript:;"></a></li>
 
 							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
+
 							<!--<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>-->
 						</ul>
 							
 						<!--<p class="viewby">Viewing by: <label>Popularity</label></p>-->
+
 					</div>
 					
 					<div id="askquestion" class="optionsdrop">
@@ -142,7 +144,6 @@
 			</div>
 	</div>
 
-
 	<div id="sidebar" class="grid_4">
 		<div class="topqas gotabs">
 			<p class="toplabel">Top:</p>
@@ -165,7 +166,7 @@
                 <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="javascript:;" class="askquestion">ask one</a>.{% endblocktrans %}</p>
                 {% endif %}
 			</div>
-			
+		
 			<div id="topanswers" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
                 <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>

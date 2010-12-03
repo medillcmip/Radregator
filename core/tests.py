@@ -356,3 +356,39 @@ class TopAnswersTestCase(QuestionTestCase):
         
         self.assertEqual(len(top_answers), 1);
 
+class QuestionResponseTestCase(QuestionTestCase):
+    def _create_response(self, question, user_profile, response_type):
+        comment_response = CommentResponse(user=user_profile, \
+                                           comment=question, \
+                                           type=response_type) 
+        comment_response.save()
+
+        return comment_response
+
+    def _create_upvote(self, question, user_profile):
+        return self._create_response(question, user_profile, 'concur')
+
+    def test_user_voted_comment_ids_no_votes(self):
+        topic = self._topic
+        user2_profile = UserProfile.objects.get(user__username="user2")
+
+        user_voted_comment_ids = topic.user_voted_comment_ids(user2_profile)
+        self.assertEqual(len(user_voted_comment_ids), 0)
+        
+
+    def test_user_voted_comment_ids_one_vote(self):
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+
+        # Make a default question
+        question = self._ask_question(topic=topic, \
+            text="How many wards is Chinatown in?", \
+            user_profile=user1_profile)
+
+        # And give it one vote
+        self._create_upvote(question, user2_profile)
+
+        user_voted_comment_ids = topic.user_voted_comment_ids(user2_profile)
+        self.assertEqual(len(user_voted_comment_ids), 1)
+        self.assertEqual(user_voted_comment_ids[0], question.id)
