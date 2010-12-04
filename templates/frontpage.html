@@ -36,7 +36,7 @@
             {% for question in questions %}
             {% with question.topics.all|first as topic %}
 			<li class="answercount-{{ question.get_answers|length }} askcount-{{ question.num_upvotes }} topicid-{{ topic.id }} anchornum-{{ question.id }}">
-				<h2 class="featquestion">{{ question.text }}<span>asked 3 hours ago.</span></h2>
+				<h2 class="featquestion">{{ question.text }}<span>asked {{ question.date_created|timesince }} ago.</span></h2>
 
                 <span class="topic-name hidden" style="display: none;">{{ topic.title }}</span>
 			</li>
