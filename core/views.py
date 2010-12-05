@@ -825,15 +825,6 @@ def api_comment_responses(request, comment_id, output_format='json',
                     if not reply_relation.right_comment.user == user:
                         raise NotUserQuestionReply ("This is a reply to a question posed by another user; user cannot accept it")
 
-
-
-
-
-
-
-                        
-
-
                 comment_response = CommentResponse(user=user, \
                                                    comment=comment, \
                                                    type=response_type) 
