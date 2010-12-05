@@ -389,7 +389,7 @@ class ApiTestCase(QuestionTestCase):
 #
         #self.fail("Test not yet implemented.")
 
-    def test_questions_popular_no_questions(self):
+    def test_questions_popular_no_voting_no_questions(self):
         """Test for /api/json/questions/ endpoint.
         
         Case for fetching popular questions when there are no questions.
@@ -404,7 +404,7 @@ class ApiTestCase(QuestionTestCase):
 
         self.assertEqual(len(json_content), 0)
 
-    def test_questions_popular_one_question(self):
+    def test_questions_popular_no_voting_one_question(self):
         """Test for /api/json/questions/ endpoint.
 
         Case for fetching popular questions when there is one question.
@@ -431,24 +431,21 @@ class ApiTestCase(QuestionTestCase):
         self.assertEqual(question.id, json_question['id'])
         self.assertEqual(question.text, json_question['text'])
 
-    def test_questions_popular_multiple_questions(self, count=5):
+    def test_questions_popular_no_voting_multiple_questions(self):
         """Test for /api/json/questions/ endpoint.
 
         Case for fetching popular questions when there is more than one question.
 
-        Named arguments:
-
-        * count: Number of questions to ask.  Defaults to 5.
-        
         """
 
         topic = self._topic
         user1_profile = UserProfile.objects.get(user__username="user1")
 
         # Ask some questions 
+        count = 5 # Ask 5 questions
         for i in range(count):
             question = self._ask_question(topic=topic, \
-                text="Test question %d" % (count), \
+                text="Test question %d" % (i), \
                 user_profile=user1_profile)
 
         # Get the questions from the API 
@@ -471,6 +468,106 @@ class ApiTestCase(QuestionTestCase):
                    question_found = True
 
             self.assertEqual(question_found, True)
+
+    def test_questions_popular_no_voting_multiple_questions_with_count(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there are multiple questions
+        but we only want to return a few.
+
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+
+        # Ask 5 questions 
+        count = 5
+        for i in range(count):
+            question = self._ask_question(topic=topic, \
+                text="Test question %d" % (i), \
+                user_profile=user1_profile)
+
+        # Get the questions from the API, but not all 5 
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '3'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 3)
+
+        for json_question in json_content:
+            # HACK ALERT: This is a really naive search, but I wanted to just 
+            # write this rather than figuring out the cleanest, most Pythonic
+            # way to do this.
+            question_found = False
+
+            # Since we limited the number of questions, we should just get the 3 most recent
+            for question in self._questions[2:]:
+                if question.id == json_question['id'] and \
+                   question.text == json_question['text']:
+                   question_found = True
+
+            self.assertEqual(question_found, True)
+
+    def test_questions_popular_voting_multiple_questions_with_count(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there are multiple questions
+        and we've voted on some of them. 
+
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        # Ask 5 questions 
+        count = 5
+        for i in range(count):
+            question = self._ask_question(topic=topic, \
+                text="Test question %d" % (i), \
+                user_profile=user1_profile)
+
+            # Vote on the questions, based on the index
+            # So, later questions will get more votes
+            if i == 1:
+               self._respond_positively(user2_profile, question) 
+            elif i == 2:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+            elif i == 3:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+               self._respond_positively(user4_profile, question) 
+            elif i == 4:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+               self._respond_positively(user4_profile, question) 
+               self._respond_positively(user5_profile, question) 
+
+        # Get the questions from the API, but not all 5 
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '3'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 3)
+
+        # Since we limited the number of questions, we should just get the 3 with the most
+        # positive votes in descending order.  
+
+        # Set our counter to the upper subscript of our questions list
+        i = len(self._questions) - 1 
+        for json_question in json_content:
+            question = self._questions[i]
+            self.assertEqual(question.id, json_question['id'])
+            self.assertEqual(question.text, json_question['text'])
+            i = i - 1
 
 class FrontPageTestCase(QuestionTestCase):
     pass
