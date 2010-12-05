@@ -897,7 +897,8 @@ def api_questions(request, output_format='json'):
 
         Valid values include:
 
-        * popular: Questions that have received the most positive "votes"
+        * popular: Current default.  Questions that have received the most 
+                   positive "votes"
 
     * count: Optional.  Specifies the number of questions to be returned.  
              Defaults to 5

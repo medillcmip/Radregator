@@ -11,21 +11,6 @@ from clipper.models import Article
 import clipper.views
 
 
-#class ApiTestCase(TestCase):
-    #def setUp(self):
-        #pass
-#
-    #def test_create_concur_response(self):
-        #pass
-#
-    #def test_get_responses(self):
-        #c = Client()
-        #response = c.get('/api/json/comments/1/responses/',
-                         #HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        #json_content = json.loads(response.content)
-        #print json_content
-#
-        #self.fail("Test not yet implemented.")
 
 class QuestionTestCase(TestCase):
     """ Base class for TestCases that deal with questions and answers. """
@@ -393,6 +378,99 @@ class QuestionResponseTestCase(QuestionTestCase):
         self.assertEqual(len(user_voted_comment_ids), 1)
         self.assertEqual(user_voted_comment_ids[0], question.id)
 
+
+class ApiTestCase(QuestionTestCase):
+    #def test_get_responses(self):
+        #c = Client()
+        #response = c.get('/api/json/comments/1/responses/',
+                         #HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        #json_content = json.loads(response.content)
+        #print json_content
+#
+        #self.fail("Test not yet implemented.")
+
+    def test_questions_popular_no_questions(self):
+        """Test for /api/json/questions/ endpoint.
+        
+        Case for fetching popular questions when there are no questions.
+        
+        """
+
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '5'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 0)
+
+    def test_questions_popular_one_question(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there is one question.
+        
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+
+        # Make a default question
+        question = self._ask_question(topic=topic, \
+            text="How many wards is Chinatown in?", \
+            user_profile=user1_profile)
+
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '5'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 1)
+
+        json_question = json_content[0]
+        self.assertEqual(question.id, json_question['id'])
+        self.assertEqual(question.text, json_question['text'])
+
+    def test_questions_popular_multiple_questions(self, count=5):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there is more than one question.
+
+        Named arguments:
+
+        * count: Number of questions to ask.  Defaults to 5.
+        
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+
+        # Ask some questions 
+        for i in range(count):
+            question = self._ask_question(topic=topic, \
+                text="Test question %d" % (count), \
+                user_profile=user1_profile)
+
+        # Get the questions from the API 
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '5'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), count)
+
+        for json_question in json_content:
+            # HACK ALERT: This is a really naive search, but I wanted to just 
+            # write this rather than figuring out the cleanest, most Pythonic
+            # way to do this.
+            question_found = False
+            for question in self._questions:
+                if question.id == json_question['id'] and \
+                   question.text == json_question['text']:
+                   question_found = True
+
+            self.assertEqual(question_found, True)
 
 class FrontPageTestCase(QuestionTestCase):
     pass
