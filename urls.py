@@ -85,6 +85,9 @@ urlpatterns = patterns('',
     (r'^commentsubmit',
      'core.views.api_commentsubmission'), # For debugging purposes
 
+    (r'^api/(?P<output_format>json)/questions/$', \
+     'core.views.api_questions'),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

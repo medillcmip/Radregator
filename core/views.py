@@ -881,3 +881,26 @@ def api_comment_responses(request, comment_id, output_format='json',
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
+
+def api_questions(request, output_format='json'):
+    """Return a JSON formatted list of questions.
+    
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * result_type: Optional. Specifies what type of questions to be returned. 
+
+        Valid values include:
+
+        * popular: Questions that have received the most positive "votes"
+
+    * count: Optional.  Specifies the number of questions to be returned.  
+             Defaults to 5
+
+    """
+    pass
