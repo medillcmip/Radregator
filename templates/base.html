@@ -67,8 +67,12 @@
 				$.scrollTo( 'div#footer', 300, {offset: {top:-35, left:0} } );
 				return false;
 			});
-            
-	        getTopics();
+
+            // Populate "Top Topics" and "Active Topics" lists in footer.
+	        getTopics(); 
+
+            // Populate "Top Questions" list in footer.
+            getTopQuestions();
 	   
 	        // Implement error on "ask" in footer
 			if (!userIsAuthenticated()) {

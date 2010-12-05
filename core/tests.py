@@ -392,3 +392,9 @@ class QuestionResponseTestCase(QuestionTestCase):
         user_voted_comment_ids = topic.user_voted_comment_ids(user2_profile)
         self.assertEqual(len(user_voted_comment_ids), 1)
         self.assertEqual(user_voted_comment_ids[0], question.id)
+
+
+class FrontPageTestCase(QuestionTestCase):
+    pass
+
+    # TODO: Implement this!

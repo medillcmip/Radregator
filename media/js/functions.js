@@ -186,7 +186,15 @@ function getTopics(){
     });
 }
 
+/**
+ * Populate the footer "Top Questions" list using AJAX.
+ * 
+ */
+function getTopQuestions() {
+    // TODO: Implement this.
 
+    return false;
+}
 
 function handleCommentSubmit(){
 	 var questionform = $('#questionform');
