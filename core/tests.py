@@ -644,3 +644,20 @@ class ApiTestCase(QuestionTestCase):
             self.assertEqual(question.id, json_question['pk'])
             self.assertEqual(question.text, json_question['fields']['text'])
             i = i - 1
+
+    def test_topics(self):
+        """Test getting all topics from the API."""
+        self.fail("This test is not yet implemented")
+
+    def test_topics_with_count(self):
+        """Test getting all topics from the API, limiting the number of results."""
+        
+        self.fail("This test is not yet implemented")
+
+    def test_topics_popular(self):
+        """Test getting popular topics."""
+        self.fail("This test is not yet implemented")
+
+    def test_topics_active(self):
+        """Test getting active topics."""
+        self.fail("This test is not yet implemented")
