@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
+from django.db.models import Count
 
 
 from fbapi.facebook import *
@@ -898,10 +899,46 @@ def api_questions(request, output_format='json'):
         Valid values include:
 
         * popular: Current default.  Questions that have received the most 
-                   positive "votes"
+                   positive "votes."  Questions are returned in descending order
+                   of positive "votes" then by descending order of created date.
 
     * count: Optional.  Specifies the number of questions to be returned.  
              Defaults to 5
 
     """
-    pass
+
+    status = 200 # HTTP return status.  We'll be optimistic.
+   
+    try:
+        if request.method == 'GET':
+            # Get the number of questions to return
+            if 'count' in request.GET.keys():
+                count = int(request.GET['count'])
+            else:
+                count = 5 # Default to 5
+
+            # HACK ALERT: This annotation doesn't differentiate between the 
+            # different types of comment responses.  So, opinion flags and 
+            # upvotes are weighed the same. -Geoff Hing <geoffhing@gmail.com>
+            # 2010-12-05
+            questions = Comment.objects.filter(is_deleted=False, \
+                            comment_type__name="Question").annotate(\
+                                num_responses=Count('responses')).order_by(\
+                                    '-num_responses', '-date_created')[:count-1]
+
+            content = serializers.serialize('json', questions,
+                                         fields=('text'),
+                                     use_natural_keys=True)
+
+        else:
+            raise MethodUnsupported("%s is not supported at this time." % \
+                                (request.method))
+
+    except MethodUnsupported, e:
+        status = 405 # Method not allowed
+        data = {} # response data 
+        data['error'] = "%s" % e
+        content=json.dumps(data)
+
+    return HttpResponse(content=content, mimetype='application/json', \
+                        status=status)

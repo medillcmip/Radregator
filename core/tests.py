@@ -429,7 +429,7 @@ class ApiTestCase(QuestionTestCase):
 
         json_question = json_content[0]
         self.assertEqual(question.id, json_question['pk'])
-        self.assertEqual(question.text, json_question['text'])
+        self.assertEqual(question.text, json_question['fields']['text'])
 
     def test_questions_popular_no_voting_multiple_questions(self):
         """Test for /api/json/questions/ endpoint.
