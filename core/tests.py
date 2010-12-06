@@ -428,7 +428,7 @@ class ApiTestCase(QuestionTestCase):
         self.assertEqual(len(json_content), 1)
 
         json_question = json_content[0]
-        self.assertEqual(question.id, json_question['id'])
+        self.assertEqual(question.id, json_question['pk'])
         self.assertEqual(question.text, json_question['text'])
 
     def test_questions_popular_no_voting_multiple_questions(self):
@@ -463,7 +463,7 @@ class ApiTestCase(QuestionTestCase):
             # way to do this.
             question_found = False
             for question in self._questions:
-                if question.id == json_question['id'] and \
+                if question.id == json_question['pk'] and \
                    question.text == json_question['text']:
                    question_found = True
 
@@ -504,7 +504,7 @@ class ApiTestCase(QuestionTestCase):
 
             # Since we limited the number of questions, we should just get the 3 most recent
             for question in self._questions[2:]:
-                if question.id == json_question['id'] and \
+                if question.id == json_question['pk'] and \
                    question.text == json_question['text']:
                    question_found = True
 
@@ -565,7 +565,7 @@ class ApiTestCase(QuestionTestCase):
         i = len(self._questions) - 1 
         for json_question in json_content:
             question = self._questions[i]
-            self.assertEqual(question.id, json_question['id'])
+            self.assertEqual(question.id, json_question['pk'])
             self.assertEqual(question.text, json_question['text'])
             i = i - 1
 
