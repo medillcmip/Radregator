@@ -10,8 +10,6 @@ from users.models import UserProfile
 from clipper.models import Article
 import clipper.views
 
-
-
 class QuestionTestCase(TestCase):
     """ Base class for TestCases that deal with questions and answers. """
     fixtures = ['test_users.json', 'test_topics.json', 'comment_types.json']
@@ -645,8 +643,3 @@ class ApiTestCase(QuestionTestCase):
             self.assertEqual(question.id, json_question['pk'])
             self.assertEqual(question.text, json_question['fields']['text'])
             i = i - 1
-
-class FrontPageTestCase(QuestionTestCase):
-    pass
-
-    # TODO: Implement this!
