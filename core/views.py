@@ -659,12 +659,6 @@ def api_topics(request, output_format="json"):
             raise UnknownOutputFormat("Unknown output format '%s'" % \
                                               (output_format))
 
-        # Get the number of questions to return
-        if 'count' in request.GET.keys():
-            count = int(request.GET['count'])
-        else:
-            count = None 
-
         # Get the type of result
         if 'result_type' in request.GET.keys():
             result_type = request.GET['result_type']
@@ -675,11 +669,13 @@ def api_topics(request, output_format="json"):
 
         # Get the number of questions to return
         if 'count' in request.GET.keys():
-            limited_topics = topics[:request.GET['count']]
+            count = int(request.GET['count'])
+            limited_topics = topics[:count]
+
         else:
             limited_topics = topics 
 
-        data = serializers.serialize('json', topics,
+        data = serializers.serialize('json', limited_topics,
                                      fields=('id', 'title', 'slug','summary'),
                                      use_natural_keys=True)
 

@@ -676,7 +676,6 @@ class TopicsApiTestCase(QuestionTestCase):
                         {'result_type': 'all'}, \
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         json_content = json.loads(response.content)
-        print json_content
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json_content), num_topics)
@@ -691,9 +690,40 @@ class TopicsApiTestCase(QuestionTestCase):
         
     def test_topics_with_count(self):
         """Test getting all topics from the API, limiting the number of results."""
-        
-        self.fail("This test is not yet implemented")
+        # Create some topics.
+        # Remember, we have one topic created by default via the fixture. 
+        topics = [self._topic]
+        title_template = "Test Topic %d"
+        summary_template = "More information about Test Topic %d"
+        num_topics = 5
 
+        # Remember, we have one topic created by default via the fixture. 
+        # So we only need to create num_topics - 1 topics.
+        for i in range(num_topics - 1):
+            topic = self._create_topic(title=title_template % (i),
+                               summary_text=summary_template % (i))
+            topics.append(topic)
+
+        # Get the topics from the API
+        c = Client()
+        count = 3
+        response = c.get('/api/json/topics/', \
+                        {'result_type': 'all', 'count': count}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_content), count)
+        i = 0
+        for topic in topics:
+            if i < count:
+                self.assertEqual(json_content[i]['pk'], topic.id),
+                self.assertEqual(json_content[i]['fields']['title'],
+                                 topic.title)
+                self.assertEqual(json_content[i]['fields']['summary'],
+                                 str(topic.summary))
+            i = i + 1
+        
     def test_topics_popular(self):
         """Test getting popular topics."""
         self.fail("This test is not yet implemented")
