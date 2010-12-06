@@ -926,9 +926,9 @@ def api_questions(request, output_format='json'):
                                 num_responses=Count('responses')).order_by(\
                                     '-num_responses', '-date_created')[:count]
 
-            content = serializers.serialize('json', questions,
-                                         fields=('text'),
-                                     use_natural_keys=True)
+            content = serializers.serialize('json', questions, \
+                                            fields=('text', 'topics'), \
+                                            use_natural_keys=True)
 
         else:
             raise MethodUnsupported("%s is not supported at this time." % \
