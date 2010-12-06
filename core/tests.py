@@ -583,7 +583,8 @@ class ApiTestCase(QuestionTestCase):
         This is designed to test that we're differentiating between the types
         of votes we're counting.  Specifically, this is designed to catch the
         bug in annotations in core.views.api_questions() where we're counting
-        all responses to a question and not just the positive votes.
+        all responses to a question and not just the positive votes.  This bug
+        was fixed in commit 71ec558bb3ae15ae342c97a1cd5dc79a7902c1bd. 
 
         """
 
