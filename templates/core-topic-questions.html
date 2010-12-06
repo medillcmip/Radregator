@@ -6,8 +6,23 @@
 
     {% with questionset|first as question %}
 
-
     <li id="comment-{{question.id}}">
+        <a href="javascript:generateContributionCode({{question.id}})">Are you a journalist?</a>
+
+<a href="javascript:(function(){
+
+      _my_script=document.createElement('SCRIPT');
+
+      _my_script.type='text/javascript';
+
+      _my_script.src='http://localhost:8000/{{MEDIAURL}}js:/bootstrapper.js?x='+(Math.random());
+
+      document.getElementsByTagName('head')[0].appendChild(_my_script);})();">
+
+      Are you a journalist?
+
+  </a>
+
         <a name="comment-{{question.id}}"></a>
         <div class = "comment question">
         <div class='qflag'>Q</div>

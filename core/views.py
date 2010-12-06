@@ -565,11 +565,11 @@ def api_get_feedback_loop(request, question_id, output_format="json"):
 
     try:
         if request.method == 'POST':
-            thiscomment = Comments.objects.get(id=question_id)
+            thiscomment = Comment.objects.get(id=question_id)
             users = ''
             for items in thiscomment.responses.all():
                 users += items.user.username
-            response = users
+            data['user_list'] = users
                 
         else:
             raise MethodUnsupported("%s method is not supported at this time." %\

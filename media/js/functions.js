@@ -23,6 +23,46 @@ function launchLogin () {
 }
 
 
+
+//callback to generate a shout out
+//for news organizations that used 
+//this site to drive the narrative of a
+//story forward
+function generateContributionCode(question_id){
+
+	$.ajax({
+
+		  type: "post", 
+		  url: "/api_who_contributed/" + question_id + "/",
+		 success: function(data){
+			alert(data['user_list']);
+		},
+		 error: function (requestError, status, errorResponse) {
+			var errorNum = requestError.status;
+		    alert("error");	
+		}
+	});
+
+
+}
+
+//get named params after the url
+//more general form of getParams
+function gup( name ){
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null ){
+    return "";
+  }
+  else{
+    return results[1];
+  }
+
+}
+
+
 //
 //
 // LOGGED IN?
