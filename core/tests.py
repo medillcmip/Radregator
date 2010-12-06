@@ -56,6 +56,13 @@ class QuestionTestCase(TestCase):
                                            comment=question, \
                                            type="concur")
         comment_response.save()
+
+    def _flag_as_opinion(self, user_profile, question):
+        """Utility method to flag something as opinion."""
+        comment_response = CommentResponse(user=user_profile, \
+                                           comment=question, \
+                                           type="opinion")
+        comment_response.save()
         
     def setUp(self):
         self._questions = []
@@ -535,6 +542,76 @@ class ApiTestCase(QuestionTestCase):
             # Vote on the questions, based on the index
             # So, later questions will get more votes
             if i == 1:
+               self._respond_positively(user2_profile, question) 
+            elif i == 2:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+            elif i == 3:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+               self._respond_positively(user4_profile, question) 
+            elif i == 4:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+               self._respond_positively(user4_profile, question) 
+               self._respond_positively(user5_profile, question) 
+
+        # Get the questions from the API, but not all 5 
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '3'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 3)
+
+        # Since we limited the number of questions, we should just get the 3 with the most
+        # positive votes in descending order.  
+
+        # Set our counter to the upper subscript of our questions list
+        i = len(self._questions) - 1 
+        for json_question in json_content:
+            question = self._questions[i]
+            self.assertEqual(question.id, json_question['pk'])
+            self.assertEqual(question.text, json_question['fields']['text'])
+            i = i - 1
+
+    def test_questions_popular_voting_multiple_questions_with_opinion(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there are multiple questions
+        and we've voted on some of them and flagged some as oppinion.
+
+        This is designed to test that we're differentiating between the types
+        of votes we're counting.  Specifically, this is designed to catch the
+        bug in annotations in core.views.api_questions() where we're counting
+        all responses to a question and not just the positive votes.
+
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        # Ask 5 questions 
+        count = 5
+        for i in range(count):
+            question = self._ask_question(topic=topic, \
+                text="Test question %d" % (i), \
+                user_profile=user1_profile)
+
+            # Vote on some questions, based on the index
+            # So, later questions will get more votes
+            # But, flag the first (index 0) question as opinion
+            if i == 0:
+               self._flag_as_opinion(user2_profile, question) 
+               self._flag_as_opinion(user3_profile, question) 
+               self._flag_as_opinion(user4_profile, question) 
+               self._flag_as_opinion(user5_profile, question) 
+            elif i == 1:
                self._respond_positively(user2_profile, question) 
             elif i == 2:
                self._respond_positively(user2_profile, question) 
