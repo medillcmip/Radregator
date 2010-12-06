@@ -1,11 +1,11 @@
 from django.db import models
-from django.db.models import Count
-from utils import comment_cmp
 from django.contrib.sites.models import Site
+
+from utils import comment_cmp, CountIfConcur
 from clipper.models import Article
+from clipper.models import Clip
 from tagger.models import Tag
 from users.models import UserProfile
-from clipper.models import Clip
 
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
@@ -79,15 +79,12 @@ class Topic(models.Model):
         """Return a list containing burning questions."""
 
         if not ("_burning_questions" in self.__dict__):
-            #questions = self.get_questions().annotate(num_responses=Count("responses"))
-            # QUESTION: Can you filter on the argument of Count? Like if I only want 
-            # count responses of a certain type?
-            # ANSWER: There is (but it's not super-easy)!
-            # http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django  
-
             # HACK ALERT!: This is a really naive approach and should definitely be refactored in
             # the future.
-            
+
+            # TODO: Now that I've implemented core.utils.CountIfConcur, it might
+            # be possible to refactor this.  
+            # -Geoff <geoffhing@gmail.com> 2010-12-06
             burning_questions = [] 
             burning_question_ids = []
             questions = self.get_questions()
@@ -200,11 +197,8 @@ class Topic(models.Model):
         number of responses.
 
         """
-        #condition = {'responses__type': "'concur'"}
-        #return self.comments.annotate(\
-            #num_responses=CountIf('responses', condition=condition)).order_by('-num_responses')[:num]
         return self.comments.annotate(\
-            num_responses=Count('responses')).order_by('-num_responses')[:num]
+            num_responses=CountIfConcur('responses')).order_by('-num_responses')[:num]
 
     def user_responded_comment_ids(self, user_profile, response_type):
         """
