@@ -924,7 +924,7 @@ def api_questions(request, output_format='json'):
             questions = Comment.objects.filter(is_deleted=False, \
                             comment_type__name="Question").annotate(\
                                 num_responses=Count('responses')).order_by(\
-                                    '-num_responses', '-date_created')[:count-1]
+                                    '-num_responses', '-date_created')[:count]
 
             content = serializers.serialize('json', questions,
                                          fields=('text'),
