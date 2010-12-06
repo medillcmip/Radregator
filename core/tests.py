@@ -10,23 +10,6 @@ from users.models import UserProfile
 from clipper.models import Article
 import clipper.views
 
-
-#class ApiTestCase(TestCase):
-    #def setUp(self):
-        #pass
-#
-    #def test_create_concur_response(self):
-        #pass
-#
-    #def test_get_responses(self):
-        #c = Client()
-        #response = c.get('/api/json/comments/1/responses/',
-                         #HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        #json_content = json.loads(response.content)
-        #print json_content
-#
-        #self.fail("Test not yet implemented.")
-
 class QuestionTestCase(TestCase):
     """ Base class for TestCases that deal with questions and answers. """
     fixtures = ['test_users.json', 'test_topics.json', 'comment_types.json']
@@ -70,6 +53,13 @@ class QuestionTestCase(TestCase):
         comment_response = CommentResponse(user=user_profile, \
                                            comment=question, \
                                            type="concur")
+        comment_response.save()
+
+    def _flag_as_opinion(self, user_profile, question):
+        """Utility method to flag something as opinion."""
+        comment_response = CommentResponse(user=user_profile, \
+                                           comment=question, \
+                                           type="opinion")
         comment_response.save()
         
     def setUp(self):
@@ -392,3 +382,265 @@ class QuestionResponseTestCase(QuestionTestCase):
         user_voted_comment_ids = topic.user_voted_comment_ids(user2_profile)
         self.assertEqual(len(user_voted_comment_ids), 1)
         self.assertEqual(user_voted_comment_ids[0], question.id)
+
+
+class ApiTestCase(QuestionTestCase):
+    #def test_get_responses(self):
+        #c = Client()
+        #response = c.get('/api/json/comments/1/responses/',
+                         #HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        #json_content = json.loads(response.content)
+        #print json_content
+#
+        #self.fail("Test not yet implemented.")
+
+    def test_questions_popular_no_voting_no_questions(self):
+        """Test for /api/json/questions/ endpoint.
+        
+        Case for fetching popular questions when there are no questions.
+        
+        """
+
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '5'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 0)
+
+    def test_questions_popular_no_voting_one_question(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there is one question.
+        
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+
+        # Make a default question
+        question = self._ask_question(topic=topic, \
+            text="How many wards is Chinatown in?", \
+            user_profile=user1_profile)
+
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '5'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 1)
+
+        json_question = json_content[0]
+        self.assertEqual(question.id, json_question['pk'])
+        self.assertEqual(question.text, json_question['fields']['text'])
+
+    def test_questions_popular_no_voting_multiple_questions(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there is more than one question.
+
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+
+        # Ask some questions 
+        count = 5 # Ask 5 questions
+        for i in range(count):
+            question = self._ask_question(topic=topic, \
+                text="Test question %d" % (i), \
+                user_profile=user1_profile)
+
+        # Get the questions from the API 
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '5'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), count)
+
+        for json_question in json_content:
+            # HACK ALERT: This is a really naive search, but I wanted to just 
+            # write this rather than figuring out the cleanest, most Pythonic
+            # way to do this.
+            question_found = False
+            for question in self._questions:
+                if question.id == json_question['pk'] and \
+                   question.text == json_question['fields']['text']:
+                   question_found = True
+
+            self.assertEqual(question_found, True)
+
+    def test_questions_popular_no_voting_multiple_questions_with_count(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there are multiple questions
+        but we only want to return a few.
+
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+
+        # Ask 5 questions 
+        count = 5
+        for i in range(count):
+            question = self._ask_question(topic=topic, \
+                text="Test question %d" % (i), \
+                user_profile=user1_profile)
+
+        # Get the questions from the API, but not all 5 
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '3'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 3)
+
+        for json_question in json_content:
+            # HACK ALERT: This is a really naive search, but I wanted to just 
+            # write this rather than figuring out the cleanest, most Pythonic
+            # way to do this.
+            question_found = False
+
+            # Since we limited the number of questions, we should just get the 3 most recent
+            for question in self._questions[2:]:
+                if question.id == json_question['pk'] and \
+                   question.text == json_question['fields']['text']:
+                   question_found = True
+
+            self.assertEqual(question_found, True)
+
+    def test_questions_popular_voting_multiple_questions_with_count(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there are multiple questions
+        and we've voted on some of them. 
+
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        # Ask 5 questions 
+        count = 5
+        for i in range(count):
+            question = self._ask_question(topic=topic, \
+                text="Test question %d" % (i), \
+                user_profile=user1_profile)
+
+            # Vote on the questions, based on the index
+            # So, later questions will get more votes
+            if i == 1:
+               self._respond_positively(user2_profile, question) 
+            elif i == 2:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+            elif i == 3:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+               self._respond_positively(user4_profile, question) 
+            elif i == 4:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+               self._respond_positively(user4_profile, question) 
+               self._respond_positively(user5_profile, question) 
+
+        # Get the questions from the API, but not all 5 
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '3'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 3)
+
+        # Since we limited the number of questions, we should just get the 3 with the most
+        # positive votes in descending order.  
+
+        # Set our counter to the upper subscript of our questions list
+        i = len(self._questions) - 1 
+        for json_question in json_content:
+            question = self._questions[i]
+            self.assertEqual(question.id, json_question['pk'])
+            self.assertEqual(question.text, json_question['fields']['text'])
+            i = i - 1
+
+    def test_questions_popular_voting_multiple_questions_with_opinion(self):
+        """Test for /api/json/questions/ endpoint.
+
+        Case for fetching popular questions when there are multiple questions
+        and we've voted on some of them and flagged some as oppinion.
+
+        This is designed to test that we're differentiating between the types
+        of votes we're counting.  Specifically, this is designed to catch the
+        bug in annotations in core.views.api_questions() where we're counting
+        all responses to a question and not just the positive votes.  This bug
+        was fixed in commit 71ec558bb3ae15ae342c97a1cd5dc79a7902c1bd. 
+
+        """
+
+        topic = self._topic
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        # Ask 5 questions 
+        count = 5
+        for i in range(count):
+            question = self._ask_question(topic=topic, \
+                text="Test question %d" % (i), \
+                user_profile=user1_profile)
+
+            # Vote on some questions, based on the index
+            # So, later questions will get more votes
+            # But, flag the first (index 0) question as opinion
+            if i == 0:
+               self._flag_as_opinion(user2_profile, question) 
+               self._flag_as_opinion(user3_profile, question) 
+               self._flag_as_opinion(user4_profile, question) 
+               self._flag_as_opinion(user5_profile, question) 
+            elif i == 1:
+               self._respond_positively(user2_profile, question) 
+            elif i == 2:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+            elif i == 3:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+               self._respond_positively(user4_profile, question) 
+            elif i == 4:
+               self._respond_positively(user2_profile, question) 
+               self._respond_positively(user3_profile, question) 
+               self._respond_positively(user4_profile, question) 
+               self._respond_positively(user5_profile, question) 
+
+        # Get the questions from the API, but not all 5 
+        c = Client()
+        response = c.get('/api/json/questions/', \
+                        {'result_type': 'popular', 'count': '3'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(len(json_content), 3)
+
+        # Since we limited the number of questions, we should just get the 3 with the most
+        # positive votes in descending order.  
+
+        # Set our counter to the upper subscript of our questions list
+        i = len(self._questions) - 1 
+        for json_question in json_content:
+            question = self._questions[i]
+            self.assertEqual(question.id, json_question['pk'])
+            self.assertEqual(question.text, json_question['fields']['text'])
+            i = i - 1

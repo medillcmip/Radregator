@@ -13,7 +13,6 @@ from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
 
-
 from fbapi.facebook import *
 
 from core.models import Topic,CommentType, Comment, Summary, CommentRelation, \
@@ -28,6 +27,7 @@ from core.forms import CommentSubmitForm, CommentDeleteForm, \
                                   MergeCommentForm, NewSummaryForm, \
                                   CommentTopicForm
 import core.utils
+from core.utils import CountIfConcur
 from users.models import UserProfile, User
 from users.views import ajax_login_required 
 from users.exceptions import UserNotAuthenticated, UserNotReporter
@@ -306,16 +306,38 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
-def frontpage(request):
-    """ 
-    Front page view. 
+def frontpage_questions(count=10):
+    """Return a list of questions to be displayed on the front page.
 
-    This is a dummy view for now that just redirects to the first non-deleted topic. 
+    Currently it returns the most recent questions in reverse chronological
+    order.
+
+    Keyword arguments:
+    count -- Number fo questions to return (default 10)
+
+
     """
-    template_dict = { 'site_name':settings.SITE_NAME, \
-        'body_classes':settings.SITE_BODY_CLASSES }
+
+    questions = Comment.objects.filter(is_deleted=False, \
+        comment_type__name="Question").order_by('-date_created')[:count]
+
+
+    return questions
+
+def frontpage(request):
+    """Front page view."""
+    logger = core.utils.get_logger()
+
+    questions = frontpage_questions()
+
+    logger.debug(questions)
+
+    template_dict = { 'site_name': settings.SITE_NAME, \
+        'body_classes': settings.SITE_BODY_CLASSES, \
+        'questions': questions }
     
-    return render_to_response('frontpage.html', context_instance=RequestContext(request))  
+    return render_to_response('frontpage.html', template_dict, \
+        context_instance=RequestContext(request))  
 
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """
@@ -880,15 +902,6 @@ def api_comment_responses(request, comment_id, output_format='json',
                     if not reply_relation.right_comment.user == user:
                         raise NotUserQuestionReply ("This is a reply to a question posed by another user; user cannot accept it")
 
-
-
-
-
-
-
-                        
-
-
                 comment_response = CommentResponse(user=user, \
                                                    comment=comment, \
                                                    type=response_type) 
@@ -944,4 +957,60 @@ def api_comment_responses(request, comment_id, output_format='json',
         data['error'] = "%s" % e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+
+def api_questions(request, output_format='json'):
+    """Return a JSON formatted list of questions.
+    
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * result_type: Optional. Specifies what type of questions to be returned. 
+
+        Valid values include:
+
+        * popular: Current default.  Questions that have received the most 
+                   positive "votes."  Questions are returned in descending order
+                   of positive "votes" then by descending order of created date.
+
+    * count: Optional.  Specifies the number of questions to be returned.  
+             Defaults to 5
+
+    """
+
+    status = 200 # HTTP return status.  We'll be optimistic.
+   
+    try:
+        if request.method == 'GET':
+            # Get the number of questions to return
+            if 'count' in request.GET.keys():
+                count = int(request.GET['count'])
+            else:
+                count = 5 # Default to 5
+
+            questions = Comment.objects.filter(is_deleted=False, \
+                            comment_type__name="Question").annotate(\
+                                num_responses=CountIfConcur('responses')).order_by(\
+                                    '-num_responses', '-date_created')[:count]
+
+            content = serializers.serialize('json', questions, \
+                                            fields=('text', 'topics'), \
+                                            use_natural_keys=True)
+
+        else:
+            raise MethodUnsupported("%s is not supported at this time." % \
+                                (request.method))
+
+    except MethodUnsupported, e:
+        status = 405 # Method not allowed
+        data = {} # response data 
+        data['error'] = "%s" % e
+        content=json.dumps(data)
+
+    return HttpResponse(content=content, mimetype='application/json', \
                         status=status)

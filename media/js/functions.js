@@ -1,5 +1,19 @@
 var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/register/">register</a> to do this!'; 
 
+
+// TOPIC DROP ON "ASK" FORM IN FOOTER
+// Implement "ask" in footer (and header?)
+function topicsDropShow() {
+	$("#asktopicsdrop").css("display","block");
+	//Character counter
+	$("#askinput").charCount({
+		allowed: 140,		
+		warning: 20,
+		counterText: 'Characters remaining: '	
+	});
+}
+
+
 // VARIABLE VERTICAL ALIGNMENT
 (function ($) {
 	$.fn.valign = function() {
@@ -212,7 +226,32 @@ function getTopics(){
     });
 }
 
+/**
+ * Populate the footer "Top Questions" list using AJAX.
+ * 
+ */
+function getTopQuestions() {
+    $.ajax({
+        type: "get",
+        url : "/api/json/questions/",
+        data : {'result_type': 'popular', 'count': '5'},
+        success : function(data){
+            $.each(data, function(index, question) {
+                var topic_id = question.fields.topics[0]; 
+                var text = question.fields.text;
+                var comment_id = question.pk;
+                $('#topquestionslist').append("<li><a href='/topic/"+ topic_id +
+                                              "/#comment-" + comment_id +
+                                              "'>"+text+"</a></li>");
+            });
+        },
+        error: {
+        // Show to user?
+        }
+    });
 
+    return false;
+}
 
 function handleCommentSubmit(){
 	 var questionform = $('#questionform');
@@ -379,11 +418,17 @@ function handleResponseLink() {
         url: "/api/json/comments/" + thiscomment_id + "/responses/",
         data: { type : response_type },
         success: function(data){
-            // Update counter
+            // Update counter and tooltip
             var count = thiscomment.children(".votebox").children(".count");
             count_val = count.text();
             count_val++;
             count.text(count_val);
+            if (thiscomment.hasClass("answer")) {
+            	thiscomment.children(".votebox").attr("title","You've marked this as a good answer!");
+            } else {
+            	thiscomment.children(".votebox").attr("title","You've marked this as an important question!");
+            }
+			thiscomment.children(".votebox").tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         },
         error: function (requestError, status, errorResponse) {
             var response_text = requestError.responseText;
@@ -756,4 +801,122 @@ $.fn.fontfit = function(max) {
 	}
 	$("#fontfit").replaceWith($("#fontfit").html());
 	return this;
+}
+
+
+
+//
+//
+// SET UP THE TIMELINE SLIDER
+//
+//
+
+function initiateHomeTimeline() {
+	var timeline = Raphael("timelinecontainer", 561, 36);
+	var backdrop = timeline.rect(1, 1, 560, 26).attr("stroke-width","0");
+	
+	var slicecount = $("ul.featspotul li").length;
+	var slices = new Array(slicecount);
+	var segmentlength = (560 / slicecount);
+	
+	for(var i = 0; i < slicecount+1; i+=1) {  
+		var multiplier = i * segmentlength;
+		if (i % 2 == 0) {
+			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.9);
+		} else {
+			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.8);
+		}
+		
+		slices[i].hover(function () {
+			this.attr({fill: "#007711"});
+			this.node.style.cursor = 'pointer';  
+		}, 
+		function () {
+			this.attr({fill: "#009933"});
+		});
+		
+		// CONNECT TIMELINE CLICKING TO HEADLINE SLIDER (& UPDATE THE "ANSWER THIS" LINK AND NODESTAMPS)
+		slices[i].click(function () {
+			// "SLIDE" THE MAIN SPOT
+			var xfactor = this.attr("x");
+			var slidevalue = -((xfactor/560)*(slicecount*961));
+			$("ul.featspotul").animate({ left: slidevalue }, 600);
+		
+			// GET THE DATA FROM THE NEW LI CLASS AND UPDATE THE DIGITS
+			var timelinestep = ((-slidevalue+961) / 961);
+			updateDigits(timelinestep);
+		
+			// "SLIDE" THE ARROW
+			var arrowanchor = xfactor + (segmentlength / 2) - 6;
+			$("#timelinemarker").animate({ left: arrowanchor }, 600);
+		});
+		
+	}
+
+	// Place the arrow initially and set initial digits
+	var arrowstart = (segmentlength / 2) - 6;
+	$("#timelinemarker").animate({ left: arrowstart }, 600);
+	updateDigits(1);	
+}
+
+function timedSlide() {
+	// Set up the timer for rotation through the timeline
+	// Get the current location
+	var slicecount = $("ul.featspotul li").length;
+	var segmentlength = (560 / slicecount);
+	var timelineloc = $("#timelinemarker").css("left");
+	timelineloc = parseInt(timelineloc.replace("px",""));
+	var timelinestep = ((timelineloc + 6) + (segmentlength / 2)) / segmentlength;
+	
+	
+	// Set up the new anchors values -- if the values exceed the width of the timeline, set back to first item
+	var newtimelineloc = timelineloc + segmentlength;
+	var newslidevalue = 0;
+	if (newtimelineloc > 560) { newtimelineloc = (segmentlength / 2) - 6; } else { newslidevalue = -((timelinestep) * 961); }
+	
+	// Slide 'em and update digits
+	$("#timelinemarker").animate({ left: newtimelineloc }, 600);
+	$("ul.featspotul").animate({ left: newslidevalue }, 600);
+	
+	var newtimelinestep = ((newtimelineloc + 6) + (segmentlength / 2)) / segmentlength;
+	updateDigits(newtimelinestep);
+}
+
+function initiateTimelineClock () {
+	setInterval('timedSlide()',10000);
+}
+
+function updateDigits (timelinestep) {
+	var classstrings = $("ul.featspotul li:nth-child("+timelinestep+")").attr("class").split(/\s+/);
+	var classvals = new Array();
+	classstrings.forEach(function(classstring) {
+		var classpair = classstring.split("-");
+		classvals[classpair[0]] = parseInt(classpair[1]);
+	});
+	
+	// Grab the topic title (switch out for Ajax call later -- topicid unused now)
+	function grabTopicName (topicid) {
+		var topicname = $("ul.featspotul li:nth-child("+timelinestep+") span.topic-name").html();
+		return topicname; 
+	}
+	
+	// Add topic name to classvals array
+	classvals["topicname"] = grabTopicName(classvals['topicid']);
+	
+	// Now write the values to the proper spots, shortening topic name when appropriate
+	// options: answercount askcount topicid anchornum topicname
+	
+	$("ul.topicinfo li.answercount span").html(classvals['answercount']);
+	$("ul.topicinfo li.askercount span").html(classvals['askcount']);
+	
+if (classvals['topicname'].length > 17) {
+	var topictext = classvals['topicname'].slice(0, 17).replace(/^\s+|\s+$/g,"");
+	topictext = topictext + "...";
+} else {
+	var topictext = classvals['topicname'];
+}
+
+$("ul.topicinfo li.topictitle span").html(topictext);
+$("ul.topicinfo li.topictitle").attr("title",classvals['topicname']).tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
+
 }

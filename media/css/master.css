@@ -13,6 +13,10 @@ a:hover {
 	text-decoration: underline;
 }
 
+.green {
+	color: #0F9D2E;
+}
+
 a.blackback { color: #fff; background-color: #323232; }
 a.blackback:hover { text-decoration: none; background-color: #232323; }
 a.blackback:active { text-decoration: none; background-color: #111; }
@@ -38,7 +42,6 @@ div#header {
 	width: 940px;
 	margin: 4px auto 0 auto;
 	font-size: 1em;
-	;
 	padding: 8px 0;
 	height: 28px;
 	position: relative;
@@ -64,6 +67,9 @@ div#header h1.templogo {
 	position: relative;
 	top: -3px;
 }
+
+div#header h1.templogo a { color: #323232; }
+div#header h1.templogo a:hover { text-decoration: none; }
 
 div#header h1.templogo span {
 	color: #0f9d2e;
@@ -159,8 +165,8 @@ div#header p#greetuser {
 	position: absolute;
 	float: left;
 	line-height: 24px;
-	left: 130px;
-	bottom: 6px;
+	left: 142px;
+	bottom: 7px;
 	font-size: 0.9em;
 }
 
@@ -243,8 +249,9 @@ span.uparrow, a.uparrow {
 	line-height: 0;
 	font-size: 0;
 	position: relative;
-	top: 8px;
+	top: 7px;
 	margin: 0 4px;
+	float: right;
 }
 
 .darkback span.downarrow, .darkback span.uparrow {
@@ -291,22 +298,41 @@ span.uparrow, a.uparrow {
 /* HOMEPAGE */
 
 div#hometimeline {
-	
+	position: relative;
 }
 
-p#timelineflag {
-	
+div#hometimeline p#timelineflag {
+	display: block;
+	max-width: 130px;
+	width: auto;
+	text-align: left;
+	padding: 0 2px;
+	height: 12px;
+	line-height: 12px;
+	margin-bottom: 2px;
+	color: #a3a3a3;
+	text-transform: lowercase;
+	font-size: 0.9em;
 }
 
-div#timelinecontainer {
+div#hometimeline div#timelinecontainer {
 	width: 562px;
-	height: 36px;
+	height: 40px;
 	border: 0;
 }
 
-div#timelinecontainer canvas {
+div#hometimeline div#timelinecontainer canvas {
 	border: 0;
 }
+
+div#hometimeline span#timelinemarker {
+	position: absolute;
+	top: 46px;
+	left: 0;
+	margin: 0;
+}
+
+
 
 ul.topicinfo {
 	float: right;
@@ -360,8 +386,23 @@ ul.topicinfo li.askercount {
 /* MAIN SPOT HEADLINE */
 
 div.featspot {
+	height: 240px;
+	width: 960px;
+	overflow: hidden;
+}
+
+ul.featspotul {
+	height: 250px;
+	width: 10000px;
+	overflow: hidden;
+	position: relative;
+}
+
+ul.featspotul li {
 	height: 180px;
-	padding: 40px 0 30px 0;
+	padding: 36px 0 20px 0;
+	width: 961px;
+	float: left;
 }
 
 h2.featquestion {
@@ -438,6 +479,77 @@ div.featinteractions ul.interactionslist li {
 	line-height: 20px;
 }
 
+/* ASK A QUESTION POPOVER */
+
+div#askoverlay {
+	padding: 20px;
+}
+
+p#yourquestion {
+	margin-bottom: 12px;
+	font-size: 0.8em;
+	color: #888;
+}
+
+p#yourquestion span {
+	font-size: 1.8em;
+	display: block;
+	color: #323232;
+}
+
+form.topicchoose p.choicewrap {
+	float: left;
+	height: 22px;
+	line-height: 22px;
+	margin-right: 14px;
+	margin-bottom: 4px;
+}
+
+form.topicchoose select {
+	
+}
+
+form.topicchoose input.newtopic {
+	padding: 2px;
+	color: #777;
+	float: left;
+}
+
+form.topicchoose .btn {
+	clear: both;
+	display: block;
+	position: relative;
+	top: 10px;
+}
+
+/* BROWSE TOPICS POPOVER */
+div#browseoverlay {
+	width: 795px;
+	height: auto;
+	overflow: auto;
+	padding-bottom: 20px;
+}
+
+div#browseoverlay h3 {
+	margin: 10px 15px;
+	font-size: 1.2em;
+}
+
+div#browseoverlay ul {
+	width: 780px;
+	height: auto;
+	overflow: auto;
+	padding-bottom: 10px;
+	margin-left: 15px;
+}
+
+div#browseoverlay ul li {
+	float: left;
+	width: 260px;
+	height: auto;
+	overflow: auto;
+	padding-bottom: 5px;
+}
 
 /* LEFT CONTENT ON TOPIC/CONTENT PAGES */
 
@@ -445,12 +557,15 @@ div#leftcontent {
 	padding: 4px 0 10px 0;
 }
 
-h3.nodestamp, .nodestamp {
+h3.nodestamp {
+	display: none;
+}
+
+.nodestamp {
 	background-color: #e5e5e5;
 	height: 24px;
-	min-width: 60px;
+	width: 60px;
 	padding: 0 10px;
-	width: auto;
 	text-align: center;
 	line-height: 24px;
 	-moz-border-radius: 15px;
@@ -515,6 +630,38 @@ a.expanderbut:hover {
 	background-color: #dcdcdc;
 	color: #a3a3a3;
 }
+
+/* REGISTER / REGISTRATION PAGE */
+
+div#leftcontent h2.registerhead {
+	font-size: 1.2em;
+	margin-bottom: 14px;
+}
+
+div#leftcontent form.registerform {
+	display: block;
+}
+
+div#leftcontent form.registerform p {
+	display: block;
+	margin: 5px 0 10px 0x;
+	line-height: 30px;
+	height: 30px;
+}
+
+div#leftcontent form.registerform p label {
+	display: block;
+	float: left;
+	width: 110px;
+	font-size: 0.8em;
+	top: 1px;
+	position: relative;
+}
+
+div#leftcontent form.registerform input.btn {
+	margin: 10px 0 20px 0;
+}
+
 
 /* TABS IMPLEMENTATION */
 .ui-tabs .ui-tabs-hide { display: none; }
@@ -709,6 +856,10 @@ ul.masterlist li div.votebox a.thumbsup {
 	position: absolute;
 	bottom: 9px;
 	left: 9px;
+}
+
+ul.masterlist li div.votebox a.thumbsup span {
+	display: none;
 }
 
 ul.masterlist li div.votebox a.thumbsup:hover {
@@ -916,8 +1067,6 @@ div.aflag {
 	z-index: 1;
 }
 
-}
-
 
 /* ANSWER FORM DROPDOWN */
 form.answerform, form.replyform {
@@ -1024,9 +1173,9 @@ p.toplabel {
 
 ul.sidetabs {
 	float: left;
-	height: 26px;
-	width: 156px;
+	width: 158px;
 	z-index: 100;
+	height:26px;
 }
 
 ul.sidetabs li {
@@ -1035,12 +1184,13 @@ ul.sidetabs li {
 	width: 44px;
 	margin-left: 6px;
 	position: relative;
-	top: 1px;
+	background: #fff;
 	border: 1px solid #d7d7d7;
 }
 
 ul.sidetabs li.ui-state-active {
 	border-bottom: 1px solid #fff;
+	top: 1px;
 }
 
 ul.sidetabs li img {
@@ -1160,13 +1310,17 @@ div#footer .footertabs li a:hover { text-decoration: none; }
 div#footer .footertabs li.ui-state-active a { color: #fff; }
 div#footer .footertabs li a:hover { text-decoration: none; }
 
+div#footer div#askdiv {
+	position: relative;
+}
+
 div#footer form.footerinput {
 	height: auto;
 	overflow: auto;
 	margin-bottom: 50px;
 }
 
-div#footer form.footerinput input {
+div#footer form.footerinput input.footerinput {
 	width: 770px;
 	height: 40px;
 	line-height: 40px;
@@ -1178,6 +1332,18 @@ div#footer form.footerinput input {
 	margin-right: 10px;
 	color: #888;
 }
+
+
+div#footer form.footerinput .counter {
+	position:absolute;
+	right:170px;
+	top:-22px;
+	font-size:16px;
+	font-weight:bold;
+	color:#fff;
+}
+div#footer form.footerinput .warning{color:#600;}	
+div#footer form.footerinput .exceeded{color:#e00;}
 
 div#footer form.footerinput .footersubmit {
 	-moz-border-radius: 10px;
@@ -1191,6 +1357,39 @@ div#footer form.footerinput .footersubmit {
 	display: block;
 	float: left;
 	width: 140px;
+}
+
+div#footer div#asktopicsdrop {
+	padding: 15px;
+	height: auto;
+	overflow: auto;
+	width: 762px;
+	position: relative;
+	top: -2px;
+	background-color: #323232;
+	color: #fff;
+	-moz-border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 10px;
+	-webkit-border-radius: 0 0 10px 10px;
+	display: none;
+}
+
+div#footer div#asktopicsdrop h3 {
+	margin: 0 6px 12px 6px;
+	font-size: 1.3em;
+	color: #50b332;
+}
+
+div#footer div#asktopicsdrop ul li {
+	width: 30%;
+	margin-right: 3%;
+	margin-bottom: 10px;
+	float: left;
+}
+
+div#footer div#asktopicsdrop ul li input {
+	margin-right: 5px;
+	border: 0;
 }
 
 div#footer h4 {
