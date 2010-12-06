@@ -3,7 +3,7 @@
 import re
 import logging
 from django.conf import settings
-from django.db import models
+from django.db import models, connection
 
 def build_readable_errors(errordict):
     """ Translate an error dictionary into HTML, to return to Ajax code """
@@ -70,20 +70,31 @@ def get_logger():
 
     return logger
 
-# Implement a conditional aggregate
-# Via http://paste.pocoo.org/show/123690/ and
-# http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django
 
-#class SQLCountIf(models.sql.aggregates.Aggregate):
-    #is_ordinal = True
-    #sql_function = 'COUNT'
-    #sql_template= '%(function)s(CASE %(condition)s WHEN true THEN 1 ELSE NULL END)'
-#
-#class CountIf(models.Aggregate):
-    #name = 'COUNT'
-#
-    #def add_to_query(self, query, alias, col, source, is_summary):
-        #sql, params = query.model._default_manager.filter(**self.extra['condition']).query.where.as_sql()
-        #self.extra['condition'] = sql % tuple(params)
-        #aggregate = SQLCountIf(col, source=source, is_summary=is_summary, **self.extra)
-        #query.aggregates[alias] = aggregate
+class SQLCountIfConcur(models.sql.aggregates.Aggregate):
+    is_ordinal = True
+    sql_function = 'COUNT'
+    sql_template= '%(function)s (CASE "core_commentresponse"."type" WHEN "concur" THEN 1 ELSE NULL END)'
+
+
+class CountIfConcur(models.Aggregate):
+    """Custom Aggregate class to count "concur" (up vote) responses.
+    
+    This is based on the work described at 
+    http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django
+    However, I was not able to use the more general code described in this blog
+    post, perhaps because django.db.sql.models.where.WhereNode.as_sql()'s 
+    implementation has changed, or because I'm using a ManyToMany relation
+    and the example is a ForeignKey relation.  In the interest of expediency, I
+    just hardcoded the test.
+
+    The thread at
+    http://groups.google.com/group/django-users/browse_thread/thread/bd5a6b329b009cfa?pli=1 
+    has good information about implementing custom Aggregate classes in general.
+    
+    """
+    name = 'COUNT'
+
+    def add_to_query(self, query, alias, col, source, is_summary):
+        aggregate = SQLCountIfConcur(col, source=source, is_summary=is_summary, **self.extra)
+        query.aggregates[alias] = aggregate
