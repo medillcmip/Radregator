@@ -191,7 +191,24 @@ function getTopics(){
  * 
  */
 function getTopQuestions() {
-    // TODO: Implement this.
+    $.ajax({
+        type: "get",
+        url : "/api/json/questions/",
+        data : {'result_type': 'popular', 'count': '5'},
+        success : function(data){
+            $.each(data, function(index, question) {
+                var topic_id = question.fields.topics[0]; 
+                var text = question.fields.text;
+                var comment_id = question.pk;
+                $('#topquestionslist').append("<li><a href='/topic/"+ topic_id +
+                                              "/#comment-" + comment_id +
+                                              "'>"+text+"</a></li>");
+            });
+        },
+        error: {
+        // Show to user?
+        }
+    });
 
     return false;
 }
