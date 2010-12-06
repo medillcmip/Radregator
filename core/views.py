@@ -650,7 +650,7 @@ def api_topics(request, output_format="json"):
                   the last question was asked.
 
     * count: Optional.  Specifies the number of questions to be returned.  
-             Defaults to 5
+             If not specified, all topics are returned.
 
     """
     
@@ -663,7 +663,7 @@ def api_topics(request, output_format="json"):
         if 'count' in request.GET.keys():
             count = int(request.GET['count'])
         else:
-            count = 5 # Default to 5
+            count = None 
 
         # Get the type of result
         if 'result_type' in request.GET.keys():
@@ -673,13 +673,19 @@ def api_topics(request, output_format="json"):
 
         topics = Topic.objects.filter(is_deleted=False)
 
+        # Get the number of questions to return
+        if 'count' in request.GET.keys():
+            limited_topics = topics[:request.GET['count']]
+        else:
+            limited_topics = topics 
+
         # Serialize the data
         # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
         # TODO: It might make sense to implement natural keys in order
         # to pass through useful user data.
         # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
 
-        data = serializers.serialize('json', topics[:count],
+        data = serializers.serialize('json', topics,
                                      fields=('id', 'title', 'slug','summary'),
                                      use_natural_keys=True)
 
