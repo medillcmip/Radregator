@@ -568,8 +568,49 @@ def api_topic_tag(request, output_format="json"):
         
 
 
+def test_who_contributed(request):
+    """
+    This method simply returns a test page to see
+    what an implementing client would look like if they
+    integrated a contribution list function into their site
+    """
+    template_dict = {}
+
+    return render_to_response('core-test-who-contributed.html', template_dict)
+
+def render_contributions(request, question_id):
+    """
+    render a list of contributors and question text to be rendered
+    in an iframe on a calling site
+    """
+    template_dict = {}
 
 
+    try:
+        if request.method == 'GET':
+            thiscomment = Comment.objects.get(id=question_id)
+            template_dict['question'] = thiscomment.text
+            template_dict['quizzer'] = thiscomment.user.user.username
+            users = {}
+            answers = thiscomment.get_answers()
+            for item in answers:
+                users[item.user.user.username] = item.user.user.username
+            users_string = ''
+            for k,v in users.items():
+                users_string += v + ", "
+            template_dict['user_list'] = users_string
+                
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." %\
+                request.method)
+
+    except ObjectDoesNotExist:
+        status = 404
+        template_dict['error'] = "Comment with id %s does not exist" % \
+            (topic_slug_or_id)
+
+
+    return render_to_response('core-who-contributed.html', template_dict)
 
 def api_get_feedback_loop(request, question_id, output_format="json"):
     """
