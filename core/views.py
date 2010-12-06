@@ -29,6 +29,7 @@ from core.forms import CommentSubmitForm, CommentDeleteForm, \
                                   MergeCommentForm, NewSummaryForm, \
                                   CommentTopicForm
 import core.utils
+from core.utils import CountIfConcur
 from users.models import UserProfile, User
 from users.views import ajax_login_required 
 from users.exceptions import UserNotAuthenticated, UserNotReporter
@@ -917,13 +918,9 @@ def api_questions(request, output_format='json'):
             else:
                 count = 5 # Default to 5
 
-            # HACK ALERT: This annotation doesn't differentiate between the 
-            # different types of comment responses.  So, opinion flags and 
-            # upvotes are weighed the same. -Geoff Hing <geoffhing@gmail.com>
-            # 2010-12-05
             questions = Comment.objects.filter(is_deleted=False, \
                             comment_type__name="Question").annotate(\
-                                num_responses=Count('responses')).order_by(\
+                                num_responses=CountIfConcur('responses')).order_by(\
                                     '-num_responses', '-date_created')[:count]
 
             content = serializers.serialize('json', questions, \
