@@ -12,8 +12,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
-from django.db.models import Count
-
 
 from fbapi.facebook import *
 
