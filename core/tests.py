@@ -61,6 +61,13 @@ class QuestionTestCase(TestCase):
                                            comment=question, \
                                            type="opinion")
         comment_response.save()
+
+    def _create_topic(self, title, summary_text):
+        summary = Summary.objects.get_or_create(text=summary_text)[0] 
+        summary.save()
+        topic = Topic(title = title, slug = core.utils.slugify(title), summary = summary, is_deleted = False)
+        topic.save()
+        return topic
         
     def setUp(self):
         self._questions = []
@@ -384,7 +391,7 @@ class QuestionResponseTestCase(QuestionTestCase):
         self.assertEqual(user_voted_comment_ids[0], question.id)
 
 
-class ApiTestCase(QuestionTestCase):
+class QuestionsApiTestCase(QuestionTestCase):
     #def test_get_responses(self):
         #c = Client()
         #response = c.get('/api/json/comments/1/responses/',
@@ -645,10 +652,43 @@ class ApiTestCase(QuestionTestCase):
             self.assertEqual(question.text, json_question['fields']['text'])
             i = i - 1
 
+
+class TopicsApiTestCase(QuestionTestCase):
     def test_topics(self):
         """Test getting all topics from the API."""
-        self.fail("This test is not yet implemented")
+        # Create some topics.
+        # Remember, we have one topic created by default via the fixture. 
+        topics = [self._topic]
+        title_template = "Test Topic %d"
+        summary_template = "More information about Test Topic %d"
+        num_topics = 5
 
+        # Remember, we have one topic created by default via the fixture. 
+        # So we only need to create num_topics - 1 topics.
+        for i in range(num_topics - 1):
+            topic = self._create_topic(title=title_template % (i),
+                               summary_text=summary_template % (i))
+            topics.append(topic)
+
+        # Get the topics from the API
+        c = Client()
+        response = c.get('/api/json/topics/', \
+                        {'result_type': 'all'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+        print json_content
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_content), num_topics)
+        i = 0
+        for topic in topics:
+            self.assertEqual(json_content[i]['pk'], topic.id),
+            self.assertEqual(json_content[i]['fields']['title'],
+                             topic.title)
+            self.assertEqual(json_content[i]['fields']['summary'],
+                             str(topic.summary))
+            i = i + 1
+        
     def test_topics_with_count(self):
         """Test getting all topics from the API, limiting the number of results."""
         
