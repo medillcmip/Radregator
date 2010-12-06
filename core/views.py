@@ -679,12 +679,6 @@ def api_topics(request, output_format="json"):
         else:
             limited_topics = topics 
 
-        # Serialize the data
-        # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
-        # TODO: It might make sense to implement natural keys in order
-        # to pass through useful user data.
-        # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
-
         data = serializers.serialize('json', topics,
                                      fields=('id', 'title', 'slug','summary'),
                                      use_natural_keys=True)
