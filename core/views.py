@@ -321,6 +321,17 @@ def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """
 
     clipper_url_form = UrlSubmitForm()
+
+    # Determine if there is an authenticated user and get a little information
+    # about that user.
+    if not request.user.is_anonymous():
+        # Logged in user
+        # Assumes consistency between users, UserProfiles
+        userprofile = UserProfile.objects.get(user = request.user) 
+
+        is_reporter = userprofile.is_reporter()
+    else:
+        is_reporter = False
     
     if request.method == 'POST':
         if request.user.is_anonymous():
@@ -336,8 +347,6 @@ def topic(request, whichtopic=1):
             # look up comment by name
             comment_type = form.cleaned_data['comment_type_str'] 
 
-            # Assumes consistency between users, UserProfiles
-            userprofile = UserProfile.objects.get(user = request.user) 
 
             comment = Comment(text = form.cleaned_data['text'], \
                               user = userprofile)
@@ -348,8 +357,9 @@ def topic(request, whichtopic=1):
 
             topic = form.cleaned_data['topic']
             in_reply_to = form.cleaned_data['in_reply_to']
-
-            comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
+            
+            # See forms for simplification possibilities
+            comment.topics = [Topic.objects.get(title=topic)] 
             if form.cleaned_data['sources']:
                 comment.sources = [form.cleaned_data['sources']]
             comment.save()
@@ -363,13 +373,10 @@ def topic(request, whichtopic=1):
                 reply_relation.save()
 
     else: 
-        form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
+        # Give them a new form if have either a valid submission, or no 
+        # submission
+        form = CommentSubmitForm() 
 
-    if not request.user.is_anonymous():
-        # Logged in user
-        is_reporter = UserProfile.objects.get(user = request.user).is_reporter()
-    else:
-        is_reporter = False
     
     if Comment.objects.count() > 0:
         reply_form = CommentSubmitForm(initial = { \
@@ -388,10 +395,19 @@ def topic(request, whichtopic=1):
         topic =  Topic.objects.get(id=whichtopic)
         template_dict['topic'] = topic 
         template_dict['comments_to_show'] = topic.comments_to_show()
-        # BOOKMARK
+       
+        # - Geoff Hing <geoffhing@gmail.com> 2010-12-02
+        # Get a list of comment ids of comments that a user has voted on. 
+        if request.user.is_anonymous():
+            template_dict['user_voted_comment_ids'] = None
+        else:
+            template_dict['user_voted_comment_ids'] = \
+                topic.user_voted_comment_ids(user_profile)
+
     except: 
         # No topic loaded
         pass
+
     template_dict['comment_form'] = form
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
