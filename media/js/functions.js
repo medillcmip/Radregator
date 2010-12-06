@@ -165,20 +165,31 @@ function getTopics(){
     $.ajax({
         type: "get",
         url : "/api/json/topics/",
-        data : {},
-        
-
+        data : {'result_type': 'popular', 'count': 5},
         success : function(data){
             $.each(data,function(index, topic)
             {
                 var pk = topic.pk;
                 var title = topic.fields.title;
                 $('#toptopicslist').append("<li><a href='/topic/"+pk+"/'>"+title+"</a></li>");
+            });
+        },
+        error: {
+        // Show to user?
+        }
+    });
+
+    $.ajax({
+        type: "get",
+        url : "/api/json/topics/",
+        data : {'result_type': 'active', 'count': 5},
+        success : function(data){
+            $.each(data,function(index, topic)
+            {
+                var pk = topic.pk;
+                var title = topic.fields.title;
                 $('#activetopicslist').append("<li><a href='/topic/"+pk+"/'>"+title+"</a></li>");
             });
-            
-
-        
         },
         error: {
         // Show to user?

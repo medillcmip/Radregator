@@ -626,11 +626,50 @@ def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
 
 
 def api_topics(request, output_format="json"):
+    """Return a JSON formatted list of topics. 
+    
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * result_type: Optional. Specifies what type of topics to be returned. 
+
+        Valid values include:
+
+        * all: Current default. All topics. 
+
+        * popular: Topics are returned in descending order
+                   based on the total number of positive "votes" for
+                   the topics questions.
+
+        * active: Topics are returned in descending order based on when
+                  the last question was asked.
+
+    * count: Optional.  Specifies the number of questions to be returned.  
+             Defaults to 5
+
+    """
     
     try:
         if output_format != 'json':
             raise UnknownOutputFormat("Unknown output format '%s'" % \
                                               (output_format))
+
+        # Get the number of questions to return
+        if 'count' in request.GET.keys():
+            count = int(request.GET['count'])
+        else:
+            count = 5 # Default to 5
+
+        # Get the type of result
+        if 'result_type' in request.GET.keys():
+            result_type = request.GET['result_type']
+        else:
+            result_type = 'all'
 
         topics = Topic.objects.filter(is_deleted=False)
 
@@ -640,7 +679,7 @@ def api_topics(request, output_format="json"):
         # to pass through useful user data.
         # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
 
-        data = serializers.serialize('json', topics,
+        data = serializers.serialize('json', topics[:count],
                                      fields=('id', 'title', 'slug','summary'),
                                      use_natural_keys=True)
 
