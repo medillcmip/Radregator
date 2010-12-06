@@ -464,7 +464,7 @@ class ApiTestCase(QuestionTestCase):
             question_found = False
             for question in self._questions:
                 if question.id == json_question['pk'] and \
-                   question.text == json_question['text']:
+                   question.text == json_question['fields']['text']:
                    question_found = True
 
             self.assertEqual(question_found, True)
@@ -505,7 +505,7 @@ class ApiTestCase(QuestionTestCase):
             # Since we limited the number of questions, we should just get the 3 most recent
             for question in self._questions[2:]:
                 if question.id == json_question['pk'] and \
-                   question.text == json_question['text']:
+                   question.text == json_question['fields']['text']:
                    question_found = True
 
             self.assertEqual(question_found, True)
@@ -566,7 +566,7 @@ class ApiTestCase(QuestionTestCase):
         for json_question in json_content:
             question = self._questions[i]
             self.assertEqual(question.id, json_question['pk'])
-            self.assertEqual(question.text, json_question['text'])
+            self.assertEqual(question.text, json_question['fields']['text'])
             i = i - 1
 
 class FrontPageTestCase(QuestionTestCase):
