@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
+from django.db.models import Count, Sum, Max
 
 from fbapi.facebook import *
 
@@ -672,21 +673,67 @@ def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
 
 
 def api_topics(request, output_format="json"):
+    """Return a JSON formatted list of topics. 
+    
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * result_type: Optional. Specifies what type of topics to be returned. 
+
+        Valid values include:
+
+        * all: Current default. All topics. 
+
+        * popular: Topics are returned in descending order
+                   based on the total number of positive "votes" for
+                   the topics questions.
+
+        * active: Topics are returned in descending order based on when
+                  the last question was asked.
+
+    * count: Optional.  Specifies the number of questions to be returned.  
+             If not specified, all topics are returned.
+
+    """
     
     try:
         if output_format != 'json':
             raise UnknownOutputFormat("Unknown output format '%s'" % \
                                               (output_format))
 
-        topics = Topic.objects.filter(is_deleted=False)
+        # Get the type of result
+        if 'result_type' in request.GET.keys():
+            result_type = request.GET['result_type']
+        else:
+            result_type = 'all'
 
-        # Serialize the data
-        # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
-        # TODO: It might make sense to implement natural keys in order
-        # to pass through useful user data.
-        # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
+        if result_type == 'popular':
+            topics = Topic.objects.filter(is_deleted=False).annotate(
+                num_votes=CountIfConcur('comments__responses')).order_by(
+                    '-num_votes')
 
-        data = serializers.serialize('json', topics,
+        elif result_type == 'active':
+            topics = Topic.objects.filter(is_deleted=False).annotate(
+                latest_comment=Max('comments__date_created')).order_by(
+                    '-latest_comment')
+                    
+        else:
+            topics = Topic.objects.filter(is_deleted=False)
+
+        # Get the number of questions to return
+        if 'count' in request.GET.keys():
+            count = int(request.GET['count'])
+            limited_topics = topics[:count]
+
+        else:
+            limited_topics = topics 
+
+        data = serializers.serialize('json', limited_topics,
                                      fields=('id', 'title', 'slug','summary'),
                                      use_natural_keys=True)
 

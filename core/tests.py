@@ -61,6 +61,13 @@ class QuestionTestCase(TestCase):
                                            comment=question, \
                                            type="opinion")
         comment_response.save()
+
+    def _create_topic(self, title, summary_text):
+        summary = Summary.objects.get_or_create(text=summary_text)[0] 
+        summary.save()
+        topic = Topic(title = title, slug = core.utils.slugify(title), summary = summary, is_deleted = False)
+        topic.save()
+        return topic
         
     def setUp(self):
         self._questions = []
@@ -384,7 +391,7 @@ class QuestionResponseTestCase(QuestionTestCase):
         self.assertEqual(user_voted_comment_ids[0], question.id)
 
 
-class ApiTestCase(QuestionTestCase):
+class QuestionsApiTestCase(QuestionTestCase):
     #def test_get_responses(self):
         #c = Client()
         #response = c.get('/api/json/comments/1/responses/',
@@ -644,3 +651,215 @@ class ApiTestCase(QuestionTestCase):
             self.assertEqual(question.id, json_question['pk'])
             self.assertEqual(question.text, json_question['fields']['text'])
             i = i - 1
+
+
+class TopicsApiTestCase(QuestionTestCase):
+    def test_topics(self):
+        """Test getting all topics from the API."""
+        # Create some topics.
+        # Remember, we have one topic created by default via the fixture. 
+        topics = [self._topic]
+        title_template = "Test Topic %d"
+        summary_template = "More information about Test Topic %d"
+        num_topics = 5
+
+        # Remember, we have one topic created by default via the fixture. 
+        # So we only need to create num_topics - 1 topics.
+        for i in range(num_topics - 1):
+            topic = self._create_topic(title=title_template % (i),
+                               summary_text=summary_template % (i))
+            topics.append(topic)
+
+        # Get the topics from the API
+        c = Client()
+        response = c.get('/api/json/topics/', \
+                        {'result_type': 'all'}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_content), num_topics)
+        i = 0
+        for topic in topics:
+            self.assertEqual(json_content[i]['pk'], topic.id),
+            self.assertEqual(json_content[i]['fields']['title'],
+                             topic.title)
+            self.assertEqual(json_content[i]['fields']['summary'],
+                             str(topic.summary))
+            i = i + 1
+        
+    def test_topics_with_count(self):
+        """Test getting all topics from the API, limiting the number of results."""
+        # Create some topics.
+        # Remember, we have one topic created by default via the fixture. 
+        topics = [self._topic]
+        title_template = "Test Topic %d"
+        summary_template = "More information about Test Topic %d"
+        num_topics = 5
+
+        # Remember, we have one topic created by default via the fixture. 
+        # So we only need to create num_topics - 1 topics.
+        for i in range(num_topics - 1):
+            topic = self._create_topic(title=title_template % (i),
+                               summary_text=summary_template % (i))
+            topics.append(topic)
+
+        # Get the topics from the API
+        c = Client()
+        count = 3
+        response = c.get('/api/json/topics/', \
+                        {'result_type': 'all', 'count': count}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_content), count)
+        i = 0
+        for topic in topics:
+            if i < count:
+                self.assertEqual(json_content[i]['pk'], topic.id)
+                self.assertEqual(json_content[i]['fields']['title'],
+                                 topic.title)
+                self.assertEqual(json_content[i]['fields']['summary'],
+                                 str(topic.summary))
+            i = i + 1
+        
+    def test_topics_popular(self):
+        """Test getting popular topics."""
+
+        # Get some user profiles to work with
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        # Create 3 topics.
+        # Remember, we have one topic created by default via the fixture. 
+        num_topics = 3
+        topics = [self._topic]
+        title_template = "Test Topic %d"
+        summary_template = "More information about Test Topic %d"
+
+        # Remember, we have one topic created by default via the fixture. 
+        # So we only need to create num_topics - 1 topics.
+        for i in range(num_topics - 1):
+            topic = self._create_topic(title=title_template % (i),
+                               summary_text=summary_template % (i))
+            # Ask 2 questions on each topic
+            question1 = self._ask_question(topic, "This is a question!", 
+                                           user1_profile)
+            question2 = self._ask_question(topic, "This is another question!", 
+                               user1_profile)
+
+            # Give the 2nd topic's questions some votes
+            if i == 0:
+                self._respond_positively(user2_profile, question1)
+                self._respond_positively(user2_profile, question2)
+                self._respond_positively(user3_profile, question1)
+                self._respond_positively(user3_profile, question2)
+
+            # But give the 3rd topic's questions even more votes
+            if i == 1:
+                self._respond_positively(user2_profile, question1)
+                self._respond_positively(user2_profile, question2)
+                self._respond_positively(user3_profile, question1)
+                self._respond_positively(user3_profile, question2)
+                self._respond_positively(user4_profile, question1)
+                self._respond_positively(user4_profile, question2)
+                
+            topics.append(topic)
+
+        # Get 2 topics from the API, ordering by total number of votes
+        # on its questions.
+        c = Client()
+        count = 2
+        response = c.get('/api/json/topics/', \
+                        {'result_type': 'popular', 'count': count}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_content), count)
+
+        # After all the topic creation, questioning and voting is done,
+        # the first topic has no votes for any of its questions, the second
+        # topic has a total of four votes for all its questions and the third
+        # topic has a total of six votes for all its questions.
+
+        # The first topic in the returned ones should be the third topic
+        # in our list of saved topics
+        self.assertEqual(json_content[0]['pk'], topics[2].id)
+        self.assertEqual(json_content[0]['fields']['title'],
+                         topics[2].title)
+        self.assertEqual(json_content[0]['fields']['summary'],
+                         str(topics[2].summary))
+
+        # The second topic in the returned ones should be the second topic
+        # in our list of saved topics
+        self.assertEqual(json_content[1]['pk'], topics[1].id)
+        self.assertEqual(json_content[1]['fields']['title'],
+                         topics[1].title)
+        self.assertEqual(json_content[1]['fields']['summary'],
+                         str(topics[1].summary))
+
+
+    def test_topics_active(self):
+        """Test getting active topics."""
+        # Get some user profiles to work with
+        user1_profile = UserProfile.objects.get(user__username="user1")
+        user2_profile = UserProfile.objects.get(user__username="user2")
+        user3_profile = UserProfile.objects.get(user__username="user3")
+        user4_profile = UserProfile.objects.get(user__username="user4")
+        user5_profile = UserProfile.objects.get(user__username="user5")
+
+        # Create 3 topics.
+        # Remember, we have one topic created by default via the fixture. 
+        num_topics = 3
+        topics = [self._topic]
+        title_template = "Test Topic %d"
+        summary_template = "More information about Test Topic %d"
+
+        # Remember, we have one topic created by default via the fixture. 
+        # So we only need to create num_topics - 1 topics.
+        for i in range(num_topics - 1):
+            topic = self._create_topic(title=title_template % (i),
+                               summary_text=summary_template % (i))
+            # Ask 2 questions on each topic
+            question1 = self._ask_question(topic, "This is a question!", 
+                                           user1_profile)
+            question2 = self._ask_question(topic, "This is another question!", 
+                               user1_profile)
+            topics.append(topic)
+
+        # Get 2 topics from the API, ordering by activity.
+        # of its questions.
+        c = Client()
+        count = 2
+        response = c.get('/api/json/topics/', \
+                        {'result_type': 'active', 'count': count}, \
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        json_content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_content), count)
+
+        # The topics should be returned in the opposite of the order that we
+        # created them since the timestamp on the questions will be slightly
+        # later.
+
+        # The first topic in the returned ones should be the third topic
+        # in our list of saved topics
+        self.assertEqual(json_content[0]['pk'], topics[2].id)
+        self.assertEqual(json_content[0]['fields']['title'],
+                         topics[2].title)
+        self.assertEqual(json_content[0]['fields']['summary'],
+                         str(topics[2].summary))
+
+        # The second topic in the returned ones should be the second topic
+        # in our list of saved topics
+        self.assertEqual(json_content[1]['pk'], topics[1].id)
+        self.assertEqual(json_content[1]['fields']['title'],
+                         topics[1].title)
+        self.assertEqual(json_content[1]['fields']['summary'],
+                         str(topics[1].summary))

@@ -7,6 +7,10 @@ from clipper.models import Clip
 from tagger.models import Tag
 from users.models import UserProfile
 
+class SummaryManager(models.Manager):
+    def get_by_natural_key(self, text):
+        return self.get(text=text)
+
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
        if we want to do versioning."""
@@ -15,6 +19,9 @@ class Summary(models.Model):
     
     def __unicode__(self):
         return self.text[:80]
+
+    def natural_key(self):
+        return self.text
 
     class Meta:
         verbose_name_plural = 'Summaries'
