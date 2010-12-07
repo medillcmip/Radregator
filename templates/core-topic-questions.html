@@ -13,7 +13,7 @@
             <div title="{% blocktrans count question.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good question. Do you? {% plural %} {{ num_upvotes }} people think this is a good question. Do you? {% endblocktrans %}" class = "votebox tooltipper{% if question.id in topic.burning_question_ids %} burningq{% endif %}">
                 <p class="count">{{question.num_upvotes}}</p>
               <!--  <p class="countsub">thumbs up</p> -->
-                <a href="#" class="thumbsup" id="thumbsup-{{question.id}}">
+                <a href="javascript:;" class="thumbsup" id="thumbsup-{{question.id}}">
                         <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
                         <span>{% trans "Good Question!" %}</span>
                     </a>
@@ -23,11 +23,11 @@
                 <p class="qa">{{question.text}}</p>
                 <p class="userinfo"><span class="username">{{question.user}}</span> on <span class="date">{{question.date_created}}</span>
                 <!--START ANSWER FORM CONTROLS -->
-                <a href="#" class="answerthis answerformtoggle" id="answerformtoggle-{{question.id}}">Answer this</a>
-                <a href="#" class="answerthis collapseanswers">Hide answers</a>
+                <a href="javascript:;" class="answerthis answerformtoggle" id="answerformtoggle-{{question.id}}">Answer this</a>
+                <a href="javascript:;" class="answerthis collapseanswers">Hide answers</a>
                 {% if is_reporter %}
-                <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
-                <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>
+                <a href="javascript:;" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
+                <a href="javascript:;" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>
                 <!--END ANSWER FORM CONTROLS -->
 
                 {% endif %}
@@ -48,14 +48,14 @@
         {% for answer in answers %}
         {% with answer|first as theanswer %}
             <li id="comment-{{theanswer.id}}">
-                <a name="comment-{{theanswer.id}}"></a>
+                <a class="answeranchor" name="comment-{{theanswer.id}}"></a>
                  <div class='aflag'></div>
                 <div class = "comment answer">
                     <div class="earmark olvl0"><span class="textspan"></span></div>
                     <div title="{% blocktrans count theanswer.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                         <p class="count">{{theanswer.num_upvotes}}</p>
                        <!-- <p class="countsub">thumbs up</p>-->
-                        <a href="#" class="thumbsup" id="thumbsup-{{theanswer.id}}">
+                        <a href="javascript:;" class="thumbsup" id="thumbsup-{{theanswer.id}}">
                                 <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
                                 <span></span>
                         </a>
@@ -67,10 +67,10 @@
                         {% include "core-topic-answerclip.html" %}
                         {% endfor %}
                         <p class="userinfo"><span class="username">{{theanswer.user}}</span> on <span class="date">{{theanswer.date_created}}</span>
-                        <a href="#" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="#" id="flagasopinion-{{theanswer.id}}" class="flagasopinion">Flag this as opinion</a>
+                        <a href="javascript:;" class="answerthis replyformtoggle" id="replyformtoggle-{{theanswer.id}}">Reply</a><a href="javascript:;" id="flagasopinion-{{theanswer.id}}" class="flagasopinion">Flag this as opinion</a>
                         {% if is_reporter %}
-                        <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{theanswer.id}}">Delete Answer</a>
-                        <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
+                        <a href="javascript:;" class="answerthis deletecommentlink" id="deletecommentlink-{{theanswer.id}}">Delete Answer</a>
+                        <a href="javascript:;" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{theanswer.id}}">Remove Answer from Topic</a>
 
                         {% endif %}
 
@@ -97,7 +97,7 @@
                         <div title="{% blocktrans count reply.num_upvotes as num_upvotes %} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                             <p class="count">{{reply.num_upvotes}}</p>
 <!--                                            <p class="countsub">thumbs up</p>-->
-                            <a href="#" class="thumbsup" id="thumbsup-{{reply.id}}">
+                            <a href="javascript:;" class="thumbsup" id="thumbsup-{{reply.id}}">
                                     <img src="{{ MEDIA_URL }}img/icns/thumbsup.png" />
                                     <span></span>
                             </a>
@@ -110,11 +110,11 @@
                             {% endfor %}
                             <p class="userinfo"><span class="username">{{reply.user}}</span> on <span class="date">{{reply.date_created}}</span>
                             {% if is_reporter %}
-                            <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{reply.id}}">Delete Reply</a>
-                            <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{reply.id}}">Remove Reply from Topic</a>
+                            <a href="javascript:;" class="answerthis deletecommentlink" id="deletecommentlink-{{reply.id}}">Delete Reply</a>
+                            <a href="javascript:;" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{reply.id}}">Remove Reply from Topic</a>
 
                             {% endif %}
-                            <a href="#" id="flagasopinion-{{reply.id}}" class="flagasopinion">Flag this as opinion</a></p>
+                            <a href="javascript:;" id="flagasopinion-{{reply.id}}" class="flagasopinion">Flag this as opinion</a></p>
                             </p>
                         </div>
                     </div>
