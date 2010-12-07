@@ -74,7 +74,11 @@ def get_logger():
 class SQLCountIfConcur(models.sql.aggregates.Aggregate):
     is_ordinal = True
     sql_function = 'COUNT'
-    sql_template= '%(function)s (CASE "core_commentresponse"."type" WHEN "concur" THEN 1 ELSE NULL END)'
+    """
+    NOTE: http://developer.postgresql.org/pgdocs/postgres/sql-syntax-lexical.html
+    POSTGRESql requires constants to be delimited by single quote values
+    """
+    sql_template= '%(function)s (CASE WHEN "core_commentresponse"."type" LIKE \'concur\' THEN 1 ELSE NULL END)'
 
 
 class CountIfConcur(models.Aggregate):
