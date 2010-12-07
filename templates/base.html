@@ -9,7 +9,7 @@
  
 	<meta name="description" content="" /> 
 	<meta name="keywords" content="" /> 
-	<meta name="author" content="A.Paley" /> 
+	<meta name="author" content="TeamRadregator" /> 
 	<meta name="copyright" content="" /> 
 	<meta name="robots" content="all,follow" />	
 	<meta name="viewport" content="width=960" /> 
@@ -21,15 +21,16 @@
 	<link href="{{ MEDIA_URL }}css/jquery.tooltip.css" rel="stylesheet" type="text/css" /> 
 	<link href="{{ MEDIA_URL }}css/colorbox.css" rel="stylesheet" type="text/css" /> 
 
+	<script src="{{ MEDIA_URL }}js/jquery.js"></script>
+	<script src="{{ MEDIA_URL }}js/functions.js"></script>
+	<script src="{{ MEDIA_URL }}js/jquery.colorbox-min.js"></script>
+	<script src="{{ MEDIA_URL }}js/jquery.rotate.js"></script>
+	<script src="{{ MEDIA_URL }}js/jquery-ui.min.js"></script>
+	<script src="{{ MEDIA_URL }}js/raphael-min.js"></script>
+
     {% block addstyles %}
     {% endblock %}
 
-	<script src="{{ MEDIA_URL }}js/jquery.tools.min.js"></script>
-	<script src="{{ MEDIA_URL }}js/functions.js"></script>
-	<script src="{{ MEDIA_URL }}js/jquery.colorbox-min.js"></script>
-	<script href="{{ MEDIA_URL }}css/jquery.tooltip.js"></script>
-	<script src="{{ MEDIA_URL }}js/jquery.rotate.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js"></script>
     {% if is_reporter %}
     <script type="text/javascript" src="{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/functions-admin.js"></script>
@@ -37,6 +38,10 @@
 
     <script type="text/javascript">
 		$(document).ready( function () {
+			$( ".gotabs" ).tabs();
+			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'fast' }});
+
+			
             $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
             $('#messageswrap').hide(); // Hide messages bar initially
 
@@ -54,17 +59,30 @@
             setUserAuthenticated(); 
 
             // Handler for ask a question button in top bar
-            $("#usercontrols a.askquestion").click(function() {
-                // TODO: Show a more advanced dialog that let's user ask 
-                // questions across lots of topics.  For now, just 
-                // show the current topic's form.
-                $("#qas .qaoptions").tabs("option", "selected", 1);
-            });
+          
             {% endif %}
+			
+			$("#usercontrols a.askquestion").click(function() {
+				$("div#footer").css("height","800px");
+				$.scrollTo( 'div#footer', 300, {offset: {top:-35, left:0} } );
+				return false;
+			});
 
-            // Set the tooltips
-            $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
-        });
+            // Populate "Top Topics" and "Active Topics" lists in footer.
+	        getTopics(); 
+
+            // Populate "Top Questions" list in footer.
+            getTopQuestions();
+	   
+	        // Implement error on "ask" in footer
+			if (!userIsAuthenticated()) {
+				$("a#asksubmit").click(function() {
+					displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+				});
+			}
+	
+	});
+    
     </script>
 
     {% block addscripts %}
@@ -94,8 +112,8 @@
 				
 				<ul id="usercontrols" class="grid_5">
 					<li class="button darkback"><a href="#askquestion" class="askquestion">Ask a Question <span class="downarrow"></span></a></li>
-					<li class="lightback"><a href="#">Favorites <span class="downarrow"></span></a></li>
-					<li class="lightback"><a href="#">Recent Q&As <span class="downarrow"></span></a></li>
+					<li class="lightback hidden"><a href="#">Favorites <span class="downarrow"></span></a></li>
+					<li class="lightback hidden"><a href="#">Recent Q&As <span class="downarrow"></span></a></li>
                     {% if is_reporter %}
                     {% include "core-topic-usercontrols-reporter.html" %}
                     {% endif %}
@@ -103,7 +121,7 @@
 				
 				
 				<!--<h1 class="logo">{{ site_name }}</h1>-->
-				<h1 class="templogo"><span>Source</span>rer</h1>
+				<h1 class="templogo"><a href="/"><span>Source</span>rer</a></h1>
 				<p id="greetuser">Hello, {{user.username}}. <a href="/logout" id="logoutlink">Log out</a>?</p>
 								
 			</div> 
@@ -129,7 +147,7 @@
 				
 
 				<!--<h1 class="logo">Querity</h1>-->
-				<h1 class="templogo"><span>Source</span>rer</h1>
+				<h1 class="templogo"><a href="/"><span>Source</span>rer</a></h1>
 				<a href="/register" id="greetsignup">Signup</a>
 								
 		</div>
@@ -139,31 +157,114 @@
 		</div>
 
         <!-- MESSAGE BAR FOR MESSAGES/ERRORS -->
-        <div id="messageswrap">
+        <div id="messageswrap" style="display:none;">
             <div id="messages" class="container_12">
                 <p></p>
 
                 <div id="hidemessages">
                     <a href="#">
                         <span>Close</span>
-                        <span class="uparrow"></span>
+                        <!--<span class="uparrow"></span>-->
                     </a>
                 </div>
             </div>
         </div>
 		
-		<div id="leftcontent" class="grid_8">
-            {% block leftcontent %}	
-            {% endblock %}
-        </div>
-		
-		<div id="sidebar" class="grid_4">
-		    {% block sidebar %}
-            {% endblock %}
-		</div>
-		
-		
+	    {% block pagecontent %}
+        {% endblock %}
 	</div>
+		
+	
+	
+<div id="footerwrap">	
+	<div id="footer" class="container_12">
+		<!--START FOOTER ASK/SEARCH INPUT-->
+		<div class="gotabs">
+			<ul class="footertabs">
+				<li><a href="#askdiv">Ask a question</a></li>
+				<!--<li><a href="#searchdiv">Search</a></li>-->
+			</ul>
+			<div class="footerpanes" id="askdiv">
+				<form id="askfooter" class="footerinput">
+					<input type="text" id="askinput" class="footerinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';topicsDropShow();">
+					
+					
+					<a href="javascript:;" id="asksubmit" class="footersubmit blackback">Ask</a>
+					
+					
+					<div id="asktopicsdrop">
+						<h3>Choose a topic:</h3>
+						<ul>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
+							<li><input type="radio" name="topic" value="Topic Example"><input name="newtopic" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';"></li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			<!--<div class="footerpanes" id="searchdiv">
+				<form id="searchfooter" class="footerinput">
+					<input type="text" id="searchinput" class="footerinput" name="searchstring" value="Search questions, answers and topics" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
+					<a href="javascript:;" id="searchsubmit" class="footersubmit blackback">Search</a>
+				</form>
+			</div>-->
+		</div>
+		<!--END FOOTER ASK/SEARCH INPUT-->
+		<!--START THREE-COLUMN "TOP" SECTION-->
+		<ul id="footer3col">
+			<li class="footercol grid_4">
+				<h4>Top Topics</h4>
+				<ul class="footerlist" id="toptopicslist">
+				</ul>
+			</li>
+			<li class="footercol grid_4">
+				<h4>Active Topics</h4>
+				<ul class="footerlist" id="activetopicslist">
+				</ul>
+			</li>
+			<li class="footercol grid_4">
+				<h4>Top Questions</h4>
+				<ul class="footerlist" id="topquestionslist">
+				</ul>
+			</li>
+		</ul>		
+		<!--END THREE-COLUMN "TOP" SECTION-->
+		
+		<p class="footerline">Legal info + links, contact, etc</p>
+	</div>
+	
+	<div style="display:none;">
+		<div class="askoverlay" id="askoverlay">
+			<p id="yourquestion">Your question: <span></span></p>
+			<form action="" class="topicchoose">
+				<p class="choicewrap">
+					<label for="topic">Choose a topic:</label>
+					<select name="topic" id="topicselect">
+						<option></option>
+						<option>New topic...</option>
+						<option>Example #1</option>
+						<option>Example #2</option>
+						<option>Example #3</option>
+					</select>
+				</p>
+				<input name="newtopic" style="display:none;" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
+			    <input type="submit" class="btn" value="Ask!" />
+			</form>
+		</div>
+	</div>
+
+	
+</div>
+
 </body>
 
 </html>

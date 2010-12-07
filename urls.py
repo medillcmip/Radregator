@@ -51,6 +51,8 @@ urlpatterns = patterns('',
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/$', \
         'core.views.api_topic'),
 
+    (r'^api/(?P<output_format>json)/topics/$', 'core.views.api_topics'),
+
     (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/summary/$', \
         'core.views.api_topic_summary'),
 
@@ -71,11 +73,20 @@ urlpatterns = patterns('',
     (r'^api/(?P<output_format>json)/comments/$',
      'core.views.api_commentsubmission'),
 
+    (r'^api/(?P<output_format>json)/comments/tag/$',
+     'core.views.api_comment_tag'),
+
+    (r'^api/(?P<output_format>json)/topics/tag/$',
+     'core.views.api_topic_tag'),
+
     (r'^api/(?P<output_format>json)/comments/submit',
      'core.views.api_commentsubmission'),
 
     (r'^commentsubmit',
      'core.views.api_commentsubmission'), # For debugging purposes
+
+    (r'^api/(?P<output_format>json)/questions/$', \
+     'core.views.api_questions'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

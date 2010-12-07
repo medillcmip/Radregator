@@ -5,9 +5,6 @@
 {% block addscripts %}
 	<script type="text/javascript">
 		$(document).ready( function () {
-			$( ".gotabs" ).tabs();
-			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'fast' }});
-
             if (!userIsAuthenticated()) {
                 // If the user isn't logged in disabled the 
                 // "ask a question ..." tab.
@@ -29,6 +26,7 @@
             //$('#addsourceform').unbind('submit', handleNewSourceForm).bind('submit', handleNewSourceForm);
             {% if is_reporter %}
             $('a.deletecommentlink').unbind('click', handleDeleteCommentLink).bind('click', handleDeleteCommentLink);
+            $('a.favoritecommentlink').unbind('click', handleFavoriteCommentLink).bind('click', handleFavoriteCommentLink);
             $('a.disassociatecommentlink').unbind('click', handleDisassociateCommentLink).bind('click', handleDisassociateCommentLink);
             {% endif %}
             //$('a.deletecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
@@ -48,26 +46,15 @@
 			// SET UP Q/A COLLAPSING
 			hideanswers();
 
-            // Handler for ask a question links in sidebar
-            $(".topqas a.askquestion").click(function() {
-                if (!userIsAuthenticated()) {
-                    // Show an error message if they try to click on the link 
-                    displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-                }
-                else {
-                    // User is authenticated.  Show the form.
-                    $("#qas .qaoptions").tabs("option", "selected", 1);
-                }
-
-                return false;
-            });
 			
-			
+            // Set the tooltips
+            $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
         });
 	</script>
 {% endblock %}
 
-{% block leftcontent %}
+{% block pagecontent %}
+	<div id="leftcontent" class="grid_8">
 			<h3 class="nodestamp">topic</h3>
 			
 			<!--V2!
@@ -86,23 +73,23 @@
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
 				<h1>{{topic.title}}</h1>
-					<p id="contextintro" class="topic-summary">
+					<div id="contextintro" class="topic-summary">
                     {{topic.summary.text|safe}}
-                    </p>
-        {% if is_reporter %}
-        {% include "core-topic-update_summary_form.html" %}
-        {% endif %}
+                    </div>
         
-		<div class="contextbot"><a class="expanderbut lightback" href="#">
+		<div class="contextbot"><a class="expanderbut lightback" href="javascript:;">
 			<span class="more"><span class="downarrow"></span>more </span>
 			<span class="less"><span class="uparrow"></span>less </span>
 		</a></div>
 			</div>
 		
 		
+        {% if is_reporter %}
+        {% include "core-topic-update_summary_form.html" %}
+        {% endif %}
 			<div id="timeline" style="display:none;">
 				<h2>Sequence View</h2>
-				<a class="expanderbut lightback" href="#"><span class="downarrow"></span>more </a>
+				<a class="expanderbut lightback" href="javascript:;"><span class="downarrow"></span>more </a>
 			</div>
 		
         {% if is_reporter %}
@@ -114,13 +101,15 @@
 				<div class="qaoptions gotabscollapse">
 					<div id="optselect">
 						<ul class="tabs">
-							<li class="nullpane" style="display:none;"><a href="#"></a></li>
+							<li class="nullpane" style="display:none;"><a href="javascript:;"></a></li>
 
 							<li class="lightback"><a href="#askquestion" class="asktab"><span class="downarrow"></span><span class="uparrow"></span>Ask a question about this topic </a></li>
-							<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>
+
+							<!--<li class="lightback"><a href="#filterqas"><span class="downarrow"></span><span class="uparrow"></span>Filter Q&As </a></li>-->
 						</ul>
 							
-						<p class="viewby">Viewing by: <label>Popularity</label></p>
+						<!--<p class="viewby">Viewing by: <label>Popularity</label></p>-->
+
 					</div>
 					
 					<div id="askquestion" class="optionsdrop">
@@ -142,20 +131,21 @@
 						
 					</div>
 					
-					
+					<!--
 					<div id="filterqas" class="optionsdrop">
 						FILTER OPTIONS (by recency/popularity/default view & answered/unanswered/filter out opinion)
 					</div>
+					-->
 					
 				</div>
 
                 {% include "core-topic-questions.html" %}
 				
 			</div>
-{% endblock %}
+	</div>
 
-{% block sidebar %}
-			<div class="topqas gotabs">
+	<div id="sidebar" class="grid_4">
+		<div class="topqas gotabs">
 			<p class="toplabel">Top:</p>
 			<ul class="sidetabs">
 				<li><a href="#burningqs"><img src="{{ MEDIA_URL }}img/icns/flame-sm.png"></a></li>
@@ -169,14 +159,14 @@
                 {% if topic.burning_questions %}
 				<ol class="top5">
                     {% for question in topic.burning_questions %}
-					<li><p>{{question.text}} <a href="#" id="answerthis-{{question.id}}">Answer this</a></p></li>
+					<li><p>{{question.text}} <a href="javascript:;" id="answerthis-{{question.id}}">Answer this</a></p></li>
                     {% endfor %}
 				</ol>
                 {% else %}
-                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="#" class="askquestion">ask one</a>.{% endblocktrans %}</p>
+                <p>{% blocktrans %}There aren't any burning questions for this topic.  Be the first to <a href="javascript:;" class="askquestion">ask one</a>.{% endblocktrans %}</p>
                 {% endif %}
 			</div>
-			
+		
 			<div id="topanswers" class="toppanes">
 				<img src="{{ MEDIA_URL }}img/icns/check.png" class="paneicon"><h2>Best Answers</h2>
                 <a title="{% blocktrans %}These are the answers that have gotten the most positive feedback from the community.{% endblocktrans %}" class="tooltipper whatsthis">What's this?</a>
@@ -204,5 +194,6 @@
                 <p>{% blocktrans  %}Did you know you can vote on which questions are the most important and which answers are the most helpful?{% endblocktrans %}</p>
                 {% endif %}
 			</div>
-
+	</div>
+</div>
 {% endblock %}

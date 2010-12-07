@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
-
+from django.db.models import Count, Sum, Max
 
 from fbapi.facebook import *
 
@@ -28,6 +28,7 @@ from core.forms import CommentSubmitForm, CommentDeleteForm, \
                                   MergeCommentForm, NewSummaryForm, \
                                   CommentTopicForm
 import core.utils
+from core.utils import CountIfConcur
 from users.models import UserProfile, User
 from users.views import ajax_login_required 
 from users.exceptions import UserNotAuthenticated, UserNotReporter
@@ -306,31 +307,54 @@ def api_commentsubmission(request, output_format = 'json'):
     # TK - need code on JavaScript side to to Ajax, etc.
     return HttpResponseRedirect("/")
 
-def frontpage(request):
-    """ 
-    Front page view. 
+def frontpage_questions(count=10):
+    """Return a list of questions to be displayed on the front page.
 
-    This is a dummy view for now that just redirects to the first non-deleted topic. 
+    Currently it returns the most recent questions in reverse chronological
+    order.
+
+    Keyword arguments:
+    count -- Number fo questions to return (default 10)
+
+
     """
-    template_dict = { 'site_name':settings.SITE_NAME, \
-        'body_classes':settings.SITE_BODY_CLASSES }
 
-    if Topic.objects.filter(is_deleted=False).count() > 0:
-        # There is at least one topic to display. 
+    questions = Comment.objects.filter(is_deleted=False, \
+        comment_type__name="Question").order_by('-date_created')[:count]
 
-        # Get the first topic
-        topic = Topic.objects.filter(is_deleted=False)[0]
-        topic_url = '/topic/%s/' % (topic.id) 
 
-        return HttpResponseRedirect(topic_url)
+    return questions
 
-    else:
-        return render_to_response('core-frontpage.html', context_instance=RequestContext(request))  
+def frontpage(request):
+    """Front page view."""
+    logger = core.utils.get_logger()
+
+    questions = frontpage_questions()
+
+    logger.debug(questions)
+
+    template_dict = { 'site_name': settings.SITE_NAME, \
+        'body_classes': settings.SITE_BODY_CLASSES, \
+        'questions': questions }
+    
+    return render_to_response('frontpage.html', template_dict, \
+        context_instance=RequestContext(request))  
 
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """
 
     clipper_url_form = UrlSubmitForm()
+
+    # Determine if there is an authenticated user and get a little information
+    # about that user.
+    if not request.user.is_anonymous():
+        # Logged in user
+        # Assumes consistency between users, UserProfiles
+        userprofile = UserProfile.objects.get(user = request.user) 
+
+        is_reporter = userprofile.is_reporter()
+    else:
+        is_reporter = False
     
     if request.method == 'POST':
         if request.user.is_anonymous():
@@ -346,8 +370,6 @@ def topic(request, whichtopic=1):
             # look up comment by name
             comment_type = form.cleaned_data['comment_type_str'] 
 
-            # Assumes consistency between users, UserProfiles
-            userprofile = UserProfile.objects.get(user = request.user) 
 
             comment = Comment(text = form.cleaned_data['text'], \
                               user = userprofile)
@@ -358,8 +380,9 @@ def topic(request, whichtopic=1):
 
             topic = form.cleaned_data['topic']
             in_reply_to = form.cleaned_data['in_reply_to']
-
-            comment.topics = [Topic.objects.get(title=topic)] # See forms for simplification possibilities
+            
+            # See forms for simplification possibilities
+            comment.topics = [Topic.objects.get(title=topic)] 
             if form.cleaned_data['sources']:
                 comment.sources = [form.cleaned_data['sources']]
             comment.save()
@@ -373,13 +396,10 @@ def topic(request, whichtopic=1):
                 reply_relation.save()
 
     else: 
-        form = CommentSubmitForm() # Give them a new form if have either a valid submission, or no submission
+        # Give them a new form if have either a valid submission, or no 
+        # submission
+        form = CommentSubmitForm() 
 
-    if not request.user.is_anonymous():
-        # Logged in user
-        is_reporter = UserProfile.objects.get(user = request.user).is_reporter()
-    else:
-        is_reporter = False
     
     if Comment.objects.count() > 0:
         reply_form = CommentSubmitForm(initial = { \
@@ -398,10 +418,19 @@ def topic(request, whichtopic=1):
         topic =  Topic.objects.get(id=whichtopic)
         template_dict['topic'] = topic 
         template_dict['comments_to_show'] = topic.comments_to_show()
-        # BOOKMARK
+       
+        # - Geoff Hing <geoffhing@gmail.com> 2010-12-02
+        # Get a list of comment ids of comments that a user has voted on. 
+        if request.user.is_anonymous():
+            template_dict['user_voted_comment_ids'] = None
+        else:
+            template_dict['user_voted_comment_ids'] = \
+                topic.user_voted_comment_ids(user_profile)
+
     except: 
         # No topic loaded
         pass
+
     template_dict['comment_form'] = form
     template_dict['reply_form'] = reply_form
     template_dict['comments'] = {}
@@ -475,6 +504,93 @@ def api_topic(request, topic_slug_or_id=None, output_format="json"):
         
     return response
 
+@ajax_login_required
+def api_comment_tag(request, output_format="json"):
+    data = {}
+    status = 200
+    response = None
+
+    try:
+        if request.method == 'POST':
+            tagname = request.POST['tags']
+
+            comment = Comment.objects.get(id=request.POST['comment'])
+
+            if tagname.startswith("_"):
+                tagname = tagname.replace("_", "_" + request.user.username +'_')
+            tag = Tag.objects.get_or_create(name=tagname)[0]
+
+            tag.save()
+
+            comment.tags.add(tag)
+
+            comment.save()
+
+            data = {'tags' : [tag.name for tag in comment.tags.all()] }
+
+
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." % request.method)
+
+
+    except MethodUnsupported, e:
+        status = 405
+        data['error'] = "%s" % e
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = 'Cmment does not exist'
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+
+@ajax_login_required
+def api_topic_tag(request, output_format="json"):
+    data = {}
+    status = 200
+    response = None
+
+    try:
+        if request.method == 'POST':
+            tagname = request.POST['tags']
+
+            topic = Topic.objects.get(id=request.POST['topic'])
+
+            if tagname.startswith("_"):
+                tagname = tagname.replace("_", "_" + request.user.username +'_')
+            tag = Tag.objects.get_or_create(name=tagname)[0]
+
+            tag.save()
+
+            topic.topic_tags.add(tag)
+
+            topic.save()
+
+            data['tags'] = [tag.name for tag in topic.topic_tags.all()]
+
+
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." % request.method)
+
+
+    except MethodUnsupported, e:
+        status = 405
+        data['error'] = "%s" % e
+
+    except ObjectDoesNotExist:
+        status = 404
+        data['error'] = "Topic does not exist"
+            
+
+    response = HttpResponse(content=json.dumps(data), \
+        mimetype='application/json', status=status)
+
+    return response
+        
+
+
 
 @ajax_login_required
 def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
@@ -510,6 +626,81 @@ def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
     return response
 
 
+def api_topics(request, output_format="json"):
+    """Return a JSON formatted list of topics. 
+    
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * result_type: Optional. Specifies what type of topics to be returned. 
+
+        Valid values include:
+
+        * all: Current default. All topics. 
+
+        * popular: Topics are returned in descending order
+                   based on the total number of positive "votes" for
+                   the topics questions.
+
+        * active: Topics are returned in descending order based on when
+                  the last question was asked.
+
+    * count: Optional.  Specifies the number of questions to be returned.  
+             If not specified, all topics are returned.
+
+    """
+    
+    try:
+        if output_format != 'json':
+            raise UnknownOutputFormat("Unknown output format '%s'" % \
+                                              (output_format))
+
+        # Get the type of result
+        if 'result_type' in request.GET.keys():
+            result_type = request.GET['result_type']
+        else:
+            result_type = 'all'
+
+        if result_type == 'popular':
+            topics = Topic.objects.filter(is_deleted=False).annotate(
+                num_votes=CountIfConcur('comments__responses')).order_by(
+                    '-num_votes')
+
+        elif result_type == 'active':
+            topics = Topic.objects.filter(is_deleted=False).annotate(
+                latest_comment=Max('comments__date_created')).order_by(
+                    '-latest_comment')
+                    
+        else:
+            topics = Topic.objects.filter(is_deleted=False)
+
+        # Get the number of questions to return
+        if 'count' in request.GET.keys():
+            count = int(request.GET['count'])
+            limited_topics = topics[:count]
+
+        else:
+            limited_topics = topics 
+
+        data = serializers.serialize('json', limited_topics,
+                                     fields=('id', 'title', 'slug','summary'),
+                                     use_natural_keys=True)
+
+    except UnknownOutputFormat:
+        pass
+        # TODO: Handle this exception
+        # QUESTION: What is the best way to return errors in JSON?
+    except ObjectDoesNotExist:
+        pass
+        # TODO: Handle this exception
+
+    return HttpResponse(data, mimetype='application/json') 
+        
 def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
     """Return a paginated list of comments for a particular topic. """
     # See http://docs.djangoproject.com/en/dev/topics/pagination/?from=olddocs#using-paginator-in-a-view 
@@ -681,15 +872,6 @@ def api_comment_responses(request, comment_id, output_format='json',
                     if not reply_relation.right_comment.user == user:
                         raise NotUserQuestionReply ("This is a reply to a question posed by another user; user cannot accept it")
 
-
-
-
-
-
-
-                        
-
-
                 comment_response = CommentResponse(user=user, \
                                                    comment=comment, \
                                                    type=response_type) 
@@ -745,4 +927,60 @@ def api_comment_responses(request, comment_id, output_format='json',
         data['error'] = "%s" % e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+
+def api_questions(request, output_format='json'):
+    """Return a JSON formatted list of questions.
+    
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * result_type: Optional. Specifies what type of questions to be returned. 
+
+        Valid values include:
+
+        * popular: Current default.  Questions that have received the most 
+                   positive "votes."  Questions are returned in descending order
+                   of positive "votes" then by descending order of created date.
+
+    * count: Optional.  Specifies the number of questions to be returned.  
+             Defaults to 5
+
+    """
+
+    status = 200 # HTTP return status.  We'll be optimistic.
+   
+    try:
+        if request.method == 'GET':
+            # Get the number of questions to return
+            if 'count' in request.GET.keys():
+                count = int(request.GET['count'])
+            else:
+                count = 5 # Default to 5
+
+            questions = Comment.objects.filter(is_deleted=False, \
+                            comment_type__name="Question").annotate(\
+                                num_responses=CountIfConcur('responses')).order_by(\
+                                    '-num_responses', '-date_created')[:count]
+
+            content = serializers.serialize('json', questions, \
+                                            fields=('text', 'topics'), \
+                                            use_natural_keys=True)
+
+        else:
+            raise MethodUnsupported("%s is not supported at this time." % \
+                                (request.method))
+
+    except MethodUnsupported, e:
+        status = 405 # Method not allowed
+        data = {} # response data 
+        data['error'] = "%s" % e
+        content=json.dumps(data)
+
+    return HttpResponse(content=content, mimetype='application/json', \
                         status=status)

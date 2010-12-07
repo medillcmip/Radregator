@@ -1,11 +1,16 @@
 from django.db import models
-from django.db.models import Count
-from utils import get_logger, comment_cmp_default, comment_cmp_date_first
 from django.contrib.sites.models import Site
+
+from utils import CountIfConcur, get_logger, comment_cmp_default, \
+                  comment_cmp_date_first
 from clipper.models import Article
+from clipper.models import Clip
 from tagger.models import Tag
 from users.models import UserProfile
-from clipper.models import Clip
+
+class SummaryManager(models.Manager):
+    def get_by_natural_key(self, text):
+        return self.get(text=text)
 
 class Summary(models.Model):
     """Summary of a subject (likely a Topic).  Make this a separate class
@@ -15,6 +20,9 @@ class Summary(models.Model):
     
     def __unicode__(self):
         return self.text[:80]
+
+    def natural_key(self):
+        return self.text
 
     class Meta:
         verbose_name_plural = 'Summaries'
@@ -87,15 +95,12 @@ class Topic(models.Model):
         """Return a list containing burning questions."""
 
         if not ("_burning_questions" in self.__dict__):
-            #questions = self.get_questions().annotate(num_responses=Count("responses"))
-            # QUESTION: Can you filter on the argument of Count? Like if I only want 
-            # count responses of a certain type?
-            # ANSWER: There is (but it's not super-easy)!
-            # http://www.voteruniverse.com/Members/jlantz/blog/conditional-aggregates-in-django  
-
             # HACK ALERT!: This is a really naive approach and should definitely be refactored in
             # the future.
-            
+
+            # TODO: Now that I've implemented core.utils.CountIfConcur, it might
+            # be possible to refactor this.  
+            # -Geoff <geoffhing@gmail.com> 2010-12-06
             burning_questions = [] 
             burning_question_ids = []
             questions = self.get_questions()
@@ -208,12 +213,29 @@ class Topic(models.Model):
         number of responses.
 
         """
-        #condition = {'responses__type': "'concur'"}
-        #return self.comments.annotate(\
-            #num_responses=CountIf('responses', condition=condition)).order_by('-num_responses')[:num]
         return self.comments.annotate(\
-            num_responses=Count('responses')).order_by('-num_responses')[:num]
+            num_responses=CountIfConcur('responses')).order_by('-num_responses')[:num]
 
+    def user_responded_comment_ids(self, user_profile, response_type):
+        """
+        Returns a queryset containing all ids of comments for this topic for which 
+        a user has responded in a certain way.
+
+        """
+        comments = CommentResponse.objects.filter(user=user_profile, \
+            type=response_type).values_list('comment', flat=True)
+
+
+        return comments
+
+    def user_voted_comment_ids(self, user_profile):
+        """ 
+        Returns a queryset containing all comment ids for this topic on which a
+        user has voted.
+        
+        """
+        return self.user_responded_comment_ids(user_profile=user_profile, \
+            response_type='concur')
 
 class Comment(models.Model):
     """User-generated feedback to the system.  These will implement questions,
