@@ -902,10 +902,11 @@ function initiateTopicTimeline() {
 
 
 // FOR TESTING // 
+/*
 	answerdata["20060702"] = {author:"www.google.com",bgcolor:"rgb(10,110,10)",clip:"Here is what would be kind of a longer clip to show what would happen when that sort of thing occurred",date:"July 2",link:"http://www.washingtonpost.com",pageanchor:"comment-7",popularity:"1",source:"washingtonpost.com",title:"Here is the name of this article",year:"2006",month:"July"};
 	
 	answerdata = sortThisArray(answerdata);
-
+*/
 // END TESTING BLOCK //
 
 
@@ -1018,8 +1019,8 @@ function grabAnswerData() {
 		thisanswerdata["date"] = vartempdate[0];
 		thisanswerdata["year"] = vartempdate[1];
 		
-		// GET A DATE STAMP
 		
+		// PUT TOGETHER THE DATE STAMP
 		var datesplit = thisanswerdata["date"].split(" ");
 		if (datesplit[1].length == 1) {
 			datesplit[1] = "0"+datesplit[1];
@@ -1036,6 +1037,7 @@ function grabAnswerData() {
 		var dayalone = datesplit[1];
 		var datestamp = thisanswerdata["year"] + monthalone + dayalone;
 		
+		
 		// MAKE SURE NOTHING GETS OVERWRITTEN BY DOUBLING DATESTAMPS
 		var iterator = 0;
 		while (datestamp in answerdata)
@@ -1050,6 +1052,8 @@ function grabAnswerData() {
 	answerdata = sortThisArray(answerdata);
 	return answerdata;
 }
+
+
 
 
 function sortThisArray(arr){
