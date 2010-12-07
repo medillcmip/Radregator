@@ -996,8 +996,15 @@ function initiateTopicTimeline() {
 		$('#prototype').clone().attr("id","slice"+slicestamp).appendTo('#tlhovercontainers');
 		$('#slice'+slicestamp+' p.dateline').html(answerdata[slicestamp]["date"]+', '+answerdata[slicestamp]["year"]+'<a href="'+answerdata[slicestamp]["link"]+'" target="_blank">'+answerdata[slicestamp]["source"]+'</a>');
 		$('#slice'+slicestamp+' h4.artheadline').html(answerdata[slicestamp]["title"]);
-		$('#slice'+slicestamp+' p.storyblurb span').html(answerdata[slicestamp]["clip"]);
 		$('#slice'+slicestamp+' p.storyblurb a.articlelink').attr("href",answerdata[slicestamp]["link"]);
+		if (answerdata[slicestamp]["clip"].length > 140) {
+			var cliptext = answerdata[slicestamp]["clip"].slice(0, 140).replace(/^\s+|\s+$/g,"");
+		} else {
+			var cliptext = answerdata[slicestamp]["clip"];
+		}
+		$('#slice'+slicestamp+' p.storyblurb span').html(cliptext);
+		
+
 		var thisleftoffset = leftoffset;
 		
 		

@@ -403,13 +403,14 @@ ul.featspotul {
 
 ul.featspotul li {
 	height: 180px;
-	padding: 36px 0 36px 0;
+	padding: 36px 0 0 0;
+	margin-bottom: 36px;
 	width: 961px;
 	float: left;
 }
 
 h2.featquestion {
-
+	padding: 6px 0;
 }
 
 h2.featquestion span {
