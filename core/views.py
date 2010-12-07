@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
-
+from django.db.models import Count, Sum, Max
 
 from fbapi.facebook import *
 
@@ -28,6 +28,7 @@ from core.forms import CommentSubmitForm, CommentDeleteForm, \
                                   MergeCommentForm, NewSummaryForm, \
                                   CommentTopicForm
 import core.utils
+from core.utils import CountIfConcur
 from users.models import UserProfile, User
 from users.views import ajax_login_required 
 from users.exceptions import UserNotAuthenticated, UserNotReporter
@@ -597,6 +598,52 @@ def api_topic_tag(request, output_format="json"):
         
 
 
+def generate_bootstrapper(request, question_id):
+    """
+    This method simply returns a test page to see
+    what an implementing client would look like if they
+    integrated a contribution list function into their site
+    """
+    template_dict = {}
+    template_dict['rooturl'] = settings.SITE_URL
+    template_dict['mediaurl'] = settings.MEDIA_URL
+    template_dict['qid'] = question_id
+    try:
+        if request.method == 'GET':
+            thiscomment = Comment.objects.get(id=question_id)
+            topics = thiscomment.topics.all()
+            #TODO: whats up in the event no topic exists?
+            if len(topics) > 0:
+                template_dict['topic_id'] = topics[0].id
+            template_dict['question'] = thiscomment.text
+            template_dict['quizzer'] = thiscomment.user.user.username
+            users = {}
+            answers = thiscomment.get_answers()
+            for item in answers:
+                users[item.user.user.username] = item.user.user.username
+            users_string = ''
+            #and another loop to make this list readable
+            values = users.values()
+            val_len = len(values) - 1
+            for i, val in enumerate(values):
+                if i != val_len:
+                    users_string += val + ", "
+                else:
+                    users_string += val
+            #for k,v in users.items():
+            #    users_string += v + ", "
+            template_dict['user_list'] = users_string
+                
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." %\
+                request.method)
+
+    except ObjectDoesNotExist:
+        status = 404
+        template_dict['error'] = "Comment with id %s does not exist" % \
+            (topic_slug_or_id)
+
+    return render_to_response('bootstrapper.js', template_dict)
 
 @ajax_login_required
 def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
@@ -633,21 +680,67 @@ def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
 
 
 def api_topics(request, output_format="json"):
+    """Return a JSON formatted list of topics. 
+    
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * result_type: Optional. Specifies what type of topics to be returned. 
+
+        Valid values include:
+
+        * all: Current default. All topics. 
+
+        * popular: Topics are returned in descending order
+                   based on the total number of positive "votes" for
+                   the topics questions.
+
+        * active: Topics are returned in descending order based on when
+                  the last question was asked.
+
+    * count: Optional.  Specifies the number of questions to be returned.  
+             If not specified, all topics are returned.
+
+    """
     
     try:
         if output_format != 'json':
             raise UnknownOutputFormat("Unknown output format '%s'" % \
                                               (output_format))
 
-        topics = Topic.objects.filter(is_deleted=False)
+        # Get the type of result
+        if 'result_type' in request.GET.keys():
+            result_type = request.GET['result_type']
+        else:
+            result_type = 'all'
 
-        # Serialize the data
-        # See http://docs.djangoproject.com/en/dev/topics/serialization/ 
-        # TODO: It might make sense to implement natural keys in order
-        # to pass through useful user data.
-        # See http://docs.djangoproject.com/en/dev/topics/serialization/#natural-keys 
+        if result_type == 'popular':
+            topics = Topic.objects.filter(is_deleted=False).annotate(
+                num_votes=CountIfConcur('comments__responses')).order_by(
+                    '-num_votes')
 
-        data = serializers.serialize('json', topics,
+        elif result_type == 'active':
+            topics = Topic.objects.filter(is_deleted=False).annotate(
+                latest_comment=Max('comments__date_created')).order_by(
+                    '-latest_comment')
+                    
+        else:
+            topics = Topic.objects.filter(is_deleted=False)
+
+        # Get the number of questions to return
+        if 'count' in request.GET.keys():
+            count = int(request.GET['count'])
+            limited_topics = topics[:count]
+
+        else:
+            limited_topics = topics 
+
+        data = serializers.serialize('json', limited_topics,
                                      fields=('id', 'title', 'slug','summary'),
                                      use_natural_keys=True)
 
@@ -832,15 +925,6 @@ def api_comment_responses(request, comment_id, output_format='json',
                     if not reply_relation.right_comment.user == user:
                         raise NotUserQuestionReply ("This is a reply to a question posed by another user; user cannot accept it")
 
-
-
-
-
-
-
-                        
-
-
                 comment_response = CommentResponse(user=user, \
                                                    comment=comment, \
                                                    type=response_type) 
@@ -896,4 +980,60 @@ def api_comment_responses(request, comment_id, output_format='json',
         data['error'] = "%s" % e
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+
+def api_questions(request, output_format='json'):
+    """Return a JSON formatted list of questions.
+    
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * result_type: Optional. Specifies what type of questions to be returned. 
+
+        Valid values include:
+
+        * popular: Current default.  Questions that have received the most 
+                   positive "votes."  Questions are returned in descending order
+                   of positive "votes" then by descending order of created date.
+
+    * count: Optional.  Specifies the number of questions to be returned.  
+             Defaults to 5
+
+    """
+
+    status = 200 # HTTP return status.  We'll be optimistic.
+   
+    try:
+        if request.method == 'GET':
+            # Get the number of questions to return
+            if 'count' in request.GET.keys():
+                count = int(request.GET['count'])
+            else:
+                count = 5 # Default to 5
+
+            questions = Comment.objects.filter(is_deleted=False, \
+                            comment_type__name="Question").annotate(\
+                                num_responses=CountIfConcur('responses')).order_by(\
+                                    '-num_responses', '-date_created')[:count]
+
+            content = serializers.serialize('json', questions, \
+                                            fields=('text', 'topics'), \
+                                            use_natural_keys=True)
+
+        else:
+            raise MethodUnsupported("%s is not supported at this time." % \
+                                (request.method))
+
+    except MethodUnsupported, e:
+        status = 405 # Method not allowed
+        data = {} # response data 
+        data['error'] = "%s" % e
+        content=json.dumps(data)
+
+    return HttpResponse(content=content, mimetype='application/json', \
                         status=status)

@@ -34,10 +34,9 @@ urlpatterns = patterns('',
     (r'^clipper_select', 'clipper.views.clipper_submit_select'),
 
     (r'^clipper/(?P<comment_id>\d+)/(?P<topic_id>\d+/)', 'clipper.views.clipper_paste_url'),
+
+    (r'^bootstrapper/(?P<question_id>\d+)/', 'core.views.generate_bootstrapper'),
     
-#    (r'^clipper/(?P<comment_id>\d+)/(?P<user_comments>.*?)/(?P<url_field>.*)', 'clipper.views.clipper_paste_url'),
-
-
     (r'^api/(?P<output_format>json)/clipper_select/',
      'clipper.views.api_clipper_submit'),
 
@@ -86,6 +85,9 @@ urlpatterns = patterns('',
 
     (r'^commentsubmit',
      'core.views.api_commentsubmission'), # For debugging purposes
+
+    (r'^api/(?P<output_format>json)/questions/$', \
+     'core.views.api_questions'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

@@ -37,6 +37,30 @@ function launchLogin () {
 }
 
 
+
+//callback to generate a shout out
+//for news organizations that used 
+//this site to drive the narrative of a
+//story forward
+function generateContributionCode(question_id){
+
+	$.ajax({
+
+		  type: "post", 
+		  url: "/api_who_contributed/" + question_id + "/",
+		 success: function(data){
+			alert(data['user_list']);
+		},
+		 error: function (requestError, status, errorResponse) {
+			var errorNum = requestError.status;
+		    alert("error");	
+		}
+	});
+
+
+}
+
+
 //
 //
 // LOGGED IN?
@@ -165,20 +189,31 @@ function getTopics(){
     $.ajax({
         type: "get",
         url : "/api/json/topics/",
-        data : {},
-        
-
+        data : {'result_type': 'popular', 'count': 5},
         success : function(data){
             $.each(data,function(index, topic)
             {
                 var pk = topic.pk;
                 var title = topic.fields.title;
                 $('#toptopicslist').append("<li><a href='/topic/"+pk+"/'>"+title+"</a></li>");
+            });
+        },
+        error: {
+        // Show to user?
+        }
+    });
+
+    $.ajax({
+        type: "get",
+        url : "/api/json/topics/",
+        data : {'result_type': 'active', 'count': 5},
+        success : function(data){
+            $.each(data,function(index, topic)
+            {
+                var pk = topic.pk;
+                var title = topic.fields.title;
                 $('#activetopicslist').append("<li><a href='/topic/"+pk+"/'>"+title+"</a></li>");
             });
-            
-
-        
         },
         error: {
         // Show to user?
@@ -186,7 +221,32 @@ function getTopics(){
     });
 }
 
+/**
+ * Populate the footer "Top Questions" list using AJAX.
+ * 
+ */
+function getTopQuestions() {
+    $.ajax({
+        type: "get",
+        url : "/api/json/questions/",
+        data : {'result_type': 'popular', 'count': '5'},
+        success : function(data){
+            $.each(data, function(index, question) {
+                var topic_id = question.fields.topics[0]; 
+                var text = question.fields.text;
+                var comment_id = question.pk;
+                $('#topquestionslist').append("<li><a href='/topic/"+ topic_id +
+                                              "/#comment-" + comment_id +
+                                              "'>"+text+"</a></li>");
+            });
+        },
+        error: {
+        // Show to user?
+        }
+    });
 
+    return false;
+}
 
 function handleCommentSubmit(){
 	 var questionform = $('#questionform');
