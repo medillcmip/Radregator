@@ -60,22 +60,6 @@ function generateContributionCode(question_id){
 
 }
 
-//get named params after the url
-//more general form of getParams
-function gup( name ){
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec( window.location.href );
-  if( results == null ){
-    return "";
-  }
-  else{
-    return results[1];
-  }
-
-}
-
 
 //
 //

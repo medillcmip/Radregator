@@ -590,27 +590,23 @@ def api_topic_tag(request, output_format="json"):
         
 
 
-def test_who_contributed(request):
+def generate_bootstrapper(request, question_id):
     """
     This method simply returns a test page to see
     what an implementing client would look like if they
     integrated a contribution list function into their site
     """
     template_dict = {}
-
-    return render_to_response('core-test-who-contributed.html', template_dict)
-
-def render_contributions(request, question_id):
-    """
-    render a list of contributors and question text to be rendered
-    in an iframe on a calling site
-    """
-    template_dict = {}
-
-
+    template_dict['rooturl'] = settings.SITE_URL
+    template_dict['mediaurl'] = settings.MEDIA_URL
+    template_dict['qid'] = question_id
     try:
         if request.method == 'GET':
             thiscomment = Comment.objects.get(id=question_id)
+            topics = thiscomment.topics.all()
+            #TODO: whats up in the event no topic exists?
+            if len(topics) > 0:
+                template_dict['topic_id'] = topics[0].id
             template_dict['question'] = thiscomment.text
             template_dict['quizzer'] = thiscomment.user.user.username
             users = {}
@@ -618,8 +614,16 @@ def render_contributions(request, question_id):
             for item in answers:
                 users[item.user.user.username] = item.user.user.username
             users_string = ''
-            for k,v in users.items():
-                users_string += v + ", "
+            #and another loop to make this list readable
+            values = users.values()
+            val_len = len(values) - 1
+            for i, val in enumerate(values):
+                if i != val_len:
+                    users_string += val + ", "
+                else:
+                    users_string += val
+            #for k,v in users.items():
+            #    users_string += v + ", "
             template_dict['user_list'] = users_string
                 
         else:
@@ -631,42 +635,7 @@ def render_contributions(request, question_id):
         template_dict['error'] = "Comment with id %s does not exist" % \
             (topic_slug_or_id)
 
-
-    return render_to_response('core-who-contributed.html', template_dict)
-
-def api_get_feedback_loop(request, question_id, output_format="json"):
-    """
-    
-    """
-    data = {} # Data we'll eventually return as JSON
-    status = 200 # HTTP response status.  Be optimistic
-    response = None
-
-    try:
-        if request.method == 'POST':
-            thiscomment = Comment.objects.get(id=question_id)
-            users = ''
-            for items in thiscomment.responses.all():
-                users += items.user.username
-            data['user_list'] = users
-                
-        else:
-            raise MethodUnsupported("%s method is not supported at this time." %\
-                request.method)
-
-    except ObjectDoesNotExist:
-        status = 404
-        data['error'] = "Comment with id %s does not exist" % \
-            (topic_slug_or_id)
-
-    except MethodUnsupported, e:
-        status = 405 
-        data['error'] = "%s" % e
-
-    response = HttpResponse(content=json.dumps(data), \
-        mimetype='application/json', status=status)
-
-    return response
+    return render_to_response('bootstrapper.js', template_dict)
 
 @ajax_login_required
 def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):

@@ -33,15 +33,8 @@ urlpatterns = patterns('',
 
     (r'^clipper/(?P<comment_id>\d+)/(?P<topic_id>\d+/)', 'clipper.views.clipper_paste_url'),
 
-    (r'^api_who_contributed/(?P<question_id>\d+)/', 'core.views.api_get_feedback_loop'),
-
-    (r'^contribution_summary/(?P<question_id>\d+)/', 'core.views.render_contributions'),
-
-    (r'^test_who_contributed/','core.views.test_who_contributed'),
+    (r'^bootstrapper/(?P<question_id>\d+)/', 'core.views.generate_bootstrapper'),
     
-#    (r'^clipper/(?P<comment_id>\d+)/(?P<user_comments>.*?)/(?P<url_field>.*)', 'clipper.views.clipper_paste_url'),
-
-
     (r'^api/(?P<output_format>json)/clipper_select/',
      'clipper.views.api_clipper_submit'),
 
