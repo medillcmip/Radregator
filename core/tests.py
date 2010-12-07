@@ -753,14 +753,14 @@ class TopicsApiTestCase(QuestionTestCase):
                                user1_profile)
 
             # Give the 2nd topic's questions some votes
-            if i == 1:
+            if i == 0:
                 self._respond_positively(user2_profile, question1)
                 self._respond_positively(user2_profile, question2)
                 self._respond_positively(user3_profile, question1)
                 self._respond_positively(user3_profile, question2)
 
             # But give the 3rd topic's questions even more votes
-            if i == 2:
+            if i == 1:
                 self._respond_positively(user2_profile, question1)
                 self._respond_positively(user2_profile, question2)
                 self._respond_positively(user3_profile, question1)
@@ -863,5 +863,3 @@ class TopicsApiTestCase(QuestionTestCase):
                          topics[1].title)
         self.assertEqual(json_content[1]['fields']['summary'],
                          str(topics[1].summary))
-
-        self.fail("This test is not yet implemented")
