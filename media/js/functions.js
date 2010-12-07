@@ -694,7 +694,7 @@ function handleFavoriteCommentLink() {
     return false;
 }
 
-// SET UP "HIDE ANWERS"
+// SET UP "HIDE ANSWERS"
 function hideanswers () {
 	// IF THERE ARE ANSWERS, SHOW BUTTON
 	$("ul.masterlist li").has("ul.answers").children("div.comment").children("div.qabox").children("p.userinfo").children("a.collapseanswers").css("display","inline");
@@ -794,7 +794,7 @@ function initiateHomeTimeline() {
 	// Place the arrow initially and set initial digits
 	var arrowstart = (segmentlength / 2) - 6;
 	$("#timelinemarker").animate({ left: arrowstart }, 600);
-	updateDigits(1);	
+	updateDigits(1);
 }
 
 function timedSlide() {
@@ -992,9 +992,6 @@ function initiateTopicTimeline() {
 			
 		iterator++;	
 	});
-	
-
-
 }
 
 
