@@ -45,7 +45,12 @@
 			
 			// SET UP Q/A COLLAPSING
 			hideanswers();
+			
+			// ANSWER CHECK
+			answerThisCheck();
 
+			// BUILD THE TIMELINE
+			initiateTopicTimeline();
 			
             // Set the tooltips
             $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
@@ -87,9 +92,26 @@
         {% if is_reporter %}
         {% include "core-topic-update_summary_form.html" %}
         {% endif %}
-			<div id="timeline" style="display:none;">
-				<h2>Sequence View</h2>
-				<a class="expanderbut lightback" href="javascript:;"><span class="downarrow"></span>more </a>
+			<div id="timeline">
+				<h2>Sequence View<img src="{{ MEDIA_URL }}img/fact-opinion.png" class="factopinionkey"></h2>
+				
+				<div id="timelinespot"></div>
+				
+				<!--<div class="contextbot"><a class="expanderbut lightback" href="javascript:;">
+					<span class="more"><span class="downarrow"></span>more </span>
+					<span class="less"><span class="uparrow"></span>less </span>
+				</a></div>-->
+				
+				<div id="tlhovercontainers">
+					<div id="prototype" class="tlhoverspot" style="display:none;">
+						<span class="connector"></span>
+						<div class="container">
+							<p class="dateline">December 22, 2009 <a href="#" target="_blank">sourceswebsite.com</a></p>
+							<h4 class="artheadline">Here is where the headline gets written</h4>
+							<p class="storyblurb">…<span>Here is a section of the story that has been highlighted by the user</span>...<a href="#" class="articlelink" target="_blank">Read article</a></p>
+						</div>
+					</div>
+				</div>
 			</div>
 		
         {% if is_reporter %}
@@ -142,6 +164,7 @@
                 {% include "core-topic-questions.html" %}
 				
 			</div>
+			
 	</div>
 
 	<div id="sidebar" class="grid_4">

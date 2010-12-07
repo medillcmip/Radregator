@@ -67,12 +67,8 @@
 				$.scrollTo( 'div#footer', 300, {offset: {top:-35, left:0} } );
 				return false;
 			});
-
-            // Populate "Top Topics" and "Active Topics" lists in footer.
-	        getTopics(); 
-
-            // Populate "Top Questions" list in footer.
-            getTopQuestions();
+            
+	        getTopics();
 	   
 	        // Implement error on "ask" in footer
 			if (!userIsAuthenticated()) {
@@ -191,77 +187,9 @@
 					
 					<a href="javascript:;" id="asksubmit" class="footersubmit blackback">Ask</a>
 					
-					
-					<div id="asktopicsdrop">
-						<h3>Choose a topic:</h3>
-						<ul>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example"><input name="newtopic" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';"></li>
-						</ul>
-					</div>
 				</form>
 			</div>
-			<!--<div class="footerpanes" id="searchdiv">
-				<form id="searchfooter" class="footerinput">
-					<input type="text" id="searchinput" class="footerinput" name="searchstring" value="Search questions, answers and topics" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
-					<a href="javascript:;" id="searchsubmit" class="footersubmit blackback">Search</a>
-				</form>
-			</div>-->
-		</div>
-		<!--END FOOTER ASK/SEARCH INPUT-->
-		<!--START THREE-COLUMN "TOP" SECTION-->
-		<ul id="footer3col">
-			<li class="footercol grid_4">
-				<h4>Top Topics</h4>
-				<ul class="footerlist" id="toptopicslist">
-				</ul>
-			</li>
-			<li class="footercol grid_4">
-				<h4>Active Topics</h4>
-				<ul class="footerlist" id="activetopicslist">
-				</ul>
-			</li>
-			<li class="footercol grid_4">
-				<h4>Top Questions</h4>
-				<ul class="footerlist" id="topquestionslist">
-				</ul>
-			</li>
-		</ul>		
-		<!--END THREE-COLUMN "TOP" SECTION-->
 		
-		<p class="footerline">Legal info + links, contact, etc</p>
-	</div>
-	
-	<div style="display:none;">
-		<div class="askoverlay" id="askoverlay">
-			<p id="yourquestion">Your question: <span></span></p>
-			<form action="" class="topicchoose">
-				<p class="choicewrap">
-					<label for="topic">Choose a topic:</label>
-					<select name="topic" id="topicselect">
-						<option></option>
-						<option>New topic...</option>
-						<option>Example #1</option>
-						<option>Example #2</option>
-						<option>Example #3</option>
-					</select>
-				</p>
-				<input name="newtopic" style="display:none;" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
-			    <input type="submit" class="btn" value="Ask!" />
-			</form>
-		</div>
-	</div>
-
 	
 </div>
 
