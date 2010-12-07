@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.context_processors import csrf
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
+from django.db.models import Count, Sum, Max
 
 from fbapi.facebook import *
 
@@ -665,7 +666,18 @@ def api_topics(request, output_format="json"):
         else:
             result_type = 'all'
 
-        topics = Topic.objects.filter(is_deleted=False)
+        if result_type == 'popular':
+            topics = Topic.objects.filter(is_deleted=False).annotate(
+                num_votes=CountIfConcur('comments__responses')).order_by(
+                    '-num_votes')
+
+        elif result_type == 'active':
+            topics = Topic.objects.filter(is_deleted=False).annotate(
+                latest_comment=Max('comments__date_created')).order_by(
+                    '-latest_comment')
+                    
+        else:
+            topics = Topic.objects.filter(is_deleted=False)
 
         # Get the number of questions to return
         if 'count' in request.GET.keys():
