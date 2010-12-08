@@ -635,10 +635,10 @@ function earmarksetup() {
 
 		// Get the "truthiness" and set background color accordingly
 		var classstring = $(this).attr("class");
-		var olevel = classstring.replace(/[a-zA-Z ]/g, '');
+		var olevel = classstring.replace(/[a-zA-Z \-]/g, '');
 		//console.log(olevel);		
 		// SET HOW EACH OPINION DOWNVOTE WEIGHS ON THE COLORING
-		var gval = 153 - (olevel * 20);
+		var gval = 153 - (olevel * 10);
 
 		var bground = "rgb(31,"+gval+",31)";
 		
