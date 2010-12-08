@@ -636,10 +636,10 @@ function earmarksetup() {
 		// Get the "truthiness" and set background color accordingly
 		var classstring = $(this).attr("class");
 		var olevel = classstring.replace(/[a-zA-Z ]/g, '');
-		
-		// SET HOW EACH DOWNVOTE WEIGHS ON THE COLORING
-		var gval = 153 - (olevel * 8);
-		
+		//console.log(olevel);		
+		// SET HOW EACH OPINION DOWNVOTE WEIGHS ON THE COLORING
+		var gval = 153 - (olevel * 20);
+
 		var bground = "rgb(31,"+gval+",31)";
 		
 		$(this).css("background-color",bground);		
@@ -987,7 +987,15 @@ function initiateTopicTimeline() {
 	var lastyear = "";
 	var lastmonth = "";
 	var lastday = "";
-	//for(var slicestamp in answerdata) {  
+	
+	//FIGURE OUT WHAT THE SCALE OF "THUMBS UP" IS
+	var toppop = 0;
+	for(var slicestamp in answerdata) {
+		var thispop = parseInt(answerdata[slicestamp]["popularity"]);
+		//console.log(thispop);
+		if (thispop > toppop) { toppop = thispop; }
+	}
+	
 	jQuery.each(answerdata, function(slicestamp, v) {
 		
 		var multiplier = iterator * segmentlength + segmentlength;
@@ -1030,10 +1038,17 @@ function initiateTopicTimeline() {
 		lastmonth = thismonth;
 		lastday = thisday;
 
+		// var thisbarheight = (answerdata[slicestamp]["popularity"]+3)*10;
+		// var thisbary = 150 - thisbarheight;
+		var thisbarpop = answerdata[slicestamp]["popularity"];
+		var thisbarheight = ((thisbarpop)*((150/toppop)))+24;
+		var thisbary = 150 - thisbarheight;
+				
 		//ANIMATE IN
 		slices[slicestamp].animate({
+			"20%": {y: thisbary},
 			"40%": {opacity: 0.6},
-			"50%": {height:150},
+			"50%": {height: thisbarheight},
 			"80%": {opacity: 0.9},
 			"100%": {width:segmentlength-1}
 		}, 1500);
@@ -1043,7 +1058,9 @@ function initiateTopicTimeline() {
 		slices[slicestamp].hover(function () {
 			this.attr("opacity",1);
 			this.node.style.cursor = 'pointer';
-			$('#slice'+slicestamp).css("display","block").css("position","absolute").css("top","100px").css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+			// $('#slice'+slicestamp).css("display","block").css("position","absolute").css("top",thisbary+(thisbarheight/2)+25).css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+			$('#slice'+slicestamp).css("display","block").css("position","absolute").css("top","160px").css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+
 		}, 
 		function () {
 			$('#slice'+slicestamp).css("display","none");
