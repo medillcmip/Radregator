@@ -638,7 +638,7 @@ function earmarksetup() {
 		var olevel = classstring.replace(/[a-zA-Z \-]/g, '');
 		//console.log(olevel);		
 		// SET HOW EACH OPINION DOWNVOTE WEIGHS ON THE COLORING
-		var gval = 153 - (olevel * 10);
+		var gval = 153 - (olevel * 30);
 
 		var bground = "rgb(31,"+gval+",31)";
 		
@@ -968,7 +968,7 @@ function initiateTopicTimeline() {
 	answerdata = sortThisArray(answerdata);
 */
 // END TESTING BLOCK //
-
+	answerdata = sortThisArray(answerdata);
 
 
 	// SET UP FUNCTION TO GET SIZE OF SLICES
