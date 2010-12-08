@@ -276,6 +276,10 @@ class Comment(models.Model):
     def num_upvotes(self):
         return self.num_responses("concur")
 
+    def opinion_level(self):
+        """Return a count of the number of times this comment has been flagged as opinion."""
+        return self.num_responses("opinion")
+
     def get_related(self, relation_type):
         """Return a list of related comments of a specified type.""" 
         related_comments = []
