@@ -874,3 +874,11 @@ class TopicsApiTestCase(QuestionTestCase):
                          topics[1].title)
         self.assertEqual(json_content[1]['fields']['summary'],
                          str(topics[1].summary))
+
+
+class Issue90TestCase(BaseTestCase):
+    """Regression Test for issue 90"""
+    fixtures = ['issue90.json']
+
+    def test_top_answers(self):
+        self.fail("This test is not implemented yet.")
