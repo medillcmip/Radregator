@@ -29,7 +29,7 @@ div#wrapper {
 
 div#headerwrap {
 	position: fixed;
-	top: 0;
+	top: -1px;
 	left: 0;
 	width: 100%;
 	height: 48px;
@@ -171,6 +171,8 @@ div#header p#greetuser {
 }
 
 ul#usercontrols {
+	position: relative;
+	left: 10px;
 	width: 440px;
 	float: right;
 	height: 26px;
@@ -205,7 +207,7 @@ ul#usercontrols li.button a {
 	height: 26px;
 	padding: 0 14px 0 20px;
 	line-height: 25px;
-	background-color: #0b9024;
+	background: #50B332 url("../img/backs/green.png") repeat;
 	color: #ececec;
 	-moz-border-radius: 15px;
 	border-radius: 15px;
@@ -213,7 +215,8 @@ ul#usercontrols li.button a {
 
 ul#usercontrols li.button a:hover {
 	text-decoration: none;
-	background-color: #0f9d2e;
+	background-color: #0b9024;
+	background-image: none;
 	
 }
 
@@ -368,7 +371,7 @@ ul.topicinfo li.answercount {
 	z-index: 2;
 	position: relative;
 	left: 20px;
-	background-color: #009933;
+	background-color: #50b332;
 	border-color: #005500;
 	color: #fff;
 	padding-left: 30px;
@@ -386,13 +389,13 @@ ul.topicinfo li.askercount {
 /* MAIN SPOT HEADLINE */
 
 div.featspot {
-	height: 240px;
+	height: 252px;
 	width: 960px;
 	overflow: hidden;
 }
 
 ul.featspotul {
-	height: 250px;
+	height: 252px;
 	width: 10000px;
 	overflow: hidden;
 	position: relative;
@@ -400,18 +403,20 @@ ul.featspotul {
 
 ul.featspotul li {
 	height: 180px;
-	padding: 36px 0 20px 0;
+	padding: 36px 0 0 0;
+	margin-bottom: 36px;
 	width: 961px;
 	float: left;
 }
 
 h2.featquestion {
-
+	padding: 6px 0;
 }
 
 h2.featquestion span {
 	font-size: 18px;
-	margin-left: 4px;
+	margin-left: 1px;
+	line-height: 12px;
 	color: #999;
 }
 
@@ -596,7 +601,7 @@ div#leftcontent div#context p {
 	line-height: 1.4em;
 }
 
-div#leftcontent div#context div.contextbot {
+div#leftcontent div#context div.contextbot, div#leftcontent div#timeline div.contextbot {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -606,7 +611,7 @@ div#leftcontent div#context div.contextbot {
 */
 }
 
-div#leftcontent div#context div.contextbot .less {
+div#leftcontent div#context div.contextbot .less, div#leftcontent div#timeline div.contextbot .less {
 	display: none;
 }
 
@@ -629,6 +634,98 @@ a.expanderbut:hover {
 	text-decoration: none;
 	background-color: #dcdcdc;
 	color: #a3a3a3;
+}
+
+/* TOPIC TIMELINE */
+
+div#leftcontent div#timeline {
+	position: relative;
+	margin-bottom: 20px;
+	padding-bottom: 10px;
+	overflow: visible;
+	height: 230px;
+}
+
+div#leftcontent div#timeline h2 {
+	font-size: 1.4em;
+	font-weight: bold;
+}
+
+div#leftcontent div#timeline img.factopinionkey {
+	position: relative;
+	top: 3px;
+	left: 16px;
+}
+
+div#leftcontent div#timeline div#timelinespot {
+	height: 200px;
+	width: 620px;
+	margin:12px 0 0 0;
+}
+
+/* TIMELINE HOVER STATES */
+
+div#tlhovercontainers {
+	width: 0;
+	height: 0;
+	overflow: visible;
+}
+
+div.tlhoverspot {
+	width: 300px;
+	height: auto;
+	overflow: visible;
+	padding-top: 24px;
+	z-index: 999;
+}
+
+div.tlhoverspot span.connector {
+	width: 24px;
+	height: 20px;
+	position: absolute;
+	left: 138px;
+	top: 4px;
+	display: block;
+	background: transparent url('../img/backs/trans-dark-arrow.png') no-repeat;
+}
+
+div.tlhoverspot div.container {
+	width: 270px;
+	height: auto;
+	overflow: auto;
+	padding: 20px 15px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	background: transparent url('../img/backs/trans-dark.png') repeat;
+	color: #ddd;
+}
+
+div.tlhoverspot div.container p.dateline {
+	font-size: 0.9em;
+}
+
+div.tlhoverspot div.container p.dateline a {
+	margin-left: 10px;
+}
+
+div.tlhoverspot div.container h4 {
+	font-size: 1.7em;
+	font-weight: normal;
+	padding-right: 10px;
+	line-height: 1.2em;
+	margin: 4px 0 6px 0;
+}
+
+div.tlhoverspot div.container p.storyblurb {
+	font-size: 1em;
+	line-height: 1.2em;
+}
+
+div.tlhoverspot div.container p.storyblurb a {
+	font-weight: bold;
+	font-style: italic;
+	margin-left: 2px;
 }
 
 /* REGISTER / REGISTRATION PAGE */

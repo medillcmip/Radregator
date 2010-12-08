@@ -3,11 +3,15 @@
 {% block addscripts %}
 <script type="text/javascript">
 	$(document).ready( function() {
-		$("ul.featspotul li").fontfit("146");
+		$("ul.featspotul li").each( function() { 
+			$(this).fontfit("146"); 
+		});
+		
 		// $("ul.featspotul li h2").valign();
-
-		initiateHomeTimeline();
-		initiateTimelineClock();		
+		$("ul.featspotul li h2 span").valign();
+		var countdown = null;
+		initiateHomeTimeline(countdown);
+		initiateTimelineClock(countdown);		
 		
 		// Set up "Browse" link
 		$("a#browsetopics").colorbox({width:"800px", height:"500px",inline:true, href:"#browseoverlay"});
@@ -45,9 +49,9 @@
 		</ul>
 	</div>
 	<div class="featinteractions">
-		<a class="button big" href="#">Answer this</a>
+		<a class="button big answerthis" href="#">Answer this</a>
 		<ul class="interactionslist">
-			<li>Jump to this <a href="#">topic page</a></li>
+			<li>Jump to this <a href="#" class="topicpage">topic page</a></li>
 			<li><a href="#" id="browsetopics">Browse</a> all topics</li>
 			<li><a href="#">Learn more about Sourcerer</a></li>
 		</ul>

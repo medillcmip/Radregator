@@ -338,8 +338,15 @@ def frontpage(request):
         'questions': questions }
     
     return render_to_response('frontpage.html', template_dict, \
-        context_instance=RequestContext(request))  
-
+        context_instance=RequestContext(request))
+        
+def signup(request):
+    template_dict = { 'site_name': settings.SITE_NAME, \
+        'body_classes': settings.SITE_BODY_CLASSES }
+    
+    return render_to_response('signup.html', template_dict, \
+        context_instance=RequestContext(request))
+        
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """
 
@@ -591,6 +598,52 @@ def api_topic_tag(request, output_format="json"):
         
 
 
+def generate_bootstrapper(request, question_id):
+    """
+    This method simply returns a test page to see
+    what an implementing client would look like if they
+    integrated a contribution list function into their site
+    """
+    template_dict = {}
+    template_dict['rooturl'] = settings.SITE_URL
+    template_dict['mediaurl'] = settings.MEDIA_URL
+    template_dict['qid'] = question_id
+    try:
+        if request.method == 'GET':
+            thiscomment = Comment.objects.get(id=question_id)
+            topics = thiscomment.topics.all()
+            #TODO: whats up in the event no topic exists?
+            if len(topics) > 0:
+                template_dict['topic_id'] = topics[0].id
+            template_dict['question'] = thiscomment.text
+            template_dict['quizzer'] = thiscomment.user.user.username
+            users = {}
+            answers = thiscomment.get_answers()
+            for item in answers:
+                users[item.user.user.username] = item.user.user.username
+            users_string = ''
+            #and another loop to make this list readable
+            values = users.values()
+            val_len = len(values) - 1
+            for i, val in enumerate(values):
+                if i != val_len:
+                    users_string += val + ", "
+                else:
+                    users_string += val
+            #for k,v in users.items():
+            #    users_string += v + ", "
+            template_dict['user_list'] = users_string
+                
+        else:
+            raise MethodUnsupported("%s method is not supported at this time." %\
+                request.method)
+
+    except ObjectDoesNotExist:
+        status = 404
+        template_dict['error'] = "Comment with id %s does not exist" % \
+            (topic_slug_or_id)
+
+    return render_to_response('bootstrapper.js', template_dict)
 
 @ajax_login_required
 def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):

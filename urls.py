@@ -9,6 +9,8 @@ urlpatterns = patterns('',
     # Example:
     # (r'^newsqa/', include('newsqa.foo.urls')),
     (r'^$', 'core.views.frontpage'),
+    
+    (r'^signup', 'core.views.signup'),
 
     (r'^topic/(?P<whichtopic>\d+)/', 'core.views.topic'),
 
@@ -32,10 +34,9 @@ urlpatterns = patterns('',
     (r'^clipper_select', 'clipper.views.clipper_submit_select'),
 
     (r'^clipper/(?P<comment_id>\d+)/(?P<topic_id>\d+/)', 'clipper.views.clipper_paste_url'),
+
+    (r'^bootstrapper/(?P<question_id>\d+)/', 'core.views.generate_bootstrapper'),
     
-#    (r'^clipper/(?P<comment_id>\d+)/(?P<user_comments>.*?)/(?P<url_field>.*)', 'clipper.views.clipper_paste_url'),
-
-
     (r'^api/(?P<output_format>json)/clipper_select/',
      'clipper.views.api_clipper_submit'),
 
