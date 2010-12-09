@@ -1632,3 +1632,7 @@ div#infowrapper li {
     font-size: 1.1em;
     margin-bottom: 12px;
 } 
+
+div#infowrapper div {
+    padding-bottom: 50px;
+}
