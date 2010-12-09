@@ -611,7 +611,7 @@ function displayMessage(message, level) {
     level = typeof(level) != 'undefined' ? level : 'info';
 
     $('#messages p').html(message);
-    $('#messageswrap').addClass(level);
+    $('#messageswrap').attr('class', level);
     $('#messageswrap').show();
 
 }
