@@ -46,9 +46,17 @@
 			
 			// SET UP Q/A COLLAPSING
 			hideanswers();
+<<<<<<< HEAD
             $('.feedback-form').hide();
             
+=======
+			
+			// ANSWER CHECK
+			answerThisCheck();
+>>>>>>> 53b4c4ccd618e7caeb8e460d5e9c57284af44a2c
 
+			// BUILD THE TIMELINE
+			initiateTopicTimeline();
 			
             // Set the tooltips
             $('.tooltipper').tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
@@ -90,9 +98,21 @@
         {% if is_reporter %}
         {% include "core-topic-update_summary_form.html" %}
         {% endif %}
-			<div id="timeline" style="display:none;">
-				<h2>Sequence View</h2>
-				<a class="expanderbut lightback" href="javascript:;"><span class="downarrow"></span>more </a>
+			<div id="timeline">
+				<h2>Timeline<img src="{{ MEDIA_URL }}img/fact-opinion.png" class="factopinionkey"></h2>
+				
+				<div id="timelinespot"></div>
+				
+				<div id="tlhovercontainers">
+				<div id="prototype" class="tlhoverspot" style="display:none;">
+					<span class="connector"></span>
+					<div class="container">
+						<p class="dateline">December 22, 2009 <a href="#">sourceswebsite.com</a></p>
+						<h4 class="artheadline">Here is where the headline gets written</h4>
+						<p class="storyblurb">...<span>Here is a section of the story that has been highlighted by the user...<a href="#" class="articlelink">Read article</a></p>
+					</div>
+				</div>
+			</div>
 			</div>
 		
         {% if is_reporter %}
@@ -145,6 +165,10 @@
                 {% include "core-topic-questions.html" %}
 				
 			</div>
+			
+			
+			
+			
 	</div>
 
 	<div id="sidebar" class="grid_4">

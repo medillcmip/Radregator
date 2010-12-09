@@ -84,4 +84,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 )
 
+# Run the site as normal or disable everything except for the signup page.
+PREVIEW_MODE=False
+
 from settings_local import *

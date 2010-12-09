@@ -10,10 +10,8 @@ from users.models import UserProfile
 from clipper.models import Article
 import clipper.views
 
-class QuestionTestCase(TestCase):
-    """ Base class for TestCases that deal with questions and answers. """
-    fixtures = ['test_users.json', 'test_topics.json', 'comment_types.json']
-
+class BaseTestCase(TestCase):
+    """Base class for test cases that provides some utility methods."""
     def _ask_question(self, topic, text, user_profile):
         comment_type = CommentType.objects.get(name="Question")
         question = Comment(text=text, user=user_profile, \
@@ -65,13 +63,26 @@ class QuestionTestCase(TestCase):
     def _create_topic(self, title, summary_text):
         summary = Summary.objects.get_or_create(text=summary_text)[0] 
         summary.save()
-        topic = Topic(title = title, slug = core.utils.slugify(title), summary = summary, is_deleted = False)
+        topic = Topic(title = title, slug = core.utils.slugify(title), 
+                      summary = summary, is_deleted = False)
         topic.save()
         return topic
         
     def setUp(self):
         self._questions = []
+
+
+class QuestionTestCase(BaseTestCase):
+    """Base class for test cases that provides some default users and topics."""
+    fixtures = ['test_users.json', 'test_topics.json', 'comment_types.json']
+
+    def setUp(self):
+        # Call the parent's setUp method.
+        super(QuestionTestCase, self).setUp()
+
+        # Make the first topic we created (in the fixture) easily accessible.
         self._topic = Topic.objects.all()[0]
+
 
 class BasicQuestionTestCase(QuestionTestCase):
     def test_num_answers(self):

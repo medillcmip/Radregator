@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+ 
+	<title>{{ site_name }}</title> 
+ 
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" /> 
+	<meta http-equiv="content-style-type" content="text/css" /> 
+ 
+	<meta name="description" content="" /> 
+	<meta name="keywords" content="" /> 
+	<meta name="author" content="TeamRadregator" /> 
+	<meta name="copyright" content="" /> 
+	<meta name="robots" content="all,follow" />	
+	<meta name="viewport" content="width=960" /> 
+	
+	<link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" type="text/css" />
+	<link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" type="text/css" />
+	<link href="{{ MEDIA_URL }}css/master.css" rel="stylesheet" type="text/css" /> 
+	<link href="{{ MEDIA_URL }}css/master-evanston.css" rel="stylesheet" type="text/css" /> 
+	<link href="{{ MEDIA_URL }}css/jquery.tooltip.css" rel="stylesheet" type="text/css" /> 
+	<link href="{{ MEDIA_URL }}css/colorbox.css" rel="stylesheet" type="text/css" /> 
+
+	<script src="{{ MEDIA_URL }}js/jquery.js"></script>
+	<script src="{{ MEDIA_URL }}js/functions.js"></script>
+	<script src="{{ MEDIA_URL }}js/jquery.colorbox-min.js"></script>
+	<script src="{{ MEDIA_URL }}js/jquery.rotate.js"></script>
+	<script src="{{ MEDIA_URL }}js/jquery-ui.min.js"></script>
+	<script src="{{ MEDIA_URL }}js/raphael-min.js"></script>
+
+    {% block addstyles %}
+    {% endblock %}
+
+    {% block addscripts %}
+    <script type="text/javascript">
+		$(document).ready( function () {
+            // Handler for collapsing the messages bar
+            $('#messages #hidemessages a').click(function() {
+                $('#messageswrap').hide();
+                return false;
+            });
+
+            $('#signupsubmit').click(function(){
+                displayMessage("The magic is happening ...")
+                var email = $('#signupinput').val();
+                $.ajax({
+                    type: "post", 
+                    url: "/api/json/invite/",
+                    data: { email : email },
+                    success: function(data){
+                        displayMessage("Thanks.  We'll be in touch.", 'info');
+                        return false;
+                    },
+                    error: function (requestError, status, errorResponse) {
+                        var response_text = requestError.responseText;
+                        var response_data = $.parseJSON(response_text);
+                        var errorMsg = response_data.error; 
+                        displayMessage(errorMsg, 'error');
+                        return false;
+                    }
+                });
+            });
+        });
+    </script>
+    {% endblock %}
+</head> 
+
+<body class="{{ body_classes }}">
+	<div id="wrapper" class="container_12">
+		<div id="headerwrap">
+			<div id="header" class="loggedin">
+				<!--<h1 class="logo">{{ site_name }}</h1>-->
+				<h1 class="templogo"><a href="/"><span>Source</span>rer</a></h1>
+			</div> 
+		</div>
+
+        <!-- MESSAGE BAR FOR MESSAGES/ERRORS -->
+        <div id="messageswrap" style="display:none;">
+            <div id="messages" class="container_12">
+                <p></p>
+
+                <div id="hidemessages">
+                    <a href="#">
+                        <span>Close</span>
+                        <!--<span class="uparrow"></span>-->
+                    </a>
+                </div>
+            </div>
+        </div>
+	</div>
+
+    <div id="signupwrap">	
+        <div id="signup" class="container_12">
+            <div id="signup-left" class="grid_6">
+                <h2>Go to the source!</h2>
+                <p>Sourcerer is preparing for a beta launch.  If you'd like to be part of the beta, enter your e-mail address and we'll send you an invitation.</p>
+                <form id="signupform" class="signupinput">
+                    <input type="text" id="signupinput" class="signupinput" name="email" value="Enter your e-mail address" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
+                    
+                    <a href="javascript:;" id="signupsubmit" class="signupbutton signupsubmit blackback">Invite Me</a>
+                    
+                </form>
+            </div>
+            <div id="signup-right" class="grid_6">
+                <a href="http://www.flickr.com/photos/localfourth/5245374245/" title="Sourcerer's Front Page by LocalFourth, on Flickr"><img src="http://farm6.static.flickr.com/5285/5245374245_f9bf8b0b46.jpg" width="450" height="197" alt="Sourcerer's Front Page" /></a>
+                    
+                <a href="http://www.flickr.com/photos/localfourth/sets/72157625560753666/" class="signupbutton blackback">Check out the screenshots</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="infowrapper" class="container_12">
+        <div class="grid_7">
+            <h2>What is Sourcerer?</h2>
+
+            <p>Sourcerer is a context management system designed to help users discover and navigate local news and information.</p>
+
+            <p>It was develeoped as part of a community media innovation project graduate course at the Northwestern University's <a href="http://www.medill.northwestern.edu" alt="Medill">Medill School of Journalism</a>.</p>
+        </div>
+        <div class="grid_5">
+            <h2>More information</h2>
+            <ul>
+              <li><a href="http://www.localfourth.com/" title="Local Fourth blog">Visit the project blog</a></li>
+              <li><a href="http://bit.ly/Local-Fourth-Final-Report
+" title="Reimagining Hyperlocal News: Searching for a Sustainable
+Future">Read the report</a></li>
+              <li><a href="http://bit.ly/CMIP2010" title="Final presentation">Watch the presentation</a></li>
+            </ul>
+        </div>
+    </div>
+	
+
+</body>
+
+</html>

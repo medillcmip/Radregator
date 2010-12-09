@@ -621,11 +621,11 @@ function earmarksetup() {
 
 		// Get the "truthiness" and set background color accordingly
 		var classstring = $(this).attr("class");
-		var olevel = classstring.replace(/[a-zA-Z ]/g, '');
-		
-		// SET HOW EACH DOWNVOTE WEIGHS ON THE COLORING
-		var gval = 153 - (olevel * 8);
-		
+		var olevel = classstring.replace(/[a-zA-Z \-]/g, '');
+		//console.log(olevel);		
+		// SET HOW EACH OPINION DOWNVOTE WEIGHS ON THE COLORING
+		var gval = 153 - (olevel * 30);
+
 		var bground = "rgb(31,"+gval+",31)";
 		
 		$(this).css("background-color",bground);		
@@ -740,7 +740,7 @@ function handleFavoriteCommentLink() {
     return false;
 }
 
-// SET UP "HIDE ANWERS"
+// SET UP "HIDE ANSWERS"
 function hideanswers () {
 	// IF THERE ARE ANSWERS, SHOW BUTTON
 	$("ul.masterlist li").has("ul.answers").children("div.comment").children("div.qabox").children("p.userinfo").children("a.collapseanswers").css("display","inline");
@@ -788,7 +788,7 @@ $.fn.fontfit = function(max) {
 
 //
 //
-// SET UP THE TIMELINE SLIDER
+// SET UP THE HOMEPAGE TIMELINE SLIDER
 //
 //
 
@@ -803,9 +803,9 @@ function initiateHomeTimeline() {
 	for(var i = 0; i < slicecount+1; i+=1) {  
 		var multiplier = i * segmentlength;
 		if (i % 2 == 0) {
-			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.9);
+			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#50b332'}).attr("stroke-width",0).attr("opacity",0.9);
 		} else {
-			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#009933'}).attr("stroke-width",0).attr("opacity",0.8);
+			slices[i] = timeline.rect(multiplier - segmentlength, 0, segmentlength, 26).attr({fill: '#50b332'}).attr("stroke-width",0).attr("opacity",0.8);
 		}
 		
 		slices[i].hover(function () {
@@ -813,7 +813,7 @@ function initiateHomeTimeline() {
 			this.node.style.cursor = 'pointer';  
 		}, 
 		function () {
-			this.attr({fill: "#009933"});
+			this.attr({fill: "#50b332"});
 		});
 		
 		// CONNECT TIMELINE CLICKING TO HEADLINE SLIDER (& UPDATE THE "ANSWER THIS" LINK AND NODESTAMPS)
@@ -830,6 +830,9 @@ function initiateHomeTimeline() {
 			// "SLIDE" THE ARROW
 			var arrowanchor = xfactor + (segmentlength / 2) - 6;
 			$("#timelinemarker").animate({ left: arrowanchor }, 600);
+			
+			// RESET THE TIMER
+			clearInterval(countdown);			
 		});
 		
 	}
@@ -837,7 +840,7 @@ function initiateHomeTimeline() {
 	// Place the arrow initially and set initial digits
 	var arrowstart = (segmentlength / 2) - 6;
 	$("#timelinemarker").animate({ left: arrowstart }, 600);
-	updateDigits(1);	
+	updateDigits(1);
 }
 
 function timedSlide() {
@@ -864,7 +867,7 @@ function timedSlide() {
 }
 
 function initiateTimelineClock () {
-	setInterval('timedSlide()',10000);
+	countdown = setInterval('timedSlide()',10000);
 }
 
 function updateDigits (timelinestep) {
@@ -890,14 +893,257 @@ function updateDigits (timelinestep) {
 	$("ul.topicinfo li.answercount span").html(classvals['answercount']);
 	$("ul.topicinfo li.askercount span").html(classvals['askcount']);
 	
-if (classvals['topicname'].length > 17) {
-	var topictext = classvals['topicname'].slice(0, 17).replace(/^\s+|\s+$/g,"");
-	topictext = topictext + "...";
-} else {
-	var topictext = classvals['topicname'];
+	if (classvals['topicname'].length > 14) {
+		var topictext = classvals['topicname'].slice(0, 17).replace(/^\s+|\s+$/g,"");
+		topictext = topictext + "...";
+	} else {
+		var topictext = classvals['topicname'];
+	}
+	
+	$("ul.topicinfo li.topictitle span").html(topictext);
+	$("ul.topicinfo li.topictitle").attr("title",classvals['topicname']).tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
+	
+	// Last, update "Answer this" link and "Jump to topic"
+	$("div.featinteractions a.answerthis").attr("href","/topic/"+classvals['topicid']+"/?answerthis=true&aanchor=comment-"+classvals['anchornum']);
+	$("div.featinteractions a.topicpage").attr("href","/topic/"+classvals['topicid']);
 }
 
-$("ul.topicinfo li.topictitle span").html(topictext);
-$("ul.topicinfo li.topictitle").attr("title",classvals['topicname']).tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
 
+
+function answerThisCheck() {
+	// GET THE URL AND PARSE IT FOR BOTH GET PARAMS
+	var $_GET = {};
+	document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
+	    function decode(s) {
+	        return decodeURIComponent(s.split("+").join(" "));
+	    }
+	    $_GET[decode(arguments[1])] = decode(arguments[2]);
+	});
+	
+	if ($_GET["answerthis"] == "true") {
+		var commentanchor = $_GET["aanchor"];
+		$.scrollTo( 'li#'+commentanchor, 100, {offset: {top:-45, left:0} } );
+		$('li#'+commentanchor+' a.answerformtoggle').click();
+	}
 }
+
+
+
+
+//
+//
+// SET UP TIMELINE ON CONTENT PAGES
+//
+//
+
+function initiateTopicTimeline() {
+	var timeline = Raphael("timelinespot", 620, 200);
+	var backdrop = timeline.rect(0, 0, 619, 150).attr("stroke-width","0").attr("fill","#323232");
+	// COUNT THE NUMBER OF ANSWERS AND RETRIEVE IMPORTANT INFO (INCLUDING OPINION FLAGS)/STORE THEM IN ARRAY
+	var answercount = $("ul.answers li").length;
+	
+	// THIS FUNCTION NEEDS TO BE REWRITTEN TO HIT THE BACKEND, NOT SCRAPE THE PAGE (SEE BELOW)
+	var answerdata = grabAnswerData();
+
+
+
+// FOR TESTING // 
+/*
+	answerdata["20060702"] = {author:"www.google.com",bgcolor:"rgb(10,110,10)",clip:"Here is what would be kind of a longer clip to show what would happen when that sort of thing occurred",date:"July 2",link:"http://www.washingtonpost.com",pageanchor:"comment-7",popularity:"1",source:"washingtonpost.com",title:"Here is the name of this article",year:"2006",month:"July"};
+	
+	answerdata = sortThisArray(answerdata);
+*/
+// END TESTING BLOCK //
+	answerdata = sortThisArray(answerdata);
+
+
+	// SET UP FUNCTION TO GET SIZE OF SLICES
+	Object.size = function(obj) {
+	    var size = 0, key;
+	    for (key in obj) {
+	        if (obj.hasOwnProperty(key)) size++;
+	    }
+		return size;
+	};
+
+	var itemcount = Object.size(answerdata);
+	var segmentlength = (620 / itemcount);
+	var slices = new Array(itemcount);
+	var iterator = 0;
+	var lastyear = "";
+	var lastmonth = "";
+	var lastday = "";
+	
+	//FIGURE OUT WHAT THE SCALE OF "THUMBS UP" IS
+	var toppop = 0;
+	for(var slicestamp in answerdata) {
+		var thispop = parseInt(answerdata[slicestamp]["popularity"]);
+		//console.log(thispop);
+		if (thispop > toppop) { toppop = thispop; }
+	}
+	
+	jQuery.each(answerdata, function(slicestamp, v) {
+		
+		var multiplier = iterator * segmentlength + segmentlength;
+		var leftoffset = multiplier - segmentlength;
+		
+		
+		// FIX HTML ISSUES
+		var thistitle = answerdata[slicestamp]["title"].replace("&quot;","\"");
+		var thistitle = thistitle.replace("&#8212;","-");
+		var thistitle = thistitle.replace("&amp;","&");
+		
+		$('#prototype').clone().attr("id","slice"+slicestamp).appendTo('#tlhovercontainers');
+		$('#slice'+slicestamp+' p.dateline').html(answerdata[slicestamp]["date"]+', '+answerdata[slicestamp]["year"]+'<a href="'+answerdata[slicestamp]["link"]+'" target="_blank">'+answerdata[slicestamp]["source"]+'</a>');
+		$('#slice'+slicestamp+' h4.artheadline').html(thistitle);
+		$('#slice'+slicestamp+' p.storyblurb a.articlelink').attr("href",answerdata[slicestamp]["link"]);
+		if (answerdata[slicestamp]["clip"].length > 140) {
+			var cliptext = answerdata[slicestamp]["clip"].slice(0, 140).replace(/^\s+|\s+$/g,"");
+		} else {
+			var cliptext = answerdata[slicestamp]["clip"];
+		}
+		$('#slice'+slicestamp+' p.storyblurb span').html(cliptext);
+		
+
+		var thisleftoffset = leftoffset;
+		
+		
+		
+		// NOW DRAW THE WHOLE DAMNED THING, INCLUDING DATES ALONG BOTTOM
+		slices[slicestamp] = timeline.rect(leftoffset, 0, 2, 1).attr({fill: answerdata[slicestamp]["bgcolor"]}).attr("stroke-width",0).attr("opacity",0).attr("slicestamp",slicestamp);
+		
+		//DEAL WITH TEXT
+		var thisyear = slicestamp.substring(0,4);
+		var thismonth = slicestamp.substring(4,6); 
+		var thisday = slicestamp.substring(6,8);
+		
+		if (thisyear != lastyear) {
+			window["year" + thisyear] = timeline.text(leftoffset+2, 176, thisyear).attr({'text-anchor': 'start'}).attr({ "font-size": 15, "font-family": "Arial, Helvetica, sans-serif","font-weight": "bold", "color": "#323232" });
+		}
+		
+		if (thismonth != lastmonth) {
+			window["month" + thismonth] = timeline.text(leftoffset+2, 160, answerdata[slicestamp]["month"]).attr({'text-anchor': 'start'}).attr({ "font-size": 12, "font-family": "Arial, Helvetica, sans-serif", "color": "#323232" });			
+		}
+		
+		//SAVE VALUES FOR NEXT ROUND
+		lastyear = thisyear;
+		lastmonth = thismonth;
+		lastday = thisday;
+
+		// var thisbarheight = (answerdata[slicestamp]["popularity"]+3)*10;
+		// var thisbary = 150 - thisbarheight;
+		var thisbarpop = answerdata[slicestamp]["popularity"];
+		var thisbarheight = ((thisbarpop)*((150/toppop)))+24;
+		var thisbary = 150 - thisbarheight;
+				
+		//ANIMATE IN
+		slices[slicestamp].animate({
+			"20%": {y: thisbary},
+			"40%": {opacity: 0.6},
+			"50%": {height: thisbarheight},
+			"80%": {opacity: 0.9},
+			"100%": {width:segmentlength-1}
+		}, 1500);
+		
+		
+		// CONNECT HOVER TO HIDE/SHOW THE ARTICLES
+		slices[slicestamp].hover(function () {
+			this.attr("opacity",1);
+			this.node.style.cursor = 'pointer';
+			// $('#slice'+slicestamp).css("display","block").css("position","absolute").css("top",thisbary+(thisbarheight/2)+25).css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+			$('#slice'+slicestamp).css("display","block").css("position","absolute").css("top","160px").css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+
+		}, 
+		function () {
+			$('#slice'+slicestamp).css("display","none");
+			this.attr("opacity",0.9);
+		});
+		
+		$('#slice'+slicestamp).hover(function () { $(this).css("display","block"); }, function() { $(this).css("display","none"); });
+		
+		// CONNECT TIMELINE CLICKING LAUNCH NEW WINDOW WITH ARTICLE
+		slices[slicestamp].click(function () {
+			window.open(answerdata[slicestamp]["link"]);
+		});
+			
+		iterator++;	
+	});
+}
+
+
+//NOTE: THIS FUNCTION NEEDS TO BE REWRITTEN TO HIT BACKEND FOR FULL ANSWER LIST...CURRENT IMPLEMENTATION ONLY READS WHAT'S ON PAGE
+function grabAnswerData() {
+	var answercount = $("ul.answers li").length;
+	var answerdata = {};
+	var iterator = 0;
+	
+	$("ul.answers li").each( function() {
+		//NEED: title, clip, source, author, popularity, link, date, page anchor, bgcolor, year
+		var thisanswerdata = {};		
+		thisanswerdata["bgcolor"] = $(this).find("div.earmark").css("background-color");
+		thisanswerdata["title"] = $(this).find("a.articlelink").html();
+		thisanswerdata["clip"] = $(this).find("p.cliptext").html();
+		thisanswerdata["source"] = $(this).find("a.publink").html();
+		thisanswerdata["author"] = $(this).find("a.publink").html(); /* FIX THIS */
+		thisanswerdata["link"] = $(this).find("a.publink").attr("href");
+		thisanswerdata["popularity"] = $(this).find("p.count").html();
+		thisanswerdata["pageanchor"] = $(this).find("a.answeranchor").attr("name");
+		vartempdate = $(this).find("span.date").html().split(", ");
+		thisanswerdata["date"] = vartempdate[0];
+		thisanswerdata["year"] = vartempdate[1];
+		
+		
+		// PUT TOGETHER THE DATE STAMP
+		var datesplit = thisanswerdata["date"].split(" ");
+		if (datesplit[1].length == 1) {
+			datesplit[1] = "0"+datesplit[1];
+		}
+		var monthalone = datesplit[0];
+		thisanswerdata["month"] = monthalone;
+		
+		var montharray = {"Jan.":"01","Feb.":"02","March":"03","April":"04","May":"05","June":"06","July":"07","Aug.":"08","Sept.":"09","Oct.":"10","Nov.":"11","Dec.":"12"}
+		
+		for (var val in montharray) {
+    		var monthalone = monthalone.replace(val, montharray[val]);
+		} 
+		
+		var dayalone = datesplit[1];
+		var datestamp = thisanswerdata["year"] + monthalone + dayalone;
+		
+		
+		// MAKE SURE NOTHING GETS OVERWRITTEN BY DOUBLING DATESTAMPS
+		var iterator = 0;
+		while (datestamp in answerdata)
+		{
+			iterator++;
+			var breakstamp = datestamp.split("-");
+			datestamp = breakstamp[0] + "-" + iterator;
+		}
+		
+		answerdata[datestamp] = thisanswerdata;
+	});
+	answerdata = sortThisArray(answerdata);
+	return answerdata;
+}
+
+
+
+
+function sortThisArray(arr){
+	// Setup Arrays
+	var sortedKeys = new Array();
+	var sortedObj = {};
+
+	// Separate keys and sort them
+	for (var i in arr){
+		sortedKeys.push(i);
+	}
+	sortedKeys.sort();
+
+	// Reconstruct sorted obj based on keys
+	for (var i in sortedKeys){
+		sortedObj[sortedKeys[i]] = arr[sortedKeys[i]];
+	}
+	return sortedObj;
+}
+

@@ -97,3 +97,6 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("Passwords do not match")
 
         return cleaned_data
+
+class InviteForm(forms.Form):
+    email = forms.EmailField()

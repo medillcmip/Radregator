@@ -338,8 +338,15 @@ def frontpage(request):
         'questions': questions }
     
     return render_to_response('frontpage.html', template_dict, \
-        context_instance=RequestContext(request))  
-
+        context_instance=RequestContext(request))
+        
+def signup(request):
+    template_dict = { 'site_name': settings.SITE_NAME, \
+        'body_classes': settings.SITE_BODY_CLASSES + " signup" }
+    
+    return render_to_response('signup.html', template_dict, \
+        context_instance=RequestContext(request))
+        
 def topic(request, whichtopic=1):
     """ Display a topic page for a given topic. """
 
