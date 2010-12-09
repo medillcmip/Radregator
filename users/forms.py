@@ -99,4 +99,4 @@ class RegisterForm(forms.Form):
         return cleaned_data
 
 class InviteForm(forms.Form):
-    email = forms.EmailField()
+    email = forms.EmailField(max_length=254)

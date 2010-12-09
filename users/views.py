@@ -519,7 +519,17 @@ def api_invite(request, output_format='json'):
                     user = User.objects.get(email=email)
                     raise UserEmailExists("It looks like you've already requested an invitation.") 
                 except User.DoesNotExist:
-                    user = User.objects.create_user(username=email,
+                    username = email # Username defaults to e-mail address
+                    if len(email) > 30:
+                        print email
+                        # Django usernames can't be longer than 30 characters
+                        # Just take the first 30 characters of the part of
+                        # the email address before the '@'
+                        email_parts = email.partition('@')
+                        username = email_parts[0][:30]
+
+                    
+                    user = User.objects.create_user(username=username,
                                                     email=email)
                     user.is_active = False
                     user.set_unusable_password()
@@ -547,6 +557,7 @@ def api_invite(request, output_format='json'):
     except Exception as detail:
         status = 500 # What the what?
         data['error'] = "Something went wrong.  We're looking into it.  Please try again." 
+        print detail
 
     content=json.dumps(data)
 
