@@ -514,12 +514,18 @@ def api_invite(request, output_format='json'):
             form = InviteForm(request.POST)
             if form.is_valid():
                 email = form.cleaned_data['email']
-                user = User.objects.create_user(username=email,
-                                                email=email)
-                user.is_active = False
-                user.save()
-                user_profile = UserProfile(user=user)
-                user_profile.save()
+
+                try:
+                    user = User.objects.get(email=email)
+                    raise UserEmailExists("It looks like you've already requested an invitation.") 
+                except User.DoesNotExist:
+                    user = User.objects.create_user(username=email,
+                                                    email=email)
+                    user.is_active = False
+                    user.set_unusable_password()
+                    user.save()
+                    user_profile = UserProfile(user=user)
+                    user_profile.save()
 
             else:
                 print form.errors
@@ -533,6 +539,10 @@ def api_invite(request, output_format='json'):
     except MethodUnsupported, e:
         status = 405 # Method not allowed
         data['error'] = "%s" % e
+
+    except (UserEmailExists) as detail:
+        status = 409 # Conflict
+        data['error'] = "%s" % detail 
 
     content=json.dumps(data)
 
