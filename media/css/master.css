@@ -272,6 +272,10 @@ span.uparrow, a.uparrow {
 	background-color: #620505;
 }
 
+#messageswrap.info {
+    background-color: #0F9D2E;
+}
+
 #messages {
     position: relative;
     margin: 0 auto;
