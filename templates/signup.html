@@ -41,13 +41,15 @@
             });
 
             $('#signupsubmit').click(function(){
-                displayMessage("The magic is happening ...")
                 var email = $('#signupinput').val();
+                var message = "The magic is happening <img src=\"/static/img/icns/ajax-loader.gif\" />";
+                displayMessage(message, 'info');
                 $.ajax({
                     type: "post", 
                     url: "/api/json/invite/",
                     data: { email : email },
                     success: function(data){
+                        working = false;
                         displayMessage("Thanks.  We'll be in touch.", 'info');
                         return false;
                     },
@@ -55,6 +57,7 @@
                         var response_text = requestError.responseText;
                         var response_data = $.parseJSON(response_text);
                         var errorMsg = response_data.error; 
+                        working = false;
                         displayMessage(errorMsg, 'error');
                         return false;
                     }
