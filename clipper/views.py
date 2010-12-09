@@ -235,6 +235,7 @@ def clipper_paste_url(request, comment_id, topic_id):
                     'author': values['author'], 'user_comments': user_comments,\
                     'topic_id_field': topic_id})
                 return_page = 'clipper_select_text.html'
+                print return_page
             except FileTypeNotSupported as fns:
                 logger.debug('clipper_paste_url(request, comment_id): TYPE=' + str(type(fns)) +\
                     ', REASON=' + str(fns) + ', URL=' + url)
