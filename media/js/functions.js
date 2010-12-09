@@ -907,7 +907,7 @@ function updateDigits (timelinestep) {
 	$("ul.topicinfo li.answercount span").html(classvals['answercount']);
 	$("ul.topicinfo li.askercount span").html(classvals['askcount']);
 	
-	if (classvals['topicname'].length > 17) {
+	if (classvals['topicname'].length > 14) {
 		var topictext = classvals['topicname'].slice(0, 17).replace(/^\s+|\s+$/g,"");
 		topictext = topictext + "...";
 	} else {
@@ -1001,9 +1001,15 @@ function initiateTopicTimeline() {
 		var multiplier = iterator * segmentlength + segmentlength;
 		var leftoffset = multiplier - segmentlength;
 		
+		
+		// FIX HTML ISSUES
+		var thistitle = answerdata[slicestamp]["title"].replace("&quot;","\"");
+		var thistitle = thistitle.replace("&#8212;","-");
+		var thistitle = thistitle.replace("&amp;","&");
+		
 		$('#prototype').clone().attr("id","slice"+slicestamp).appendTo('#tlhovercontainers');
 		$('#slice'+slicestamp+' p.dateline').html(answerdata[slicestamp]["date"]+', '+answerdata[slicestamp]["year"]+'<a href="'+answerdata[slicestamp]["link"]+'" target="_blank">'+answerdata[slicestamp]["source"]+'</a>');
-		$('#slice'+slicestamp+' h4.artheadline').html(answerdata[slicestamp]["title"]);
+		$('#slice'+slicestamp+' h4.artheadline').html(thistitle);
 		$('#slice'+slicestamp+' p.storyblurb a.articlelink').attr("href",answerdata[slicestamp]["link"]);
 		if (answerdata[slicestamp]["clip"].length > 140) {
 			var cliptext = answerdata[slicestamp]["clip"].slice(0, 140).replace(/^\s+|\s+$/g,"");
