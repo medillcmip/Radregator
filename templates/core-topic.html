@@ -19,6 +19,7 @@
             //$('a.answerthis').unbind('click', handleReplyform).bind('click', handleReplyform);
             $('a.thumbsup').unbind('click', handleResponseLink).bind('click', handleResponseLink);
             $('a.flagasopinion').unbind('click', handleOpinionLink).bind('click', handleOpinionLink);
+            $('a.feedbacklooper').unbind('click', handleFeedbackJSGen).bind('click', handleFeedbackJSGen);
 			//$('#logoutlink').unbind('click', handleLogoutLink).bind('click', handleLogoutLink); 
 
             // TK - placeholders, we may rebind these 
@@ -45,6 +46,8 @@
 			
 			// SET UP Q/A COLLAPSING
 			hideanswers();
+            $('.feedback-form').hide();
+            
 
 			
             // Set the tooltips

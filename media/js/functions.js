@@ -13,6 +13,16 @@ function topicsDropShow() {
 	});
 }
 
+function handleFeedbackJSGen(){
+   alert( $(this).closest('li').attr('id') );
+   $("#feedbackloop-dialog-1" ).dialog({
+            autoOpen: false,
+            height: 300,
+            width: 350,
+            modal: true
+    }); 
+
+}
 
 // VARIABLE VERTICAL ALIGNMENT
 (function ($) {
@@ -34,30 +44,6 @@ function topicsDropShow() {
 //
 function launchLogin () {
 	$.fn.colorbox({href:'/authenticate', open:true});
-}
-
-
-
-//callback to generate a shout out
-//for news organizations that used 
-//this site to drive the narrative of a
-//story forward
-function generateContributionCode(question_id){
-
-	$.ajax({
-
-		  type: "post", 
-		  url: "/api_who_contributed/" + question_id + "/",
-		 success: function(data){
-			alert(data['user_list']);
-		},
-		 error: function (requestError, status, errorResponse) {
-			var errorNum = requestError.status;
-		    alert("error");	
-		}
-	});
-
-
 }
 
 

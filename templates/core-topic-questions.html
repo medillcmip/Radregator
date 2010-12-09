@@ -26,7 +26,7 @@
                 <!--START ANSWER FORM CONTROLS -->
                 <a href="#" class="answerthis answerformtoggle" id="answerformtoggle-{{question.id}}">Answer this</a>
                 <a href="#" class="answerthis collapseanswers">Hide answers</a>
-                <a href="#" class="">Using this information for your story?</a>
+                <a href="#" class="answerthis feedbackloop" id="feedbacklooper-{{question.id}}">Using this information for your story?</a>
                 {% if is_reporter %}
                 <a href="#" class="answerthis deletecommentlink" id="deletecommentlink-{{question.id}}">Delete Question</a>
                 <a href="#" class="answerthis disassociatecommentlink" id="disassociatecommentlink-{{question.id}}">Remove Question from Topic</a>
@@ -34,7 +34,7 @@
 
                 {% endif %}
                 </p>
-
+                {% include "core-topic-feedbackgenerator.html" %}
                 {% include "core-topic-answerform.html" %}
                 
             </div>
