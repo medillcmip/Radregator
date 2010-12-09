@@ -31,125 +31,23 @@
     {% block addstyles %}
     {% endblock %}
 
-    {% if is_reporter %}
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/functions-admin.js"></script>
-    {% endif %}
-
+    {% block addscripts %}
     <script type="text/javascript">
 		$(document).ready( function () {
-			$( ".gotabs" ).tabs();
-			$( ".gotabscollapse" ).tabs({collapsible: true, fx: { height: 'toggle', duration: 'fast' }});
-
-			
-            $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
-            $('#messageswrap').hide(); // Hide messages bar initially
-
-            $('#fbloginbut').unbind('click', handleFacebookLoginButton).bind('click', handleFacebookLoginButton);
-
-            // Handler for collapsing the messages bar
-            $('#messages #hidemessages a').click(function() {
-                $('#messageswrap').hide();
-                return false;
+            $('#signupsubmit').click(function(){
             });
-
-            {% if user.is_authenticated %}
-            // Set a flag that shows that tells other javascript code
-            // that the user is logged in.
-            setUserAuthenticated(); 
-
-            // Handler for ask a question button in top bar
-          
-            {% endif %}
-			
-			$("#usercontrols a.askquestion").click(function() {
-				$("div#footer").css("height","800px");
-				$.scrollTo( 'div#footer', 300, {offset: {top:-35, left:0} } );
-				return false;
-			});
-            
-	        getTopics();
-	   
-	        // Implement error on "ask" in footer
-			if (!userIsAuthenticated()) {
-				$("a#asksubmit").click(function() {
-					displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-				});
-			}
-	
-	});
-    
+        });
     </script>
-
-    {% block addscripts %}
     {% endblock %}
 </head> 
+
 <body class="{{ body_classes }}">
-        <div id="fb-root"></div>
-        <script type="text/javascript">
-        window.fbAsyncInit = function() {
-            FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,
-                     xfbml: true});
-        };
-
-        (function() {
-          var e = document.createElement('script'); e.async = true;
-          e.src = document.location.protocol +
-             '//connect.facebook.net/en_US/all.js';
-          document.getElementById('fb-root').appendChild(e);
-        }());
-
-       </script>
 	<div id="wrapper" class="container_12">
 		<div id="headerwrap">
-		<!--THIS IS HEADER "LOGGED IN"-->
-        {% if user.is_authenticated %}
 			<div id="header" class="loggedin">
-				
-				<ul id="usercontrols" class="grid_5">
-					<li class="button darkback"><a href="#askquestion" class="askquestion"><span class="downarrow"></span>Ask a Question</a></li>
-					<li class="lightback"><a href="#"><span class="downarrow"></span>Favorites</a></li>
-					<li class="lightback"><a href="#"><span class="downarrow"></span>Recent Q&As</a></li>
-                    {% if is_reporter %}
-                    {% include "core-topic-usercontrols-reporter.html" %}
-                    {% endif %}
-				</ul>
-				
-				
 				<!--<h1 class="logo">{{ site_name }}</h1>-->
 				<h1 class="templogo"><a href="/"><span>Source</span>rer</a></h1>
-				<p id="greetuser">Hello, {{user.username}}. <a href="/logout" id="logoutlink">Log out</a>?</p>
-								
 			</div> 
-		<!--CLOSE HEADER "LOGGED IN"-->
-			
-        {% else %}
-		<!--THIS IS HEADER "LOGGED OUT"-->
-		<div id="header" class="loggedout">
-				
-				<div id="facebooklogin">
-					<p>or</p>
-					<a href="#" id="fbloginbut">Login with Facebook</a>
-				</div>
-				<form id="usersignin">
-					<label>Login:</label>
-					<input type="text" value="username" name="username" class="textinput" id="usersignin-username" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';" />
-					
-					<input type="password" value="password" name="password" class="textinput" id="usersignin-password" onblur="if (this.value=='') { this.value=this.defaultValue; } else {}" onfocus="if (this.value==this.defaultValue) { this.value=''; }" />
-					<input type="submit" value="submit" name="submit" class="submit" id="usersignin-submit" />
-				</form>
-				
-				
-				
-
-				<!--<h1 class="logo">Querity</h1>-->
-				<h1 class="templogo"><span>Source</span>rer</h1>
-				<a href="/register" id="greetsignup">Signup</a>
-								
-		</div>
-		<!--CLOSE HEADER "LOGGED OUT"-->
-
-        {%endif%}
 		</div>
 
         <!-- MESSAGE BAR FOR MESSAGES/ERRORS -->
@@ -165,33 +63,48 @@
                 </div>
             </div>
         </div>
-		
-	    {% block pagecontent %}
-        {% endblock %}
 	</div>
-		
+
+    <div id="signupwrap">	
+        <div id="signup" class="container_12">
+            <div id="signup-left" class="grid_6">
+                <h2>Go to the source!</h2>
+                <p>Sourcerer is preparing for a beta launch.  If you'd like to be part of the beta, enter your e-mail address and we'll send you an invitation.</p>
+                <form id="signupform" class="signupinput">
+                    <input type="text" id="signupinput" class="signupinput" name="email" value="Enter your e-mail address" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
+                    
+                    <a href="javascript:;" id="signupsubmit" class="signupbutton signupsubmit blackback">Invite Me</a>
+                    
+                </form>
+            </div>
+            <div id="signup-right" class="grid_6">
+                <a href="http://www.flickr.com/photos/localfourth/5245374245/" title="Sourcerer's Front Page by LocalFourth, on Flickr"><img src="http://farm6.static.flickr.com/5285/5245374245_f9bf8b0b46.jpg" width="450" height="197" alt="Sourcerer's Front Page" /></a>
+                    
+                <a href="http://www.flickr.com/photos/localfourth/sets/72157625560753666/" class="signupbutton blackback">Check out the screenshots</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="infowrapper" class="container_12">
+        <div class="grid_7">
+            <h2>What is Sourcerer?</h2>
+
+            <p>Sourcerer is a context management system designed to help users discover and navigate local news and information.</p>
+
+            <p>It was develeoped as part of a community media innovation project graduate course at the Northwestern University's <a href="http://www.medill.northwestern.edu" alt="Medill">Medill School of Journalism</a>.</p>
+        </div>
+        <div class="grid_5">
+            <h2>More information</h2>
+            <ul>
+              <li><a href="http://www.localfourth.com/" title="Local Fourth blog">Visit the project blog</a></li>
+              <li><a href="http://bit.ly/Local-Fourth-Final-Report
+" title="Reimagining Hyperlocal News: Searching for a Sustainable
+Future">Read the report</a></li>
+              <li><a href="http://bit.ly/CMIP2010" title="Final presentation">Watch the presentation</a></li>
+            </ul>
+        </div>
+    </div>
 	
-	
-<div id="footerwrap">	
-	<div id="footer" class="container_12">
-		<!--START FOOTER ASK/SEARCH INPUT-->
-		<div class="gotabs">
-			<ul class="footertabs">
-				<li><a href="#askdiv">Ask a question</a></li>
-				<!--<li><a href="#searchdiv">Search</a></li>-->
-			</ul>
-			<div class="footerpanes" id="askdiv">
-				<form id="askfooter" class="footerinput">
-					<input type="text" id="askinput" class="footerinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';topicsDropShow();">
-					
-					
-					<a href="javascript:;" id="asksubmit" class="footersubmit blackback">Ask</a>
-					
-				</form>
-			</div>
-		
-	
-</div>
 
 </body>
 
