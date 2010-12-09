@@ -13,10 +13,10 @@ class ClipTextForm(forms.Form):
     published story
     """
     selected_text = forms.CharField(widget=forms.Textarea(\
-        attrs={'class':'clipper_text_field'}), required=True, \
+        attrs={'cols':32,'class':'clipper_text_field'}), required=True, \
         label="Any text you highlight in the article will appear here!")
     user_comments = forms.CharField(widget=forms.Textarea(\
-        attrs={'class':'clipper_text_field'}), required=False, \
+        attrs={'col':32,'class':'clipper_text_field'}), required=False, \
         label="Add some of your own commentary here.")
     title = forms.CharField(required=False, \
         label="Not the right title for this article?  Mind filling it in for us?"\

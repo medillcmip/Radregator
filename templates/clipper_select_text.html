@@ -199,14 +199,14 @@
 
 
         <form id="form1" name="form1"  method='POST' action='/api/json/clipper_select/'>
-          <div id='clipper_highlights_textarea' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=33%;">
+          <div id='clipper_highlights_textarea' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=27%;">
           {{form.selected_text.errors}}
           <label for="id_selected_text" style="display:block;">Highlighted text appears here...</label><br>
           {{form.selected_text}}
         </div>
 
 
-        <div id='clipper_user_comments_area' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=33%;">
+        <div id='clipper_user_comments_area' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=27%;">
           {{form.user_comments.errors}}
           <label for="id_user_comments" style="display:block;"><a href="javascript:$('#id_user_comments').show();">Want to add a comment?</a></label><br>
           {{form.user_comments}}
