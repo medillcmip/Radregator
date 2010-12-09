@@ -41,14 +41,18 @@
             });
 
             $('#signupsubmit').click(function(){
+                var email = $('#signupinput').val();
                 $.ajax({
                     type: "post", 
                     url: "/api/json/invite/",
-                     success: function(data){
+                    data: { email : email },
+                    success: function(data){
                         displayMessage("Thanks.  We'll be in touch.", 'info');
                         return false;
                     },
                     error: function (requestError, status, errorResponse) {
+                        var response_text = requestError.responseText;
+                        var response_data = $.parseJSON(response_text);
                         var errorMsg = response_data.error; 
                         displayMessage(errorMsg, 'error');
                         return false;

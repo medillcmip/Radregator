@@ -90,7 +90,7 @@ urlpatterns = patterns('',
      'core.views.api_questions'),
 
     (r'^api/(?P<output_format>json)/invite/$', \
-     'core.views.api_invite'),
+     'users.views.api_invite'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

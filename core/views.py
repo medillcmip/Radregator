@@ -1037,37 +1037,3 @@ def api_questions(request, output_format='json'):
 
     return HttpResponse(content=content, mimetype='application/json', \
                         status=status)
-
-def api_invite(request, output_format='json'):
-    """Create a user, but make it disabled.
-
-    Formats: json
-
-    HTTP Method: GET
-
-    Requires authentication: false
-
-    Parameters:
-
-    * email: E-mail address for the new user. 
-    """
-
-    status = 201 # HTTP return status.  We'll be optimistic.
-    data = {} # response data 
-
-    try:
-        if request.method == 'POST':
-            pass
-
-        else:
-            raise MethodUnsupported("%s is not supported at this time." % \
-                                (request.method))
-
-    except MethodUnsupported, e:
-        status = 405 # Method not allowed
-        data['error'] = "%s" % e
-
-    content=json.dumps(data)
-
-    return HttpResponse(content=content, mimetype='application/json', \
-                        status=status)

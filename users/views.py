@@ -15,7 +15,7 @@ import core.utils
 
 from models import UserProfile
 from models import User
-from forms import LoginForm, RegisterForm 
+from forms import LoginForm, RegisterForm, InviteForm 
 
 logger = core.utils.get_logger()
 
@@ -490,4 +490,51 @@ def api_facebook_auth(request, output_format='json'):
         data['error'] = "%s" % error
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
+                        status=status)
+
+def api_invite(request, output_format='json'):
+    """Create a user, but make it disabled.
+
+    Formats: json
+
+    HTTP Method: GET
+
+    Requires authentication: false
+
+    Parameters:
+
+    * email: E-mail address for the new user. 
+    """
+
+    status = 201 # HTTP return status.  We'll be optimistic.
+    data = {} # response data 
+
+    try:
+        if request.method == 'POST':
+            form = InviteForm(request.POST)
+            if form.is_valid():
+                email = form.cleaned_data['email']
+                user = User.objects.create_user(username=email,
+                                                email=email)
+                user.is_active = False
+                user.save()
+                user_profile = UserProfile(user=user)
+                user_profile.save()
+
+            else:
+                print form.errors
+                status = 400 # Caught in a bad request
+                data['error'] = "Invalid e-mail address."
+
+        else:
+            raise MethodUnsupported("%s is not supported at this time." % \
+                                (request.method))
+
+    except MethodUnsupported, e:
+        status = 405 # Method not allowed
+        data['error'] = "%s" % e
+
+    content=json.dumps(data)
+
+    return HttpResponse(content=content, mimetype='application/json', \
                         status=status)
