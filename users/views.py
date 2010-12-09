@@ -544,6 +544,10 @@ def api_invite(request, output_format='json'):
         status = 409 # Conflict
         data['error'] = "%s" % detail 
 
+    except Exception as detail:
+        status = 500 # What the what?
+        data['error'] = "Something went wrong.  We're looking into it.  Please try again." 
+
     content=json.dumps(data)
 
     return HttpResponse(content=content, mimetype='application/json', \

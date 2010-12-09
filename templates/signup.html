@@ -41,6 +41,7 @@
             });
 
             $('#signupsubmit').click(function(){
+                displayMessage("The magic is happening ...")
                 var email = $('#signupinput').val();
                 $.ajax({
                     type: "post", 
