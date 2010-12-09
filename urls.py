@@ -5,101 +5,113 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    # Example:
-    # (r'^newsqa/', include('newsqa.foo.urls')),
-    (r'^$', 'core.views.frontpage'),
-    
-    (r'^signup', 'core.views.signup'),
+if not settings.PREVIEW_MODE:
+    urlpatterns = patterns('',
+        # Example:
+        # (r'^newsqa/', include('newsqa.foo.urls')),
+        (r'^$', 'core.views.frontpage'),
+        
+        (r'^signup', 'core.views.signup'),
 
-    (r'^topic/(?P<whichtopic>\d+)/', 'core.views.topic'),
+        (r'^topic/(?P<whichtopic>\d+)/', 'core.views.topic'),
 
-    (r'^reporterview', 'core.views.reporterview'),
+        (r'^reporterview', 'core.views.reporterview'),
 
-    (r'^loginstatus', 'core.views.login_status'),
-    (r'^login', 'users.views.api_login'),
+        (r'^loginstatus', 'core.views.login_status'),
+        (r'^login', 'users.views.api_login'),
 
-    (r'^static_login', 'users.views.weblogin'),
-    (r'^static_register', 'users.views.register'),
-    (r'^logout', 'users.views.weblogout'),
+        (r'^static_login', 'users.views.weblogin'),
+        (r'^static_register', 'users.views.register'),
+        (r'^logout', 'users.views.weblogout'),
 
-    (r'^register', 'users.views.register'),
+        (r'^register', 'users.views.register'),
 
-    (r'^authenticate', 'users.views.auth'),
-    
-    (r'^accounts/login/$', 'users.views.weblogin'),
+        (r'^authenticate', 'users.views.auth'),
+        
+        (r'^accounts/login/$', 'users.views.weblogin'),
 
-    (r'^accounts/login/register/$', 'users.views.register'),
-    
-    (r'^clipper_select', 'clipper.views.clipper_submit_select'),
+        (r'^accounts/login/register/$', 'users.views.register'),
+        
+        (r'^clipper_select', 'clipper.views.clipper_submit_select'),
 
-    (r'^clipper/(?P<comment_id>\d+)/(?P<topic_id>\d+/)', 'clipper.views.clipper_paste_url'),
+        (r'^clipper/(?P<comment_id>\d+)/(?P<topic_id>\d+/)', 'clipper.views.clipper_paste_url'),
 
-    (r'^bootstrapper/(?P<question_id>\d+)/', 'core.views.generate_bootstrapper'),
-    
-    (r'^api/(?P<output_format>json)/clipper_select/',
-     'clipper.views.api_clipper_submit'),
+        (r'^bootstrapper/(?P<question_id>\d+)/', 'core.views.generate_bootstrapper'),
+        
+        (r'^api/(?P<output_format>json)/clipper_select/',
+         'clipper.views.api_clipper_submit'),
 
-    (r'^deletecomments', 'core.views.deletecomments'),
-    (r'^deletetopics', 'core.views.deletetopics'),
-    (r'^mergecomments', 'core.views.mergecomments'),
-    (r'^newtopic', 'core.views.newtopic'),
-    (r'^newsummary', 'core.views.newsummary'),
-    (r'^associatecomment', 'core.views.associatecomment'),
-    (r'^disassociatecomment', 'core.views.disassociatecomment'),
-    (r'^disabled_act', 'users.views.disabled_act'),
+        (r'^deletecomments', 'core.views.deletecomments'),
+        (r'^deletetopics', 'core.views.deletetopics'),
+        (r'^mergecomments', 'core.views.mergecomments'),
+        (r'^newtopic', 'core.views.newtopic'),
+        (r'^newsummary', 'core.views.newsummary'),
+        (r'^associatecomment', 'core.views.associatecomment'),
+        (r'^disassociatecomment', 'core.views.disassociatecomment'),
+        (r'^disabled_act', 'users.views.disabled_act'),
 
-    (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/$', \
-        'core.views.api_topic'),
+        (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/$', \
+            'core.views.api_topic'),
 
-    (r'^api/(?P<output_format>json)/topics/$', 'core.views.api_topics'),
+        (r'^api/(?P<output_format>json)/topics/$', 'core.views.api_topics'),
 
-    (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/summary/$', \
-        'core.views.api_topic_summary'),
+        (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/summary/$', \
+            'core.views.api_topic_summary'),
 
-    (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'core.views.api_topic_comments'),
+        (r'^api/(?P<output_format>json)/topics/(?P<topic_slug_or_id>[\w-]+)/comments/(?P<page>\d+)/$', 'core.views.api_topic_comments'),
 
-    (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/responses/(?P<response_id>\d*)$',
-     'core.views.api_comment_responses'),
+        (r'^api/(?P<output_format>json)/comments/(?P<comment_id>\d+)/responses/(?P<response_id>\d*)$',
+         'core.views.api_comment_responses'),
 
-    (r'^api/(?P<output_format>json)/users/facebooklogin/$',
-     'users.views.api_facebook_auth'),
+        (r'^api/(?P<output_format>json)/users/facebooklogin/$',
+         'users.views.api_facebook_auth'),
 
-    (r'^api/(?P<output_format>json)/users/(?P<uri_username>\w*)/login/$',
-     'users.views.api_auth'),
+        (r'^api/(?P<output_format>json)/users/(?P<uri_username>\w*)/login/$',
+         'users.views.api_auth'),
 
-    (r'^api/(?P<output_format>json)/users/$',
-     'users.views.api_users'),
+        (r'^api/(?P<output_format>json)/users/$',
+         'users.views.api_users'),
 
-    (r'^api/(?P<output_format>json)/comments/$',
-     'core.views.api_commentsubmission'),
+        (r'^api/(?P<output_format>json)/comments/$',
+         'core.views.api_commentsubmission'),
 
-    (r'^api/(?P<output_format>json)/comments/tag/$',
-     'core.views.api_comment_tag'),
+        (r'^api/(?P<output_format>json)/comments/tag/$',
+         'core.views.api_comment_tag'),
 
-    (r'^api/(?P<output_format>json)/topics/tag/$',
-     'core.views.api_topic_tag'),
+        (r'^api/(?P<output_format>json)/topics/tag/$',
+         'core.views.api_topic_tag'),
 
-    (r'^api/(?P<output_format>json)/comments/submit',
-     'core.views.api_commentsubmission'),
+        (r'^api/(?P<output_format>json)/comments/submit',
+         'core.views.api_commentsubmission'),
 
-    (r'^commentsubmit',
-     'core.views.api_commentsubmission'), # For debugging purposes
+        (r'^commentsubmit',
+         'core.views.api_commentsubmission'), # For debugging purposes
 
-    (r'^api/(?P<output_format>json)/questions/$', \
-     'core.views.api_questions'),
+        (r'^api/(?P<output_format>json)/questions/$', \
+         'core.views.api_questions'),
 
-    (r'^api/(?P<output_format>json)/invite/$', \
-     'users.views.api_invite'),
+        (r'^api/(?P<output_format>json)/invite/$', \
+         'users.views.api_invite'),
 
+        # Some testing forms for new features
+        (r'^simpletest/(?P<whichtest>\w+)', 'core.views.simpletest'),
+    )
+
+else:
+    urlpatterns = patterns('',
+        # (r'^newsqa/', include('newsqa.foo.urls')),
+        (r'^$', 'core.views.signup'),
+        (r'^api/(?P<output_format>json)/invite/$', \
+         'users.views.api_invite'),
+    )
+
+# Add the admin stuff
+urlpatterns += patterns('',
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-
-    # Some testing forms for new features
-    (r'^simpletest/(?P<whichtest>\w+)', 'core.views.simpletest'),
 )
 
 # Serve static content.  This is inneficient and insecure

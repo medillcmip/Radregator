@@ -75,3 +75,6 @@ if DEBUG and ENABLE_FIREPYTHON:
 # See http://stackoverflow.com/questions/690723/log-all-errors-to-console-or-file-on-django-site/691252#691252
 if DEBUG:
     DEBUG_PROPAGATE_EXCEPTIONS = False 
+
+# Run the site as normal or disable everything except for the signup page.
+PREVIEW_MODE=False

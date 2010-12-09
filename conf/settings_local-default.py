@@ -65,3 +65,6 @@ if DEBUG:
 
 SITE_NAME = 'Querity'
 SITE_BODY_CLASSES = ''
+
+# Run the site as normal or disable everything except for the signup page.
+PREVIEW_MODE=False
