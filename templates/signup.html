@@ -34,7 +34,26 @@
     {% block addscripts %}
     <script type="text/javascript">
 		$(document).ready( function () {
+            // Handler for collapsing the messages bar
+            $('#messages #hidemessages a').click(function() {
+                $('#messageswrap').hide();
+                return false;
+            });
+
             $('#signupsubmit').click(function(){
+                $.ajax({
+                    type: "post", 
+                    url: "/api/json/invite/",
+                     success: function(data){
+                        displayMessage("Thanks.  We'll be in touch.", 'info');
+                        return false;
+                    },
+                    error: function (requestError, status, errorResponse) {
+                        var errorMsg = response_data.error; 
+                        displayMessage(errorMsg, 'error');
+                        return false;
+                    }
+                });
             });
         });
     </script>
