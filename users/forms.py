@@ -100,3 +100,9 @@ class RegisterForm(forms.Form):
 
 class InviteForm(forms.Form):
     email = forms.EmailField(max_length=254)
+    interest = forms.ChoiceField(required=False,
+        choices=(
+            ('publisher', 'A publisher, reporter or other media maker interested in running Sourcerer on my site.'),
+            ('consumer', 'A media consumer interested in using Sourcerer.'),
+            ('', "None of these.  I'm just interested."),
+        ))

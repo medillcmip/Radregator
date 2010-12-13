@@ -504,6 +504,9 @@ def api_invite(request, output_format='json'):
     Parameters:
 
     * email: E-mail address for the new user. 
+    * interest: User's interest in signing up.  Value can be either "publisher",
+                "consumer", or an empty string.  Default is an empty string.
+
     """
 
     status = 201 # HTTP return status.  We'll be optimistic.
@@ -511,9 +514,13 @@ def api_invite(request, output_format='json'):
 
     try:
         if request.method == 'POST':
+            #print "DEBUG: POST"
             form = InviteForm(request.POST)
+            #print "DEBUG: form object created"
             if form.is_valid():
+                #print "DEBUG: form validated"
                 email = form.cleaned_data['email']
+                interest = form.cleaned_data['interest']
 
                 try:
                     user = User.objects.get(email=email)
@@ -521,24 +528,25 @@ def api_invite(request, output_format='json'):
                 except User.DoesNotExist:
                     username = email # Username defaults to e-mail address
                     if len(email) > 30:
-                        print email
+                        #print email
                         # Django usernames can't be longer than 30 characters
                         # Just take the first 30 characters of the part of
                         # the email address before the '@'
                         email_parts = email.partition('@')
                         username = email_parts[0][:30]
 
-                    
                     user = User.objects.create_user(username=username,
                                                     email=email)
                     user.is_active = False
                     user.set_unusable_password()
                     user.save()
-                    user_profile = UserProfile(user=user)
+                    #print "DEBUG: saved user"
+                    user_profile = UserProfile(user=user, interest=interest)
                     user_profile.save()
+                    #print "DEBUG: saved user profile"
 
             else:
-                print form.errors
+                #print "DEBUG: %s" % (form.errors)
                 status = 400 # Caught in a bad request
                 data['error'] = "Invalid e-mail address."
 
@@ -557,7 +565,7 @@ def api_invite(request, output_format='json'):
     except Exception as detail:
         status = 500 # What the what?
         data['error'] = "Something went wrong.  We're looking into it.  Please try again." 
-        print detail
+        #print detail
 
     content=json.dumps(data)
 
