@@ -973,7 +973,6 @@ function initiateTopicTimeline() {
 
 
 //answerdata["20101217-1"] = {author: null,bgcolor: "rgb(31, 153, 31)",clip: null,date: "Dec. 17",link: undefined,month: "Dec.",pageanchor: undefined,popularity: "0",source: null,title: null,year: "2010"};
-//doop, what? cmon
 //END TESTING ISSUE 126
 
 	answerdata = sortThisArray(answerdata);
@@ -1089,9 +1088,10 @@ function initiateTopicTimeline() {
                 window.open(answerdata[slicestamp]["link"]);
             });
                 
-            iterator++;	
 
         }catch(e){}//not all articles have data populated 
+
+        iterator++;	
 	});
 }
 
