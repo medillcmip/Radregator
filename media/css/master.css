@@ -1570,7 +1570,7 @@ div#signup p {
 }
 
 div#signup form#signupform {
-    margin-top: 50px;
+    margin-top: 25px;
 }
 
 div#signup form.signupinput {
@@ -1578,7 +1578,6 @@ div#signup form.signupinput {
 	overflow: auto;
 	margin-bottom: 50px;
 }
-
 
 div#signup form.signupinput input.signupinput {
 	width: 300px;
@@ -1588,9 +1587,24 @@ div#signup form.signupinput input.signupinput {
 	font-weight: bold;
 	border: 2px #323232 solid;
 	padding: 0 10px;
-	float: left;
+	/* float: left; */
 	margin-right: 10px;
 	color: #888;
+}
+
+div#signup .signupselect {
+	width: 324px;
+	height: 36px;
+	line-height: 32px;
+	font-size: 14px;
+	font-weight: bold;
+	border: 2px #323232 solid;
+	padding: 0 0 0 10px;
+	/* float: left; */
+	margin-right: 10px;
+    margin-top: 10px;
+	color: #888;
+    background-color: #ffffff;
 }
 
 div#signup .signupbutton {
@@ -1603,10 +1617,11 @@ div#signup .signupbutton {
 	font-weight: bold;
 	text-align: center;
 	display: block;
+    margin-top: 10px;
 }
 
 div#signup form.signupinput .signupsubmit {
-	float: left;
+	/* float: left; */
 	width: 100px;
 }
 
