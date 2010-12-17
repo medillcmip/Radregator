@@ -968,6 +968,14 @@ function initiateTopicTimeline() {
 	answerdata = sortThisArray(answerdata);
 */
 // END TESTING BLOCK //
+
+//TESTING ISSUE 126 
+
+
+//answerdata["20101217-1"] = {author: null,bgcolor: "rgb(31, 153, 31)",clip: null,date: "Dec. 17",link: undefined,month: "Dec.",pageanchor: undefined,popularity: "0",source: null,title: null,year: "2010"};
+
+//END TESTING ISSUE 126
+
 	answerdata = sortThisArray(answerdata);
 
 
@@ -1003,84 +1011,87 @@ function initiateTopicTimeline() {
 		
 		
 		// FIX HTML ISSUES
-		var thistitle = answerdata[slicestamp]["title"].replace("&quot;","\"");
-		var thistitle = thistitle.replace("&#8212;","-");
-		var thistitle = thistitle.replace("&amp;","&");
+        try{
+            var thistitle = answerdata[slicestamp]["title"].replace("&quot;","\"");
+            var thistitle = thistitle.replace("&#8212;","-");
+            var thistitle = thistitle.replace("&amp;","&");
 		
-		$('#prototype').clone().attr("id","slice"+slicestamp).appendTo('#tlhovercontainers');
-		$('#slice'+slicestamp+' p.dateline').html(answerdata[slicestamp]["date"]+', '+answerdata[slicestamp]["year"]+'<a href="'+answerdata[slicestamp]["link"]+'" target="_blank">'+answerdata[slicestamp]["source"]+'</a>');
-		$('#slice'+slicestamp+' h4.artheadline').html(thistitle);
-		$('#slice'+slicestamp+' p.storyblurb a.articlelink').attr("href",answerdata[slicestamp]["link"]);
-		if (answerdata[slicestamp]["clip"].length > 140) {
-			var cliptext = answerdata[slicestamp]["clip"].slice(0, 140).replace(/^\s+|\s+$/g,"");
-		} else {
-			var cliptext = answerdata[slicestamp]["clip"];
-		}
-		$('#slice'+slicestamp+' p.storyblurb span').html(cliptext);
-		
+            $('#prototype').clone().attr("id","slice"+slicestamp).appendTo('#tlhovercontainers');
+            $('#slice'+slicestamp+' p.dateline').html(answerdata[slicestamp]["date"]+', '+answerdata[slicestamp]["year"]+'<a href="'+answerdata[slicestamp]["link"]+'" target="_blank">'+answerdata[slicestamp]["source"]+'</a>');
+            $('#slice'+slicestamp+' h4.artheadline').html(thistitle);
+            $('#slice'+slicestamp+' p.storyblurb a.articlelink').attr("href",answerdata[slicestamp]["link"]);
+            if (answerdata[slicestamp]["clip"].length > 140) {
+                var cliptext = answerdata[slicestamp]["clip"].slice(0, 140).replace(/^\s+|\s+$/g,"");
+            } else {
+                var cliptext = answerdata[slicestamp]["clip"];
+            }
+            $('#slice'+slicestamp+' p.storyblurb span').html(cliptext);
+            
 
-		var thisleftoffset = leftoffset;
-		
-		
-		
-		// NOW DRAW THE WHOLE DAMNED THING, INCLUDING DATES ALONG BOTTOM
-		slices[slicestamp] = timeline.rect(leftoffset, 0, 2, 1).attr({fill: answerdata[slicestamp]["bgcolor"]}).attr("stroke-width",0).attr("opacity",0).attr("slicestamp",slicestamp);
-		
-		//DEAL WITH TEXT
-		var thisyear = slicestamp.substring(0,4);
-		var thismonth = slicestamp.substring(4,6); 
-		var thisday = slicestamp.substring(6,8);
-		
-		if (thisyear != lastyear) {
-			window["year" + thisyear] = timeline.text(leftoffset+2, 176, thisyear).attr({'text-anchor': 'start'}).attr({ "font-size": 15, "font-family": "Arial, Helvetica, sans-serif","font-weight": "bold", "color": "#323232" });
-		}
-		
-		if (thismonth != lastmonth) {
-			window["month" + thismonth] = timeline.text(leftoffset+2, 160, answerdata[slicestamp]["month"]).attr({'text-anchor': 'start'}).attr({ "font-size": 12, "font-family": "Arial, Helvetica, sans-serif", "color": "#323232" });			
-		}
-		
-		//SAVE VALUES FOR NEXT ROUND
-		lastyear = thisyear;
-		lastmonth = thismonth;
-		lastday = thisday;
+            var thisleftoffset = leftoffset;
+            
+            
+            
+            // NOW DRAW THE WHOLE DAMNED THING, INCLUDING DATES ALONG BOTTOM
+            slices[slicestamp] = timeline.rect(leftoffset, 0, 2, 1).attr({fill: answerdata[slicestamp]["bgcolor"]}).attr("stroke-width",0).attr("opacity",0).attr("slicestamp",slicestamp);
+            
+            //DEAL WITH TEXT
+            var thisyear = slicestamp.substring(0,4);
+            var thismonth = slicestamp.substring(4,6); 
+            var thisday = slicestamp.substring(6,8);
+            
+            if (thisyear != lastyear) {
+                window["year" + thisyear] = timeline.text(leftoffset+2, 176, thisyear).attr({'text-anchor': 'start'}).attr({ "font-size": 15, "font-family": "Arial, Helvetica, sans-serif","font-weight": "bold", "color": "#323232" });
+            }
+            
+            if (thismonth != lastmonth) {
+                window["month" + thismonth] = timeline.text(leftoffset+2, 160, answerdata[slicestamp]["month"]).attr({'text-anchor': 'start'}).attr({ "font-size": 12, "font-family": "Arial, Helvetica, sans-serif", "color": "#323232" });			
+            }
+            
+            //SAVE VALUES FOR NEXT ROUND
+            lastyear = thisyear;
+            lastmonth = thismonth;
+            lastday = thisday;
 
-		// var thisbarheight = (answerdata[slicestamp]["popularity"]+3)*10;
-		// var thisbary = 150 - thisbarheight;
-		var thisbarpop = answerdata[slicestamp]["popularity"];
-		var thisbarheight = ((thisbarpop)*((150/toppop)))+24;
-		var thisbary = 150 - thisbarheight;
-				
-		//ANIMATE IN
-		slices[slicestamp].animate({
-			"20%": {y: thisbary},
-			"40%": {opacity: 0.6},
-			"50%": {height: thisbarheight},
-			"80%": {opacity: 0.9},
-			"100%": {width:segmentlength-1}
-		}, 1500);
-		
-		
-		// CONNECT HOVER TO HIDE/SHOW THE ARTICLES
-		slices[slicestamp].hover(function () {
-			this.attr("opacity",1);
-			this.node.style.cursor = 'pointer';
-			// $('#slice'+slicestamp).css("display","block").css("position","absolute").css("top",thisbary+(thisbarheight/2)+25).css("left",(thisleftoffset+(segmentlength/2))-150+"px");
-			$('#slice'+slicestamp).css("display","block").css("position","absolute").css("top","160px").css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+            // var thisbarheight = (answerdata[slicestamp]["popularity"]+3)*10;
+            // var thisbary = 150 - thisbarheight;
+            var thisbarpop = answerdata[slicestamp]["popularity"];
+            var thisbarheight = ((thisbarpop)*((150/toppop)))+24;
+            var thisbary = 150 - thisbarheight;
+                    
+            //ANIMATE IN
+            slices[slicestamp].animate({
+                "20%": {y: thisbary},
+                "40%": {opacity: 0.6},
+                "50%": {height: thisbarheight},
+                "80%": {opacity: 0.9},
+                "100%": {width:segmentlength-1}
+            }, 1500);
+            
+            
+            // CONNECT HOVER TO HIDE/SHOW THE ARTICLES
+            slices[slicestamp].hover(function () {
+                this.attr("opacity",1);
+                this.node.style.cursor = 'pointer';
+                // $('#slice'+slicestamp).css("display","block").css("position","absolute").css("top",thisbary+(thisbarheight/2)+25).css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+                $('#slice'+slicestamp).css("display","block").css("position","absolute").css("top","160px").css("left",(thisleftoffset+(segmentlength/2))-150+"px");
 
-		}, 
-		function () {
-			$('#slice'+slicestamp).css("display","none");
-			this.attr("opacity",0.9);
-		});
-		
-		$('#slice'+slicestamp).hover(function () { $(this).css("display","block"); }, function() { $(this).css("display","none"); });
-		
-		// CONNECT TIMELINE CLICKING LAUNCH NEW WINDOW WITH ARTICLE
-		slices[slicestamp].click(function () {
-			window.open(answerdata[slicestamp]["link"]);
-		});
-			
-		iterator++;	
+            }, 
+            function () {
+                $('#slice'+slicestamp).css("display","none");
+                this.attr("opacity",0.9);
+            });
+            
+            $('#slice'+slicestamp).hover(function () { $(this).css("display","block"); }, function() { $(this).css("display","none"); });
+            
+            // CONNECT TIMELINE CLICKING LAUNCH NEW WINDOW WITH ARTICLE
+            slices[slicestamp].click(function () {
+                window.open(answerdata[slicestamp]["link"]);
+            });
+                
+            iterator++;	
+
+        }catch(e){}//not all articles have data populated 
 	});
 }
 
