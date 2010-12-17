@@ -315,8 +315,6 @@ function handleReplySubmit(){
 	 var this_sources = $('#id_sources-'+thiscomment_id).val();
 	 var this_url = $('#' + thisform + ' .clipper_url_field').val();
 
-	 $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
-
 		  if(this_url != '' &&  this_url != null){
 				
 				return true;
