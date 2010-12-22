@@ -33,7 +33,7 @@ class UserProfile(models.Model):
     city = models.TextField(blank=True)
     state = models.CharField(blank=True, max_length=2)
     zip = models.CharField(blank=True, max_length=10)
-    phone_number = models.CharField(blank=True, max_length=10)
+    phone_number = models.CharField(blank=True, max_length=12)
     dob = models.DateField(blank=True, null = True)
     user_type = models.CharField(max_length=15, choices = USER_TYPE_CHOICES)
     is_verified = models.BooleanField(default = False)

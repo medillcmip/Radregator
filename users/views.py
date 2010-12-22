@@ -228,34 +228,45 @@ def register(request):
     """
     template_dict = {}
     form = None
-
+    logger.info("users.register(request):")
     return_page = ''
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             #grab input
-            logger.debug('users.views.register(request): form was valid')
             f_username = form.cleaned_data['username']
+            
+            logger.info('users.views.register(request): form was valid for user %s' \
+                , f_username)
+
             f_password = form.cleaned_data['password']
-            #f_email = form.cleaned_data['email']
-            #f_first_name = form.cleaned_data['first_name']
-            #f_last_name = form.cleaned_data['last_name']
-            #f_street_address = form.cleaned_data['street_address']
-            #f_city = form.cleaned_data['city']
-            #f_state = form.cleaned_data['state']
-            #f_zip_code = form.cleaned_data['zip_code']
-            #f_phone = form.cleaned_data['phone']
-            #f_dob = form.cleaned_data['dob']
+            f_email = form.cleaned_data['email']
+            f_first_name = form.cleaned_data['first_name']
+            f_last_name = form.cleaned_data['last_name']
+            f_street_address = form.cleaned_data['street_address']
+            f_city = form.cleaned_data['city']
+            f_state = form.cleaned_data['state']
+            f_zip_code = form.cleaned_data['zip_code']
+            f_phone = form.cleaned_data['phone']
+            f_dob = form.cleaned_data['dob']
             #we validate the username / email is unique by overriding
             #clean_field methods in RegisterForm
             baseuser = User.objects.create_user(username=f_username,\
-                password=f_password, email='')
-            baseuser.first_name=''
-            baseuser.last_name=''
+                password=f_password, email=f_email)
+            baseuser.first_name = f_first_name
+            baseuser.last_name = f_last_name
             baseuser.save()
             newuser = UserProfile(user=baseuser)
+            newuser.street_address = f_street_address
+            newuser.city = f_city
+            newuser.dob = f_dob
+            newuser.phone_number = f_phone
+            newuser.zip_code = f_zip_code
+            newuser.state = f_state
+            #all users are considered sources if they register
+            newuser.user_type = 'S'
             newuser.save()
-            logger.debug('user.views.register(request): user saved') 
+            logger.info('user.views.register(request): user %s saved', f_username) 
             #this call is antiquated and not how the flow is designed to work
             #any longer.  
             #return do_login(f_username,f_password,request)
@@ -267,7 +278,7 @@ def register(request):
         form = RegisterForm()
         return_page = 'users-register.html'
     template_dict['form'] = form
-    logger.debug('users.views.register(request: returning page='+return_page)
+    logger.info('users.views.register(request: returning page='+return_page)
     return render_to_response(return_page, template_dict,\
         context_instance=RequestContext(request))
 

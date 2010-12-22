@@ -5,6 +5,7 @@ import core.utils
 from django.contrib.auth import authenticate
 from django.contrib.localflavor.us.forms import USZipCodeField,\
     USStateField,USPhoneNumberField
+from django.contrib.localflavor.us.us_states import STATE_CHOICES
 
 logger = core.utils.get_logger() 
 
@@ -51,21 +52,32 @@ class RegisterForm(forms.Form):
     EMAIL_EXISTS_MSG = 'This email already exists, please try another'
     USERNAME_MUST_BE_ALNUM_MSG = 'Usernames must be alphanumeric (i.e., A-Z,0-9)'
 
+    STATE_CHOICES = list(STATE_CHOICES)
+
     username = forms.CharField(max_length=30)
     password = forms.CharField(max_length=30, widget=forms.PasswordInput)
     confirm_password = forms.CharField(max_length=30, widget=forms.PasswordInput)
-    #first_name = forms.CharField(max_length=30, required=False)
-    #last_name = forms.CharField(max_length=45, required=False)
-    #email = forms.EmailField(required=False)
-    #street_address = forms.CharField(max_length=45,required=False)
-    #city = forms.CharField(max_length=45,required=False)
-    #state = USStateField(required=False)
-    #zip_code = USZipCodeField(required=False)
-    #phone = USPhoneNumberField(required=False)
-    #dob = forms.DateField(initial=datetime.date.today, required=False)
-    #dont_log_user_in = forms.BooleanField(required = False, initial=False)
+    email = forms.EmailField(required=True \
+        , label='email')
+    first_name = forms.CharField(max_length=30, required=False \
+        , label='First name: (optional)')
+    last_name = forms.CharField(max_length=45, required=False \
+        , label='Last name: (optional)')
+    street_address = forms.CharField(max_length=45,required=False \
+        , label='Street: (optional)')
+    city = forms.CharField(max_length=45,required=False \
+        , label='City: (optional)')
+    state = USStateField(required=False \
+        , label='State: (optional)' \
+        , widget=forms.Select(choices=STATE_CHOICES))
+    zip_code = USZipCodeField(required=False \
+        , label='Zip code: (optional)')
+    phone = USPhoneNumberField(required=False \
+        , label='Phone: (optional)')
+    dob = forms.DateField(initial=datetime.date.today, required=False \
+        , label='Birthday: (optional)'
+        , widget=forms.TextInput(attrs={'class':'demo'}))
 
-    # TODO: validate that password = confirm password
 
     def clean_email(self):
         """
