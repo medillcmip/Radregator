@@ -530,7 +530,7 @@ function handleUserSignInForm() {
         $(this).html('');
     });
 
-    var posturl = "/api/json/users/"+thisuser+"/login/";
+    var posturl = "/api/json/users/login/";
         // alert(posturl);
 
     $.ajax({

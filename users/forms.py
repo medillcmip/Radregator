@@ -1,15 +1,20 @@
 from django import forms
 from models import User
 import datetime
+import core.utils
 from django.contrib.auth import authenticate
 from django.contrib.localflavor.us.forms import USZipCodeField,\
     USStateField,USPhoneNumberField
+
+logger = core.utils.get_logger() 
+
 
 
 class LoginForm(forms.Form):
     # Error message constants 
     WRONG_USERNAME_OR_PASSWORD_MSG = 'The username / password combination ' + \
         'you entered was wrong or you don\'t have an account with us'
+    ERR_ALPHANUMS_MSG = 'Usernames must be alphanumeric (i.e., A-Z, 0-9)'
 
     username = forms.CharField(max_length=30)
     password = forms.CharField(max_length=30, widget=forms.PasswordInput)
@@ -24,7 +29,10 @@ class LoginForm(forms.Form):
         """
         f_username = self.cleaned_data.get('username')
         f_password = self.cleaned_data.get('password')
+
+        logger.info('LoginForm.clean(self): logging user in %s', f_username)
         user = authenticate(username = f_username, password = f_password)
+    
         if user is None and (f_username != None and f_password != None):
             raise forms.ValidationError(self.WRONG_USERNAME_OR_PASSWORD_MSG)
         else:
@@ -63,11 +71,13 @@ class RegisterForm(forms.Form):
         """
         ensure no other users have the same email
         """
-
         def get_non_empty_emails(usr):
             if len(usr.email) != 0: return True
             else: return False
         data = self.cleaned_data['email']
+
+        logger.info('RegisterForm.clean_email(self): checking for email %s '\
+            , data)
         usrs = User.objects.filter(email=data, email__isnull=False)
         populated_emails = filter(get_non_empty_emails,usrs)
         if len(populated_emails) > 0:
@@ -80,9 +90,9 @@ class RegisterForm(forms.Form):
         ensure no other users exist with the same username
         """
         data = self.cleaned_data['username']
+        logger.info('RegisterForm.clean_username(self): checking username %s'
+            , data)
         usrs = User.objects.filter(username=data)
-        if not data.isalnum():
-            raise forms.ValidationError(self.USERNAME_MUST_BE_ALNUM_MSG)
         if len(usrs) > 0:
             raise forms.ValidationError(self.USERNAME_EXISTS_MSG)
         else:
@@ -91,6 +101,8 @@ class RegisterForm(forms.Form):
     def clean(self):
         """ Ensure that password and confirm_password fields match. """
         cleaned_data = self.cleaned_data
+        logger.info('RegisterForm.clean(self): ensuring match between password \
+            fields for user %s', cleaned_data.get('username'))
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
         if password != confirm_password:

@@ -66,7 +66,7 @@ if not settings.PREVIEW_MODE:
         (r'^api/(?P<output_format>json)/users/facebooklogin/$',
          'users.views.api_facebook_auth'),
 
-        (r'^api/(?P<output_format>json)/users/(?P<uri_username>\w*)/login/$',
+        (r'^api/(?P<output_format>json)/users/login/$',
          'users.views.api_auth'),
 
         (r'^api/(?P<output_format>json)/users/$',

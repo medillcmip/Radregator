@@ -272,7 +272,7 @@ def register(request):
         context_instance=RequestContext(request))
 
 
-def api_auth(request, uri_username, output_format='json'):
+def api_auth(request, output_format='json'):
     """Like auth() but through AJAX"""
 
     data = {} # Response data 
