@@ -353,6 +353,12 @@ def api_auth(request, output_format='json'):
         status = 401 # unauthorized
         data['error'] = "%s" % error
 
+    except UserAccountDisabled, error:
+        status = 401 #unauthorized
+        data['error'] = "Your account is disabled or it has not been \
+             activated yet. Please reset your password or email the site\
+             administrator"
+
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
 
