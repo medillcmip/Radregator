@@ -3,7 +3,7 @@ import os.path
 
 
 ADMINS = (
-     ('Shane Shifflett', 'shifflett.shane@gmail.com'),
+     ('Admin', 'admin@sourcerer.us'),
 )
 
 MANAGERS = ADMINS
