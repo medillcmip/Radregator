@@ -3,7 +3,7 @@ import os.path
 
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+     ('Shane Shifflett', 'shifflett.shane@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -56,6 +56,10 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
+LOGIN_REDIRECT_URL = '/'
+#account activiation window
+ACCOUNT_ACTIVATION_DAYS = 7
+AUTH_PROFILE_MODULE = "users.UserProfile"
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -74,6 +78,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    'registration',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'core',

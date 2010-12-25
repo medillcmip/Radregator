@@ -1,5 +1,6 @@
 from django import forms
 from models import User
+from models import UserProfile
 import datetime
 import core.utils
 from django.contrib.auth import authenticate
@@ -7,6 +8,7 @@ from django.contrib.localflavor.us.forms import USZipCodeField,\
     USStateField,USPhoneNumberField
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
 
+from registration.forms import RegistrationForm
 logger = core.utils.get_logger() 
 
 
@@ -40,7 +42,7 @@ class LoginForm(forms.Form):
             return self.cleaned_data
 
 
-class RegisterForm(forms.Form):
+class RegisterForm(RegistrationForm):
     """
     using django.forms.ModelForm doesn't really
     fit here because the User class is a property
@@ -54,11 +56,6 @@ class RegisterForm(forms.Form):
 
     STATE_CHOICES = list(STATE_CHOICES)
 
-    username = forms.CharField(max_length=30)
-    password = forms.CharField(max_length=30, widget=forms.PasswordInput)
-    confirm_password = forms.CharField(max_length=30, widget=forms.PasswordInput)
-    email = forms.EmailField(required=True \
-        , label='email')
     first_name = forms.CharField(max_length=30, required=False \
         , label='First name: (optional)')
     last_name = forms.CharField(max_length=45, required=False \
@@ -77,7 +74,6 @@ class RegisterForm(forms.Form):
     dob = forms.DateField(initial=datetime.date.today, required=False \
         , label='Birthday: (optional)'
         , widget=forms.TextInput(attrs={'class':'demo'}))
-
 
     def clean_email(self):
         """

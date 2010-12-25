@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.views.generic.simple import direct_to_template
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -18,19 +19,20 @@ if not settings.PREVIEW_MODE:
         (r'^reporterview', 'core.views.reporterview'),
 
         (r'^loginstatus', 'core.views.login_status'),
+        
         (r'^login', 'users.views.api_login'),
 
-        (r'^static_login', 'users.views.weblogin'),
-        (r'^static_register', 'users.views.register'),
         (r'^logout', 'users.views.weblogout'),
 
-        (r'^register', 'users.views.register'),
+        #django-registration
+        (r'^accounts/register/complete/$',direct_to_template,\
+            {'template': 'registration/registration_complete.html'}),
+        
+        (r'^accounts/register/', 'users.views.register'),
+        
+        (r'^accounts/', include('registration.urls')),
 
         (r'^authenticate', 'users.views.auth'),
-        
-        (r'^accounts/login/$', 'users.views.weblogin'),
-
-        (r'^accounts/login/register/$', 'users.views.register'),
         
         (r'^clipper_select', 'clipper.views.clipper_submit_select'),
 

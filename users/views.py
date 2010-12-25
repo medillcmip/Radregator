@@ -16,7 +16,7 @@ import core.utils
 from models import UserProfile
 from models import User
 from forms import LoginForm, RegisterForm, InviteForm 
-
+from registration.models import RegistrationProfile
 logger = core.utils.get_logger()
 
 def ajax_login_required(view_func):
@@ -233,14 +233,17 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            #grab input
+            #grab ise
+            baseuser = RegistrationProfile.objects.create_inactive_user\
+            (username=form.cleaned_data['username'],\
+            password=form.cleaned_data['password1'],\
+            email=form.cleaned_data['email'])
+
             f_username = form.cleaned_data['username']
             
             logger.info('users.views.register(request): form was valid for user %s' \
                 , f_username)
 
-            f_password = form.cleaned_data['password']
-            f_email = form.cleaned_data['email']
             f_first_name = form.cleaned_data['first_name']
             f_last_name = form.cleaned_data['last_name']
             f_street_address = form.cleaned_data['street_address']
@@ -251,8 +254,6 @@ def register(request):
             f_dob = form.cleaned_data['dob']
             #we validate the username / email is unique by overriding
             #clean_field methods in RegisterForm
-            baseuser = User.objects.create_user(username=f_username,\
-                password=f_password, email=f_email)
             baseuser.first_name = f_first_name
             baseuser.last_name = f_last_name
             baseuser.save()
@@ -270,13 +271,14 @@ def register(request):
             #this call is antiquated and not how the flow is designed to work
             #any longer.  
             #return do_login(f_username,f_password,request)
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/accounts/register/complete/')
         else:
-            return_page = 'users-register.html'
+            logger.info('user.views.register(request): invalid form')
+            return_page = 'registration/registration_form.html'
     if request.method != 'POST': 
         #get a new form
         form = RegisterForm()
-        return_page = 'users-register.html'
+        return_page = 'registration/registration_form.html'
     template_dict['form'] = form
     logger.info('users.views.register(request: returning page='+return_page)
     return render_to_response(return_page, template_dict,\

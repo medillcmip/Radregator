@@ -111,6 +111,11 @@ div#header form#usersignin {
 	height: 26px;
 	width: auto;
 }
+div#header form#usersignin div#pass_reset_link {
+    font-size: 0.8em;
+    bottom: 7px;
+    position: relative;
+}
 
 div#header form#usersignin label {
 	font-size: 0.9em;
