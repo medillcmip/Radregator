@@ -1,4 +1,5 @@
 from django import forms
+from core import utils
 
 class UrlSubmitForm(forms.Form):
     url_field = forms.URLField(label='Site you want to clip', required=True,\
@@ -32,3 +33,15 @@ class ClipTextForm(forms.Form):
     url_field = forms.URLField(required=True, widget=forms.HiddenInput)
     comment_id_field = forms.CharField(widget=forms.HiddenInput, required=True)
     topic_id_field = forms.CharField(widget=forms.HiddenInput, required=True)
+
+    def clean(self):
+        """
+        sanitize user input so there isn't any HTML... issue117
+        """
+        f_comments = self.cleaned_data.get('user_comments')      
+        self.cleaned_data['user_comments'] = utils.sanitize_html(f_comments)
+        f_selection = self.cleaned_data.get('selected_text')
+        self.cleaned_data['selected_text'] = utils.sanitize_html(f_selection)
+        return self.cleaned_data
+
+

@@ -4,6 +4,44 @@ import re
 import logging
 from django.conf import settings
 from django.db import models, connection
+import re
+from urlparse import urljoin
+from BeautifulSoup import BeautifulSoup, Comment
+
+def sanitize_html(value, base_url=None):
+    '''
+    http://stackoverflow.com/questions/16861/sanitising-user-input-using-python
+    in response to issue 117 we need greater validation in some cases
+    so that we aren't rendering HTML in parts of the page
+    '''
+    rjs = r'[\s]*(&#x.{1,7})?'.join(list('javascript:'))
+    rvb = r'[\s]*(&#x.{1,7})?'.join(list('vbscript:'))
+    re_scripts = re.compile('(%s)|(%s)' % (rjs, rvb), re.IGNORECASE)
+    #currently we aren't allowing any formatting in the forms so 
+    #uncomment the next two lines to add support for html input 
+    #on Q&A submission
+    #validTags = 'p i strong b u a h1 h2 h3 pre br'.split()
+    #validAttrs = 'href src width height'.split()
+    validTags = ''.split()
+    validAttrs = ''.split()
+    urlAttrs = 'href src'.split() # Attributes which should have a URL
+    soup = BeautifulSoup(value)
+    for comment in soup.findAll(text=lambda text: isinstance(text, Comment)):
+        # Get rid of comments
+        comment.extract()
+    for tag in soup.findAll(True):
+        if tag.name not in validTags:
+            tag.hidden = True
+        attrs = tag.attrs
+        tag.attrs = []
+        for attr, val in attrs:
+            if attr in validAttrs:
+                val = re_scripts.sub('', val) # Remove scripts (vbs & js)
+                if attr in urlAttrs:
+                    val = urljoin(base_url, val) # Calculate the absolute url
+                tag.attrs.append((attr, val))
+
+    return soup.renderContents().decode('utf8')
 
 def build_readable_errors(errordict):
     """ Translate an error dictionary into HTML, to return to Ajax code """
