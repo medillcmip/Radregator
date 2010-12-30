@@ -47,6 +47,11 @@
 
             $('#fbloginbut').unbind('click', handleFacebookLoginButton).bind('click', handleFacebookLoginButton);
 
+
+            $('#asksubmit').unbind('click', paintQuestionTopics).bind('click', paintQuestionTopics);
+
+            $('#askfooter').unbind('submit', handleFooterQSubmit).bind('submit', handleFooterQSubmit);
+
             // Handler for collapsing the messages bar
             $('#messages #hidemessages a').click(function() {
                 $('#messageswrap').hide();
@@ -65,6 +70,7 @@
 			$("#usercontrols a.askquestion").click(function() {
 				$("div#footer").css("height","800px");
 				$.scrollTo( 'div#footer', 300, {offset: {top:-35, left:0} } );
+                paintQuestionTopics();
 				return false;
 			});
 
@@ -74,12 +80,6 @@
             // Populate "Top Questions" list in footer.
             getTopQuestions();
 	   
-	        // Implement error on "ask" in footer
-			if (!userIsAuthenticated()) {
-				$("a#asksubmit").click(function() {
-					displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-				});
-			}
 	
 	});
     
@@ -186,31 +186,21 @@
 				<!--<li><a href="#searchdiv">Search</a></li>-->
 			</ul>
 			<div class="footerpanes" id="askdiv">
-				<form id="askfooter" class="footerinput">
-					<input type="text" id="askinput" class="footerinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';topicsDropShow();">
-					
-					
+				<form id="askfooter" class="footerinput" method="POST" action="">
+					<input type="text" id="askinput" class="footerinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';topicsDropShow();if(!$('#asktopicsdrop').is(':visible'))paintQuestionTopics();">
 					<a href="javascript:;" id="asksubmit" class="footersubmit blackback">Ask</a>
-					
-					
 					<div id="asktopicsdrop">
-						<h3>Choose a topic:</h3>
-						<ul>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example"><input name="newtopic" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';"></li>
-						</ul>
-					</div>
+						<h3>Choose a topic your question should appear under:</h3>
+                        <div id="ask_topics_form_content">
+<!-- for now we don't want to allow users to create topics.... keep them constrained to what sourcerer admins provide 
+<input type="radio" name="topic" value="Topic Example"><input name="newtopic" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';"></br> -->
+                        </div>
+
+                        {% csrf_token %}
+                        <input type="submit" value="Submit" />
 				</form>
+					</div>
+
 			</div>
 			<!--<div class="footerpanes" id="searchdiv">
 				<form id="searchfooter" class="footerinput">

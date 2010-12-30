@@ -36,6 +36,9 @@ from tagger.models import Tag
 from clipper.forms import UrlSubmitForm
 
 
+logger = core.utils.get_logger()
+
+
 def reporterview(request):
     """ VERY rudimentary reporter view"""
 
@@ -145,12 +148,12 @@ def login_status(request):
     
 
 def disassociatecomment_logic(form, userprofile):
-   comment = form.cleaned_data['comment']
-   topic = form.cleaned_data['topic']
+    comment = form.cleaned_data['comment']
+    topic = form.cleaned_data['topic']
 
-   comment.topics.remove(topic)
-   comment.save()
-   topic.save()
+    comment.topics.remove(topic)
+    comment.save()
+    topic.save()
 
 def associatecomment_logic(form, userprofile):
     comment = form.cleaned_data['comment']
@@ -243,17 +246,22 @@ def newtopic(request):
 def newsummary(request):
     return reporter_api(request, NewSummaryForm, newsummary_logic)
 
+
 def api_commentsubmission(request, output_format = 'json'):
     
     data = {} # response data
     status = 200 # OK
 
     try:
+        logger.info("core.views.api_commentsubmission(request, output_format=\
+            'json')")
         if request.method:
 
             form = CommentSubmitForm(request.REQUEST)
-
             if request.user.is_anonymous():
+
+                logger.info("core.views.api_commentsubmission(request, output_format=\
+                    'json'): user is anonymous")
                 status = 401 # Unauthorized
                 data['error'] = "You need to log in"
                 data['field_errors'] = form.errors
@@ -263,7 +271,9 @@ def api_commentsubmission(request, output_format = 'json'):
 
             if not form.is_valid():
                 # Raise exceptions
-
+                
+                logger.info("core.views.api_commentsubmission(request, output_format=\
+                    'json'): form not valid, errors= %s", form.errors)
                 status = 400 # Bad request
                 data['error'] = "Some required fields are missing or invalid."
                 data['field_errors'] = form.errors
@@ -276,7 +286,11 @@ def api_commentsubmission(request, output_format = 'json'):
                 f_comment_type = form.cleaned_data['comment_type_str'] # a comment type
                 f_text = form.cleaned_data['text'] # Text
                 f_sources = form.cleaned_data['sources']
-                try: f_topic = Topic.objects.get(title = form.cleaned_data['topic']) # a topic name
+                f_topic = form.cleaned_data['topic']
+                logger.info("core.views.api_commentsubmission(request, output_format=\
+                    'json'): form is good, topic=%s, comment=%s, \
+                    comment_type=%s", f_topic, f_text, f_comment_type)
+                try: f_topic = Topic.objects.get(title = f_topic) # a topic name
                 except:
                     raise InvalidTopic()
 
@@ -297,15 +311,21 @@ def api_commentsubmission(request, output_format = 'json'):
 
 
         else: # Not a post
+            
+            logger.info("core.views.api_commentsubmission(request, output_format=\
+                'json'): not a post")
             raise MethodUnsupported("This endpoint only accepts POSTs, you used:" + request.method)
         
     except InvalidTopic:
+
+        logger.info("core.views.api_commentsubmission(request, output_format=\
+            'json'): Invalid topic")
         status = 400 # Bad Request
         data['error'] = "Invalid topic"
 
+    logger.info("core.views.api_commentsubmission(request, output_format=\
+        'json'): returning data=%s", data)
     return HttpResponse(content = json.dumps(data), mimetype='text/html', status=status)
-    # TK - need code on JavaScript side to to Ajax, etc.
-    return HttpResponseRedirect("/")
 
 def frontpage_questions(count=10):
     """Return a list of questions to be displayed on the front page.
@@ -327,15 +347,14 @@ def frontpage_questions(count=10):
 
 def frontpage(request):
     """Front page view."""
-    logger = core.utils.get_logger()
 
     questions = frontpage_questions()
 
     logger.debug(questions)
-
     template_dict = { 'site_name': settings.SITE_NAME, \
         'body_classes': settings.SITE_BODY_CLASSES, \
-        'questions': questions }
+        'questions': questions,
+        'qa_form': CommentSubmitForm()}
     
     return render_to_response('frontpage.html', template_dict, \
         context_instance=RequestContext(request))
@@ -718,7 +737,8 @@ def api_topics(request, output_format="json"):
             result_type = request.GET['result_type']
         else:
             result_type = 'all'
-
+        logger.info('core.views.api_topics(request, output_format=\"json\"): \
+            result_type = %s', result_type)
         if result_type == 'popular':
             topics = Topic.objects.filter(is_deleted=False).annotate(
                 num_votes=CountIfConcur('comments__responses')).order_by(
@@ -737,20 +757,31 @@ def api_topics(request, output_format="json"):
             count = int(request.GET['count'])
             limited_topics = topics[:count]
 
+            logger.info('core.views.api_topics(request, output_format=\"json\"): \
+                count = %s', count)
         else:
             limited_topics = topics 
+
 
         data = serializers.serialize('json', limited_topics,
                                      fields=('id', 'title', 'slug','summary'),
                                      use_natural_keys=True)
 
-    except UnknownOutputFormat:
+    except UnknownOutputFormat, e:
+        logger.info('core.views.api_topics(request, output_format=\"json\"): \
+            error = %s', e)
         pass
         # TODO: Handle this exception
         # QUESTION: What is the best way to return errors in JSON?
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist, e:
+        logger.info('core.views.api_topics(request, output_format=\"json\"): \
+            error = %s', e)
         pass
         # TODO: Handle this exception
+
+
+    logger.info('core.views.api_topics(request, output_format=\"json\"): \
+        returning data')
 
     return HttpResponse(data, mimetype='application/json') 
         

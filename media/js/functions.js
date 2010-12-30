@@ -1,16 +1,73 @@
-var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/register/">register</a> to do this!'; 
+var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/accounts/register/">register</a> to do this!'; 
 
+
+function handleFooterQSubmit() {
+    var thistext = $("#askinput").val()
+    var thistopic = $('input:radio[name=q_topic]:checked').val();
+    var token = $('input[name=csrfmiddlewaretoken]').val();
+    alert(token)
+    $.ajax({
+        type: "post",
+        url : "/api/json/comments/",
+		  data: { 
+		  'topic': thistopic,
+		  'text': thistext,
+          'in_reply_to': "",
+          'comment_type_str': '1',
+          'csrf_token': token
+        } ,
+        success : function(data){
+            alert(data);
+        },
+        error: function(data){
+            alert(data);
+        }
+    });
+
+}
+
+function paintQuestionTopics() {
+
+    if(!userIsAuthenticated()){
+        displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+        return false;
+    }
+    if(!$('#asktopicsdrop').is(':visible'))
+    {
+        $.ajax({
+            type: "get",
+            url : "/api/json/topics/",
+            data : {'result_type': 'all'},
+            success : function(data){
+                $('#ask_topics_form_content').append("<ul>");
+                $.each(data,function(index, topic)
+                {
+                    var pk = topic.pk;
+                    var title = topic.fields.title;
+                    $('#ask_topics_form_content').append("<input type=\"radio\" name=\"q_topic\" value=\""+title+"\"/>"+title+"</br>");
+                });
+                $('#ask_topics_form_content').append("</ul>");
+                $("#asktopicsdrop").css("display","block");
+            },
+            error: function(data){
+            // Show to user?
+            }
+        });
+    }
+}
 
 // TOPIC DROP ON "ASK" FORM IN FOOTER
 // Implement "ask" in footer (and header?)
 function topicsDropShow() {
-	$("#asktopicsdrop").css("display","block");
+
 	//Character counter
+    /*for now we don't do character counts on questions
 	$("#askinput").charCount({
 		allowed: 140,		
 		warning: 20,
 		counterText: 'Characters remaining: '	
 	});
+    */
 }
 
 
@@ -102,7 +159,8 @@ function setUserAuthenticated() {
 function userIsAuthenticated() {
     // Read the flag set by setUserAuthenticated() to see if the user is
     // logged in
-    return jQuery.data(document.body, "is_authenticated");
+    var val = jQuery.data(document.body, "is_authenticated");
+    if(val == null){return false;}else{return true;}
 }
 
 //
