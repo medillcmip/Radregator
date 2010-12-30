@@ -31,6 +31,13 @@ FB_API_ID = 'FAB_REPL_FB_API_ID'
 FB_API_KEY = 'FAB_REPL_FB_API_KEY'
 FB_SECRET_KEY = 'FAB_REPL_FB_SECRET_KEY'
 
+EMAIL_HOST = 'FAB_REPL_EMAIL_HOST'
+EMAIL_HOST_USER = 'FAB_REPL_EMAIL_HOST_USER'
+EMAIL_HOST_PASSWORD = 'FAB_REPL_EMAIL_HOST_PASS'
+DEFAULT_FROM_EMAIL = 'FAB_REPL_EMAIL_ADDR'
+SERVER_EMAIL = 'FAB_REPL_EMAIL_ADDR'
+
+
 # If you need to add additional middleware (like using Firelogger)
 # Overwrite the MIDDLEWARE_CLASSES variable.  You should probably
 # copy over what's in settings.py
@@ -75,3 +82,6 @@ if DEBUG and ENABLE_FIREPYTHON:
 # See http://stackoverflow.com/questions/690723/log-all-errors-to-console-or-file-on-django-site/691252#691252
 if DEBUG:
     DEBUG_PROPAGATE_EXCEPTIONS = False 
+
+# Run the site as normal or disable everything except for the signup page.
+PREVIEW_MODE=False

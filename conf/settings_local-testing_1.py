@@ -31,6 +31,15 @@ FB_API_ID = 'FAB_REPL_FB_API_ID'
 FB_API_KEY = 'FAB_REPL_FB_API_KEY'
 FB_SECRET_KEY = 'FAB_REPL_FB_SECRET_KEY'
 
+#email settings, used primarly by registration
+
+EMAIL_HOST = 'FAB_REPL_EMAIL_HOST'
+EMAIL_HOST_USER = 'FAB_REPL_EMAIL_HOST_USER'
+EMAIL_HOST_PASSWORD = 'FAB_REPL_EMAIL_HOST_PASS'
+DEFAULT_FROM_EMAIL = 'FAB_REPL_EMAIL_ADDR'
+SERVER_EMAIL = 'FAB_REPL_EMAIL_ADDR'
+
+
 # If you need to add additional middleware (like using Firelogger)
 # Overwrite the MIDDLEWARE_CLASSES variable.  You should probably
 # copy over what's in settings.py
@@ -55,7 +64,7 @@ INSTALLED_APPS = (
     'tagger',
     'clipper',
     'users',
-
+    'registration',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 

@@ -33,6 +33,7 @@
             //$('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
+            $('.replyform').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
             
             // SET UP ANSWER/REPLY DROPDOWN DRAWERS
             answerdrawers();

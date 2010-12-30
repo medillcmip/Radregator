@@ -53,7 +53,7 @@
                 <a class="answeranchor" name="comment-{{theanswer.id}}"></a>
                  <div class='aflag'></div>
                 <div class = "comment answer">
-                    <div class="earmark olvl0"><span class="textspan"></span></div>
+                    <div class="earmark olvl-{{theanswer.opinion_level}}"><span class="textspan"></span></div>
                     <div title="{% blocktrans count theanswer.num_upvotes as num_upvotes %} {{ num_upvotes }} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                         <p class="count">{{theanswer.num_upvotes}}</p>
                        <!-- <p class="countsub">thumbs up</p>-->
@@ -95,7 +95,7 @@
                  <a name="comment-{{reply.id}}"></a>
                  <div class='aflag'></div>
                  <div class = "comment answer">
-                    <div class="earmark olvl0"><span class="textspan"></span></div>
+                    <div class="earmark olvl-{{ reply.opinion_level }}"><span class="textspan"></span></div>
                         <div title="{% blocktrans count reply.num_upvotes as num_upvotes %} person thinks this is a good answer.  Do you? {% plural %} {{ num_upvotes }} people think this is a good answer. Do you? {% endblocktrans %}" class = "votebox tooltipper">
                             <p class="count">{{reply.num_upvotes}}</p>
 <!--                                            <p class="countsub">thumbs up</p>-->

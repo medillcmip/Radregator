@@ -342,7 +342,7 @@ def frontpage(request):
         
 def signup(request):
     template_dict = { 'site_name': settings.SITE_NAME, \
-        'body_classes': settings.SITE_BODY_CLASSES }
+        'body_classes': settings.SITE_BODY_CLASSES + " signup" }
     
     return render_to_response('signup.html', template_dict, \
         context_instance=RequestContext(request))

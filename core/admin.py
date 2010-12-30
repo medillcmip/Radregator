@@ -25,7 +25,7 @@ class CommentRelationAdmin(admin.ModelAdmin):
     pass
 
 class CommentResponseAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('comment', 'user', 'type') 
 
 class ArticleAdmin(admin.ModelAdmin):
     pass

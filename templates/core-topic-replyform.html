@@ -1,12 +1,9 @@
 <script type="text/javascript">
-$(document).ready( function () {
-    $('.replyform').submit(handleReplySubmit);
-});
 
 </script>
 
 
-				<form action = "/clipper/{{theanswer.id}}/" method="post" class="replyform" id="replyform-{{theanswer.id}}">
+				<form action = "/clipper/{{theanswer.id}}/{{topic.id}}/" method="post" class="replyform" id="replyform-{{theanswer.id}}">
           <h4>Reply to this answer:</h4>
           {{clipper_url_form.user_comments}}<BR>
 					<label>Cite a source for this reply (enter a URL): </label>

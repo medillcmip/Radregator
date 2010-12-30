@@ -16,7 +16,7 @@ a:hover {
 .green {
 	color: #0F9D2E;
 }
-
+ 
 a.blackback { color: #fff; background-color: #323232; }
 a.blackback:hover { text-decoration: none; background-color: #232323; }
 a.blackback:active { text-decoration: none; background-color: #111; }
@@ -110,6 +110,11 @@ div#header form#usersignin {
 	display: block;
 	height: 26px;
 	width: auto;
+}
+div#header form#usersignin div#pass_reset_link {
+    font-size: 0.8em;
+    bottom: 7px;
+    position: relative;
 }
 
 div#header form#usersignin label {
@@ -270,6 +275,10 @@ span.uparrow, a.uparrow {
     width: 100%;
     z-index: 1000;
 	background-color: #620505;
+}
+
+#messageswrap.info {
+    background-color: #0F9D2E;
 }
 
 #messages {
@@ -675,7 +684,7 @@ div.tlhoverspot {
 	width: 300px;
 	height: auto;
 	overflow: visible;
-	padding-top: 24px;
+	padding-top: 23px;
 	z-index: 999;
 }
 
@@ -1532,3 +1541,122 @@ div#footer p.footerline {
 	font-size: 0.9em;
 }
 
+/* SIGNUP */
+.signup div#wrapper {
+    padding-top: 40px;
+}
+
+div#signupwrap {
+	background: #50b332 url(../img/backs/green.png) repeat;
+	height: auto;
+	width: 100%;
+	overflow: auto;
+	border-top: 1px solid #323232;
+	padding-bottom: 50px;
+}
+
+div#signup {
+	padding-top: 40px;
+	height: auto;
+	overflow: auto;
+	padding-bottom: 25px;
+}
+
+div#signup h2 {
+    font-weight: bold;
+    font-size: 48px;
+    color: #ffffff;
+}
+
+div#signup p {
+    color: white;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+div#signup form#signupform {
+    margin-top: 25px;
+}
+
+div#signup form.signupinput {
+	height: auto;
+	overflow: auto;
+	margin-bottom: 50px;
+}
+
+div#signup form.signupinput input.signupinput {
+	width: 300px;
+	height: 32px;
+	line-height: 32px;
+	font-size: 14px;
+	font-weight: bold;
+	border: 2px #323232 solid;
+	padding: 0 10px;
+	/* float: left; */
+	margin-right: 10px;
+	color: #888;
+}
+
+div#signup .signupselect {
+	width: 324px;
+	height: 36px;
+	line-height: 32px;
+	font-size: 14px;
+	font-weight: bold;
+	border: 2px #323232 solid;
+	padding: 0 0 0 10px;
+	/* float: left; */
+	margin-right: 10px;
+    margin-top: 10px;
+	color: #888;
+    background-color: #ffffff;
+}
+
+div#signup .signupbutton {
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	height: 32px;
+	line-height: 32px;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	display: block;
+    margin-top: 10px;
+}
+
+div#signup form.signupinput .signupsubmit {
+	/* float: left; */
+	width: 100px;
+}
+
+.signup #infowrapper {
+    padding-top: 40px;
+}
+
+div#infowrapper h2 {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 40px;
+}
+
+div#infowrapper p {
+    margin-top: 10px;
+}
+
+div#infowrapper ul {
+    height: auto;
+    list-style: disc outside none;
+    padding-left: 20px;
+    margin-top: 10px;
+    width: auto;
+}
+
+div#infowrapper li {
+    font-size: 1.1em;
+    margin-bottom: 12px;
+} 
+
+div#infowrapper div {
+    padding-bottom: 50px;
+}

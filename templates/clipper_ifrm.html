@@ -1,11 +1,10 @@
+
+
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:fb="http://www.facebook.com/2008/fbml">
   <head>
-    {% autoescape off%}
-    {{requested_page_head}}
-    {% endautoescape%}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>radregator</title>
+    <title></title>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/demo.css">
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui-1.8.6.custom.css">
     <script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
@@ -33,7 +32,7 @@
     }
 
 
-    //Want to make sure something in the selection has been filled in
+    //Want think this was the issue I ran into not to make sure something in the selection has been filled in
     //because if we let django forms do it, we'll have to save the page
     //we harvested into a temp location and load it back out 
     //by checking here we can forefront that process and save a page load
@@ -199,14 +198,14 @@
 
 
         <form id="form1" name="form1"  method='POST' action='/api/json/clipper_select/'>
-          <div id='clipper_highlights_textarea' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=27%;">
+          <div id='clipper_highlights_textarea' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=33%;">
           {{form.selected_text.errors}}
           <label for="id_selected_text" style="display:block;">Highlighted text appears here...</label><br>
           {{form.selected_text}}
         </div>
 
 
-        <div id='clipper_user_comments_area' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=27%;">
+        <div id='clipper_user_comments_area' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=33%;">
           {{form.user_comments.errors}}
           <label for="id_user_comments" style="display:block;"><a href="javascript:$('#id_user_comments').show();">Want to add a comment?</a></label><br>
           {{form.user_comments}}
@@ -239,10 +238,6 @@
 <BR> 
 
 <div class="" id="requested_page" style="margin-top:275px;" >
-{% autoescape off %}
-{{requested_page_body}}
-{% endautoescape %}
-
 
 </div>
   </body>

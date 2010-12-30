@@ -1,23 +1,57 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
+from django.contrib.auth.models import User
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+from models import UserProfile
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+class PreviewSignupTest(TestCase):
+    """Test case for API endpoint for signup form."""
 
->>> 1 + 1 == 2
-True
-"""}
+    def setUp(self):
+        self._endpoint_url = '/api/json/invite/'
 
+    def test_get(self):
+        email = 'foo@bar.com'
+        interest = 'consumer'
+        response = self.client.get(self._endpoint_url, 
+            {'email' : email, 'interest': interest})
+        self.assertEqual(response.status_code, 405)
+
+    def test_blank_email(self):
+        email = ''
+        interest = 'consumer'
+        response = self.client.post(self._endpoint_url, 
+            {'email' : email, 'interest': interest})
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_email(self):
+        email = 'foo@'
+        interest = 'consumer'
+        response = self.client.post(self._endpoint_url, 
+            {'email' : email, 'interest': interest})
+        self.assertEqual(response.status_code, 400)
+
+    def _test_interest(self, interest):
+        """Utility method to test different values of the interest parameter"""
+        email = 'foo@bar.com'
+        response = self.client.post(self._endpoint_url, 
+            {'email' : email, 'interest': interest})
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.get(email=email)
+        user_profile = UserProfile.objects.get(user=user)
+        self.assertEqual(interest, user_profile.interest)
+
+    def test_blank_interest(self):
+        self._test_interest('')
+
+    def test_publisher_interest(self):
+        self._test_interest('publisher')
+
+    def test_consumer_interest(self):
+        self._test_interest('consumer')
+
+    def test_invalid_interest(self):
+        email = 'foo@bar.com'
+        interest = 'asasdadad'
+        response = self.client.post(self._endpoint_url, 
+            {'email' : email, 'interest': interest})
+        self.assertEqual(response.status_code, 400)
