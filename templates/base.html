@@ -186,7 +186,7 @@
 				<!--<li><a href="#searchdiv">Search</a></li>-->
 			</ul>
 			<div class="footerpanes" id="askdiv">
-				<form id="askfooter" class="footerinput" method="POST" action="">
+				<form id="askfooter" class="footerinput">
 					<input type="text" id="askinput" class="footerinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';topicsDropShow();if(!$('#asktopicsdrop').is(':visible'))paintQuestionTopics();">
 					<a href="javascript:;" id="asksubmit" class="footersubmit blackback">Ask</a>
 					<div id="asktopicsdrop">
@@ -196,7 +196,7 @@
 <input type="radio" name="topic" value="Topic Example"><input name="newtopic" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';"></br> -->
                         </div>
 
-                        {% csrf_token %}
+                        
                         <input type="submit" value="Submit" />
 				</form>
 					</div>

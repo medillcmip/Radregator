@@ -256,7 +256,6 @@ def api_commentsubmission(request, output_format = 'json'):
         logger.info("core.views.api_commentsubmission(request, output_format=\
             'json')")
         if request.method:
-
             form = CommentSubmitForm(request.REQUEST)
             if request.user.is_anonymous():
 

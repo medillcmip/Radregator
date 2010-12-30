@@ -1,11 +1,8 @@
 var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/accounts/register/">register</a> to do this!'; 
 
-
 function handleFooterQSubmit() {
     var thistext = $("#askinput").val()
     var thistopic = $('input:radio[name=q_topic]:checked').val();
-    var token = $('input[name=csrfmiddlewaretoken]').val();
-    alert(token)
     $.ajax({
         type: "post",
         url : "/api/json/comments/",
@@ -14,12 +11,11 @@ function handleFooterQSubmit() {
 		  'text': thistext,
           'in_reply_to': "",
           'comment_type_str': '1',
-          'csrf_token': token
         } ,
         success : function(data){
-            alert(data);
+            alert('success');
         },
-        error: function(data){
+        error: function(requestError, status, errorResponse, data){
             alert(data);
         }
     });
