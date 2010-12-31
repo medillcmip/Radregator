@@ -14,6 +14,8 @@ def sanitize_html(value, base_url=None):
     in response to issue 117 we need greater validation in some cases
     so that we aren't rendering HTML in parts of the page
     '''
+    if value == None:
+        value = '' #blank str to avoid errors
     rjs = r'[\s]*(&#x.{1,7})?'.join(list('javascript:'))
     rvb = r'[\s]*(&#x.{1,7})?'.join(list('vbscript:'))
     re_scripts = re.compile('(%s)|(%s)' % (rjs, rvb), re.IGNORECASE)

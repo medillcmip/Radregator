@@ -1,8 +1,9 @@
 var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/accounts/register/">register</a> to do this!'; 
-
+var FAILED_TO_QUESTION_MESSAGE = 'Sorry! We\'re experiencing technical difficulties and we couldn\'t accept your question right now.';
 function handleFooterQSubmit() {
     var thistext = $("#askinput").val()
     var thistopic = $('input:radio[name=q_topic]:checked').val();
+    var topic_id = $('input:radio[name=q_topic]:checked').attr('id');
     $.ajax({
         type: "post",
         url : "/api/json/comments/",
@@ -13,13 +14,14 @@ function handleFooterQSubmit() {
           'comment_type_str': '1',
         } ,
         success : function(data){
-            alert('success');
+            location.href="/topic/"+topic_id+"#comment-"+data;
         },
         error: function(requestError, status, errorResponse, data){
-            alert(data);
+            displayMessage(FAILED_TO_QUESTION_MESSAGE, 'error');
+            return false;
         }
     });
-
+    return false;
 }
 
 function paintQuestionTopics() {
@@ -40,7 +42,7 @@ function paintQuestionTopics() {
                 {
                     var pk = topic.pk;
                     var title = topic.fields.title;
-                    $('#ask_topics_form_content').append("<input type=\"radio\" name=\"q_topic\" value=\""+title+"\"/>"+title+"</br>");
+                    $('#ask_topics_form_content').append("<input type=\"radio\" id="+pk+" name=\"q_topic\" value=\""+title+"\"/>"+title+"</br>");
                 });
                 $('#ask_topics_form_content').append("</ul>");
                 $("#asktopicsdrop").css("display","block");

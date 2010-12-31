@@ -302,10 +302,11 @@ def api_commentsubmission(request, output_format = 'json'):
                 if f_sources:
                     comment.sources = [f_sources]
                 comment.save()
-                data['comment_id'] = comment.id
+                data = comment.id
 
                 if f_in_reply_to: # Comment is in reply to another comment
-                    reply_relation = CommentRelation(left_comment = comment, right_comment = f_in_reply_to, relation_type = 'reply')
+                    reply_relation = CommentRelation(left_comment = comment, \
+                        right_comment = f_in_reply_to, relation_type = 'reply')
                     reply_relation.save()
 
 
