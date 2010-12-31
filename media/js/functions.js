@@ -868,13 +868,15 @@ $.fn.fontfit = function(max) {
 //
 //
 
+var feat_slider_container_width = 961;
 function initiateHomeTimeline() {
-	var timeline = Raphael("timelinecontainer", 561, 36);
-	var backdrop = timeline.rect(1, 1, 560, 26).attr("stroke-width","0");
+    var container_height = 36;
+	var timeline = Raphael("timelinecontainer", feat_slider_container_width , container_height);
+	var backdrop = timeline.rect(1, 1, feat_slider_container_width , 26).attr("stroke-width","0");
 	
 	var slicecount = $("ul.featspotul li").length;
 	var slices = new Array(slicecount);
-	var segmentlength = (560 / slicecount);
+	var segmentlength = (feat_slider_container_width  / slicecount);
 	
 	for(var i = 0; i < slicecount+1; i+=1) {  
 		var multiplier = i * segmentlength;
@@ -896,7 +898,7 @@ function initiateHomeTimeline() {
 		slices[i].click(function () {
 			// "SLIDE" THE MAIN SPOT
 			var xfactor = this.attr("x");
-			var slidevalue = -((xfactor/560)*(slicecount*961));
+			var slidevalue = -((xfactor/feat_slider_container_width )*(slicecount*961));
 			$("ul.featspotul").animate({ left: slidevalue }, 600);
 		
 			// GET THE DATA FROM THE NEW LI CLASS AND UPDATE THE DIGITS
@@ -923,7 +925,7 @@ function timedSlide() {
 	// Set up the timer for rotation through the timeline
 	// Get the current location
 	var slicecount = $("ul.featspotul li").length;
-	var segmentlength = (560 / slicecount);
+	var segmentlength = (feat_slider_container_width  / slicecount);
 	var timelineloc = $("#timelinemarker").css("left");
 	timelineloc = parseInt(timelineloc.replace("px",""));
 	var timelinestep = ((timelineloc + 6) + (segmentlength / 2)) / segmentlength;
@@ -932,7 +934,7 @@ function timedSlide() {
 	// Set up the new anchors values -- if the values exceed the width of the timeline, set back to first item
 	var newtimelineloc = timelineloc + segmentlength;
 	var newslidevalue = 0;
-	if (newtimelineloc > 560) { newtimelineloc = (segmentlength / 2) - 6; } else { newslidevalue = -((timelinestep) * 961); }
+	if (newtimelineloc > feat_slider_container_width ) { newtimelineloc = (segmentlength / 2) - 6; } else { newslidevalue = -((timelinestep) * 961); }
 	
 	// Slide 'em and update digits
 	$("#timelinemarker").animate({ left: newtimelineloc }, 600);
@@ -971,12 +973,12 @@ function updateDigits (timelinestep) {
 	
 	if (classvals['topicname'].length > 14) {
 		var topictext = classvals['topicname'].slice(0, 17).replace(/^\s+|\s+$/g,"");
-		topictext = topictext + "...";
+		//topictext = topictext + "...";
 	} else {
 		var topictext = classvals['topicname'];
 	}
 	
-	$("ul.topicinfo li.topictitle span").html(topictext);
+	$("ul.topicinfo li.topictitle span").html('hello');
 	$("ul.topicinfo li.topictitle").attr("title",classvals['topicname']).tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
 	
 	// Last, update "Answer this" link and "Jump to topic"
