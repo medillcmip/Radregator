@@ -38,6 +38,10 @@ from clipper.forms import UrlSubmitForm
 
 logger = core.utils.get_logger()
 
+def browse_topics(request):
+
+    template_dict = {}
+    return render_to_response('core-browse-topics.html', template_dict)
 
 def reporterview(request):
     """ VERY rudimentary reporter view"""

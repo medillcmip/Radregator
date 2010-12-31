@@ -14,6 +14,8 @@ if not settings.PREVIEW_MODE:
         
         (r'^signup', 'core.views.signup'),
 
+        (r'^browse/topics/', 'core.views.browse_topics'),
+
         (r'^topic/(?P<whichtopic>\d+)/', 'core.views.topic'),
 
         (r'^reporterview', 'core.views.reporterview'),
