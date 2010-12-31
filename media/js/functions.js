@@ -1,5 +1,35 @@
 var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/accounts/register/">register</a> to do this!'; 
 var FAILED_TO_QUESTION_MESSAGE = 'Sorry! We\'re experiencing technical difficulties and we couldn\'t accept your question right now.';
+var EMPTY_COMMENT_FIELD = "Whoops!  It doesn't look like there was anything to ask.  Feel free to fill the form with your questions.";
+
+
+function handleCommentSubmitErrors(requestError, status, errorResponse) {
+    var response_text = requestError.responseText;
+    var response_data = $.parseJSON(response_text);
+    var errorNum = requestError.status;
+    if(errorNum == 400) {
+        //a field wasn't filled out, comments only have
+        //one field at time of writing
+        displayMessage(EMPTY_COMMENT_FIELD, 'error');
+    }
+    else if (errorNum == 401) {
+         // User isn't logged in
+         displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+         questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+         $('a.login').bind('click', launchLogin);
+    } 
+    else if (errorNum == 403) {
+         // Another error
+         var errorMsg = response_data.error;
+         displayMessage(errorMsg, 'error');
+    }
+    else{
+        displayMessage(FAILED_TO_QUESTION_MESSAGE, 'error');
+    }
+
+}
+
+
 function handleFooterQSubmit() {
     var thistext = $("#askinput").val()
     var thistopic = $('input:radio[name=q_topic]:checked').val();
@@ -16,8 +46,8 @@ function handleFooterQSubmit() {
         success : function(data){
             location.href="/topic/"+topic_id+"#comment-"+data;
         },
-        error: function(requestError, status, errorResponse, data){
-            displayMessage(FAILED_TO_QUESTION_MESSAGE, 'error');
+        error: function(requestError, status, errorResponse){
+            handleCommentSubmitErrors(requestError, status, errorResponse);
             return false;
         }
     });
@@ -25,7 +55,6 @@ function handleFooterQSubmit() {
 }
 
 function paintQuestionTopics() {
-
     if(!userIsAuthenticated()){
         displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
         return false;
@@ -329,28 +358,7 @@ function handleCommentSubmit(){
 				
 		  },
 		  error: function (requestError, status, errorResponse) {
-				var response_text = requestError.responseText;
-				var response_data = $.parseJSON(response_text);
-				var errorNum = requestError.status;
-
-				if (errorNum == "401") {
-					 // User isn't logged in
-					 var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-					 questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-					 $('a.login').bind('click', launchLogin);
-				} 
-				else if (errorNum == "403") {
-					 // Another error
-					 var errorMsg = response_data.error; 
-					 questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-				}
-
-				error_message = questionform.children('.error-message');
-				error_message.css('display','block');
-
-				$('.error-message').click(function() {
-					 $(this).remove();
-				});
+                handleCommentSubmitErrors(requestError, status, errorResponse);
 
 		  }
 	 });
