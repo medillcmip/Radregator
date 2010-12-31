@@ -338,12 +338,17 @@ def frontpage_questions(count=10):
 
 
     """
-
     questions = Comment.objects.filter(is_deleted=False, \
-        comment_type__name="Question").order_by('-date_created')[:count]
-
-
-    return questions
+            comment_type__name="Question").order_by('-date_created')[:count]
+    #issue 112, we have to make sure that questions w/o topics 
+    #aren't allowed into the front page
+    def frontpage_q_filter(this_questions):
+        if len(this_questions.topics.all()) > 0:
+            return True
+        else: return False
+    
+    f_questions = filter(frontpage_q_filter, questions)
+    return f_questions
 
 def frontpage(request):
     """Front page view."""
