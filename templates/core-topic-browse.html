@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block addscripts %}
+    <script type="text/javascript">
+        $(document).ready( function () {
+            contextexpander($('.context_summaries')[0]);
+        });
+    </script>
+{% endblock %}
+{% block pagecontent %}
+
+<B>Browse topics</B>
+<BR>
+<div id="topics_list">
+    <ul class="topicslist">
+        {% for topic in topics %}
+        <li id="topic-{{topic.id}}">
+            <div class="topiclist_link">
+                <U><a id="link-topic-{{topic.id}}" href="/topic/{{ topic.id }}/">{{ topic.title }}</a></U>
+            </div>
+            <BR>
+            <div id="context" class="context_summaries">
+                    <div id="contextintro" class="topic-summary">
+                        {{topic.summary.text|safe}}
+                    </div>
+                    <div class="contextbot">
+                        <a class="expanderbut lightback" href="javascript:;">
+                        <span class="more"><span class="downarrow"></span>more </span>
+                        <span class="less"><span class="uparrow"></span>less </span>
+                        </a>
+                    </div>
+            <div>
+        </li>
+        <BR>
+        {% endfor %}
+    </ul>
+</div>
+<BR>
+{% endblock %}

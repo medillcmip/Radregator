@@ -39,7 +39,7 @@
             answerdrawers();
 
 			// HANDLE CONTEXT MORE/LESS
-			contextexpander();
+			contextexpander($("#context"));
 			
 			// HANDLE EARMARK HEIGHTS, LABELS and COLORS
 			earmarksetup();
@@ -79,15 +79,17 @@
     <div class="topicid" id="{{topic.id}}"></div>
 			<div id="context">
 				<h1>{{topic.title}}</h1>
-					<div id="contextintro" class="topic-summary">
+			    <div id="contextintro" class="topic-summary">
                     {{topic.summary.text|safe}}
-                    </div>
+                </div>
         
-		<div class="contextbot"><a class="expanderbut lightback" href="javascript:;">
-			<span class="more"><span class="downarrow"></span>more </span>
-			<span class="less"><span class="uparrow"></span>less </span>
-		</a></div>
-			</div>
+                <div class="contextbot">
+                    <a class="expanderbut lightback" href="javascript:;">
+                    <span class="more"><span class="downarrow"></span>more </span>
+                    <span class="less"><span class="uparrow"></span>less </span>
+                    </a>
+                </div>
+	        </div>
 		
 		
         {% if is_reporter %}

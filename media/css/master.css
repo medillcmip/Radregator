@@ -1095,6 +1095,32 @@ ul.masterlist li div.answer a.flagasopinion {
 	font-weight: bold;
 }
 
+/* HANDLE Browse Topics WITH INDENTS */
+ul.topicslist {
+	margin-left: 29px;
+	margin-bottom: 12px;
+	padding-top: 17px;
+}
+
+div.topiclist_link{
+	font-size: 1.5em;
+	color: #e3e3e3;
+	font-weight: bolder;
+}
+
+div.topiclist_summary{
+	font-size: 1.em;
+    margin-left: 35px;
+    margin-right: 45px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+
+	overflow: auto;
+	background-color: #e5e5e5;
+	padding: 10px;
+}
 /* HANDLE NESTED ANSWERS WITH INDENTS */
 ul.masterlist li ul.answers {
 	margin-left: 29px;

@@ -40,8 +40,12 @@ logger = core.utils.get_logger()
 
 def browse_topics(request):
 
-    template_dict = {}
-    return render_to_response('core-browse-topics.html', template_dict)
+    logger.info('core.views.browse_topics(request)')
+    topics = Topic.objects.all()
+    template_dict = {'topics': topics}
+
+    return render_to_response('core-topic-browse.html', template_dict, \
+                              context_instance=RequestContext(request))
 
 def reporterview(request):
     """ VERY rudimentary reporter view"""

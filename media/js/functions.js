@@ -606,14 +606,14 @@ function handleUserSignInForm() {
 
 // MORE / LESS ON CONTEXT
 
-function contextexpander() {
+function contextexpander(obj) {
 	
 	// GET TOTAL HEIGHT
-	var fullheight = $("#context").height();
+	var fullheight = obj.height();
 	//alert(fullheight);
 	
 	if (fullheight < 150) {
-		$(".contextbot").css("display","none");
+	    obj.css("display","none");
 		return false;
 	}
 	
@@ -622,27 +622,32 @@ function contextexpander() {
       'height' : '10em',
       'overflow' : 'hidden'
     }
-	$("#context").css(csschunk);
+	obj.css(csschunk);
 	
 	// ADD CLICK-TO-TOGGLE
 	$(".contextbot .expanderbut").toggle(
 	function()
 	{
-		$('#context').animate({
+		obj.animate({
 		height: fullheight+10, 
 		overflow: "auto",
 		}, 500);
-		$(".contextbot .more").css("display","none");
-		$(".contextbot .less").css("display","block");
+        obj.children[1].children[0].children[0].css("display", "none");
+        obj.children[1].children[0].children[1].css("display", "block");
+		//$(".contextbot .more").css("display","none");
+		//$(".contextbot .less").css("display","block");
 	},
 	function()
 		{
-			$('#context').animate({
+			obj.animate({
 			height: "10em", 
 			overflow: "hidden"
 		}, 500);
-		$(".contextbot .more").css("display","block");
-		$(".contextbot .less").css("display","none");
+
+        obj.children[1].children[0].children[0].css("display", "block");
+        obj.children[1].children[0].children[1].css("display", "none");
+		//$(".contextbot .more").css("display","block");
+		//$(".contextbot .less").css("display","none");
 	});
 }
 
