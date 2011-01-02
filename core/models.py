@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.sites.models import Site
 
-from utils import comment_cmp, CountIfConcur
+from utils import comment_cmp, CountIfConcur, get_logger
 from clipper.models import Article
 from clipper.models import Clip
 from tagger.models import Tag
 from users.models import UserProfile
+
+logger = get_logger()
 
 class SummaryManager(models.Manager):
     def get_by_natural_key(self, text):
@@ -204,8 +206,10 @@ class Topic(models.Model):
         number of responses.
 
         """
-        return self.comments.annotate(\
+        logger.info("core.models.Comment.popular_comments(self, num=5)")
+        return self.comments.filter(is_deleted=False).annotate(\
             num_responses=CountIfConcur('responses')).order_by('-num_responses')[:num]
+
 
     def user_responded_comment_ids(self, user_profile, response_type):
         """
