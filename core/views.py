@@ -335,6 +335,12 @@ def api_commentsubmission(request, output_format = 'json'):
         'json'): returning data=%s", data)
     return HttpResponse(content = json.dumps(data), mimetype='text/html', status=status)
 
+
+def frontpage_q_filter(this_questions):
+    if len(this_questions.topics.all()) > 0:
+        return True
+    else: return False
+
 def frontpage_questions(count=10):
     """Return a list of questions to be displayed on the front page.
 
@@ -350,10 +356,6 @@ def frontpage_questions(count=10):
             comment_type__name="Question").order_by('-date_created')[:count]
     #issue 112, we have to make sure that questions w/o topics 
     #aren't allowed into the front page
-    def frontpage_q_filter(this_questions):
-        if len(this_questions.topics.all()) > 0:
-            return True
-        else: return False
     
     f_questions = filter(frontpage_q_filter, questions)
     return f_questions
@@ -1059,13 +1061,13 @@ def api_questions(request, output_format='json'):
                 count = int(request.GET['count'])
             else:
                 count = 5 # Default to 5
-
             questions = Comment.objects.filter(is_deleted=False, \
                             comment_type__name="Question").annotate(\
                                 num_responses=CountIfConcur('responses')).order_by(\
                                     '-num_responses', '-date_created')[:count]
 
-            content = serializers.serialize('json', questions, \
+            f_questions = filter(frontpage_q_filter, questions)
+            content = serializers.serialize('json', f_questions, \
                                             fields=('text', 'topics'), \
                                             use_natural_keys=True)
 
