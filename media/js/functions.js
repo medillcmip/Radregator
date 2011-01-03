@@ -609,11 +609,10 @@ function handleUserSignInForm() {
 function contextexpander(obj) {
 	
 	// GET TOTAL HEIGHT
-	var fullheight = obj.height();
-	//alert(fullheight);
+	var fullheight = $(obj).height();
 	
 	if (fullheight < 150) {
-	    obj.css("display","none");
+	    $($(obj).find('.contextbot')).css("display","none");
 		return false;
 	}
 	
@@ -622,32 +621,29 @@ function contextexpander(obj) {
       'height' : '10em',
       'overflow' : 'hidden'
     }
-	obj.css(csschunk);
-	
+	$(obj).css(csschunk);
 	// ADD CLICK-TO-TOGGLE
-	$(".contextbot .expanderbut").toggle(
+    var expander = $(obj).find('.contextbot .expanderbut');
+	$(expander).toggle(
 	function()
 	{
-		obj.animate({
+		$(obj).animate({
 		height: fullheight+10, 
 		overflow: "auto",
 		}, 500);
-        obj.children[1].children[0].children[0].css("display", "none");
-        obj.children[1].children[0].children[1].css("display", "block");
-		//$(".contextbot .more").css("display","none");
-		//$(".contextbot .less").css("display","block");
+
+		$($(this).find('.more')).css("display","none");
+		$($(this).find('.less')).css("display","block");
 	},
 	function()
 		{
-			obj.animate({
+			$(obj).animate({
 			height: "10em", 
 			overflow: "hidden"
 		}, 500);
 
-        obj.children[1].children[0].children[0].css("display", "block");
-        obj.children[1].children[0].children[1].css("display", "none");
-		//$(".contextbot .more").css("display","block");
-		//$(".contextbot .less").css("display","none");
+		$($(this).find('.less')).css("display","none");
+		$($(this).find('.more')).css("display","block");
 	});
 }
 

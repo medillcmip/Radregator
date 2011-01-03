@@ -77,9 +77,9 @@
         {% include "core-topic-addsource.html" %}
     {% endif %}
     <div class="topicid" id="{{topic.id}}"></div>
-			<div id="context">
+			<div class="context" id="context">
 				<h1>{{topic.title}}</h1>
-			    <div id="contextintro" class="topic-summary">
+			    <div id="contextintro" class="topiclist_summary" >
                     {{topic.summary.text|safe}}
                 </div>
         

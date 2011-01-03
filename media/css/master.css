@@ -596,7 +596,7 @@ div#leftcontent h1 {
 	margin: 0;
 }
 
-div#leftcontent div#context {
+div#leftcontent div.context {
 	position: relative;
 	border-bottom: 1px solid #ccc;
 	margin-bottom: 40px;
@@ -605,12 +605,12 @@ div#leftcontent div#context {
 	height: auto;
 }
 
-div#leftcontent div#context p {
+div#leftcontent div.context p {
 	margin: 0 0 5px 0;
 	line-height: 1.4em;
 }
 
-div#leftcontent div#context div.contextbot, div#leftcontent div#timeline div.contextbot {
+div#leftcontent div.context div.contextbot, div#leftcontent div#timeline div.contextbot {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -638,7 +638,11 @@ a.expanderbut {
 	height: 20px;
 	cursor: pointer;
 }
-
+a.topicsmany{
+    position: static;
+    
+    
+}
 a.expanderbut:hover {
 	text-decoration: none;
 	background-color: #dcdcdc;
@@ -1108,7 +1112,7 @@ div.topiclist_link{
 	font-weight: bolder;
 }
 
-div.topiclist_summary{
+div.topiclist_summary p.topiclist_summary{
 	font-size: 1.em;
     margin-left: 35px;
     margin-right: 45px;
