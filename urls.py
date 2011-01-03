@@ -11,6 +11,8 @@ if not settings.PREVIEW_MODE:
         # Example:
         # (r'^newsqa/', include('newsqa.foo.urls')),
         (r'^$', 'core.views.frontpage'),
+    
+        (r'^about/', 'core.views.about_page'),
         
         (r'^signup', 'core.views.signup'),
 
