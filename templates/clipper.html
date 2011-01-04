@@ -1,46 +1,29 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:fb="http://www.facebook.com/2008/fbml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>radregator</title>
-
-<script type="text/javascript">
-  function toggleItem(id){
-      var item = document.getElementById(id);
-      if(item){
-        if ( item.style.display == "none"){
-          item.style.display = "";
-        }
-        else{
-          item.style.display = "none";
-        } 
-      }
-    }
-
-</script>
-  </head>
-  <body>
-    <h1>Something didn't work out like it should have.</h1>
-
-
-
-<div class="" id="clipper">
-
-
-  <div id="urlEntry" style="border: 1px solid black;">
+{% extends "base.html" %}
+{% load i18n %}
+{% block addscripts %}
+{% endblock %}
+{% block pagecontent %}
+<h1>Uh oh! Something didn't work out like it should have.</h1>
+<BR>
 {{errors}}
+<BR>
+<BR>
+<div class="" id="clipper">
+  <div id="urlEntry" style="">
     <form name="form1" method='POST' action=''>
-{{form.as_p}}
-{% csrf_token %}
-    <input type="submit" class="btn" value="Go!" />
-
+    <table>
+      {{form.as_table}}
+      {% csrf_token %}
+      <tr>
+        <th><br></th>
+      </tr>
+      <tr>
+        <th><input type="submit" class="btn" value="Submit" /></th>
+        <th> </th>
+      </tr>
+    </table>
     </form>
-
   </div>
-
-
-
-
 </div>
-  </body>
-</html>
+<BR><BR>
+{% endblock %}

@@ -2,11 +2,12 @@ from django import forms
 from core import utils
 
 class UrlSubmitForm(forms.Form):
-    url_field = forms.URLField(label='Site you want to clip', required=True,\
-                widget=forms.TextInput(attrs={'size':'70', 'class':'clipper_url_field'}))
+    url_field = forms.URLField(label='Enter the URL of the site you want to clip'\
+        , required=True,\
+        widget=forms.TextInput(attrs={'size':'70', 'class':'clipper_url_field'}))
     user_comments = forms.CharField(widget=forms.Textarea(\
-        attrs={'class':'clipper_text_field'}), required=False, \
-        label="Add some of your own commentary here.")
+        attrs={'class':'clipper_text_field', 'col': 52}), required=False, \
+        label="Your comments go here: ")
 
 class ClipTextForm(forms.Form):
     """
