@@ -82,7 +82,7 @@
         $("#requested_page_frm").contents().find("head").append($("#tmp_space_head").html());
         $("#requested_page_frm").contents().find("#page_content").append($("#tmp_space_body").html());
     
-        $("#requested_page_frm").load(function(){
+        $("#requested_page_frm").contents().find("HTML").ready(function(){
           //cleanup
           $("#tmp_space_head").remove();
           $("#tmp_space_body").remove();
