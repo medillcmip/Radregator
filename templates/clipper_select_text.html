@@ -1,9 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:fb="http://www.facebook.com/2008/fbml">
   <head>
-    {% autoescape off%}
-    {{requested_page_head}}
-    {% endautoescape%}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>radregator</title>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/demo.css">
@@ -47,14 +44,10 @@
 
     radregator.select.getSelected = function(){
       var txt = '';
-      if (window.getSelection){
-        txt = window.getSelection();
-      }
-      else if (document.getSelection){
-        txt = document.getSelection();
-      }
-      else if (document.selection){
-        txt = document.selection.createRange().text;
+      var $obj = $("#requested_page_frm")[0].contentWindow
+      if ($obj.getSelection){
+        txt = $obj.getSelection();
+        $("#id_selected_text").val(txt);
       }
       else return;
       return txt;
@@ -85,7 +78,21 @@
       });
 
     $(document).ready(function(){
-        $(document).bind("mouseup", radregator.select.mouseup);
+        //a way to avoid making two calls to take a page from the server
+        $("#requested_page_frm").contents().find("head").append($("#tmp_space_head").html());
+        $("#requested_page_frm").contents().find("#page_content").append($("#tmp_space_body").html());
+    
+        $("#requested_page_frm").load(function(){
+          //cleanup
+          $("#tmp_space_head").remove();
+          $("#tmp_space_body").remove();
+          var $body = $("#requested_page_frm").contents().find('HTML');
+            /* ...bind your events here to $body.. */
+            $body.mouseup(radregator.select.mouseup);
+
+
+        });
+        //$(document).bind("mouseup", radregator.select.mouseup);
         $(document).bind("submit", radregator.select.checkSelectionForm);
 
         //hide elements
@@ -186,9 +193,11 @@
 
 </head>
   <body>
+  <div id="tmp_space_head" style="display:none;">{% autoescape off %}{{requested_page_head}}{% endautoescape %}</div>
+  <div id="tmp_space_body" style="display:none;">{% autoescape off %}{{requested_page_body}}{% endautoescape %}</div>
   <div id="clipper_wrapper_floater" style="position:fixed;top:0;left:0;width:100%;height:275px;background:white;z-index:1001;">
 
-    <div id="clipper_i_am" class="clipper_styles" style="border:.2em dotted #900;background:white;font-family:arial;font-size:12px;color:black;width:940px;z-index:1000;height:275px;margin-left:auto;margin-right:auto;">
+    <div id="clipper_i_am" class="clipper_styles" style="background:white;font-family:arial;font-size:12px;color:black;width:1000px;z-index:1000;height:275px;margin-left:auto;margin-right:auto;">
       <a href="javascript:showHelp()">What's this?</a>
       <div id="clipper_help" class="clipper_styles"> 
 
@@ -208,7 +217,7 @@
 
         <div id='clipper_user_comments_area' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=27%;">
           {{form.user_comments.errors}}
-          <label for="id_user_comments" style="display:block;"><a href="javascript:$('#id_user_comments').show();">Want to add a comment?</a></label><br>
+          <label for="id_user_comments" style="display:block;">Your comments</label><br>
           {{form.user_comments}}
 
         </div>
@@ -239,11 +248,9 @@
 <BR> 
 
 <div class="" id="requested_page" style="margin-top:275px;" >
-{% autoescape off %}
-{{requested_page_body}}
-{% endautoescape %}
-
 
 </div>
+
+<IFRAME SRC="/clipper_ifrm/" WIDTH="100%" HEIGHT="100%" id="requested_page_frm" style="overflow-y:auto;"></IFRAME>
   </body>
 </html>

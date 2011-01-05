@@ -42,6 +42,10 @@ if not settings.PREVIEW_MODE:
 
         (r'^clipper/(?P<comment_id>\d+)/(?P<topic_id>\d+/)', 'clipper.views.clipper_paste_url'),
 
+
+        (r'^clipper_ifrm',direct_to_template,\
+            {'template': 'clipper_ifrm.html'}),
+
         (r'^bootstrapper/(?P<question_id>\d+)/', 'core.views.generate_bootstrapper'),
         
         (r'^api/(?P<output_format>json)/clipper_select/',
