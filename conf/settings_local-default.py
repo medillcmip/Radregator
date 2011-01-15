@@ -68,3 +68,20 @@ SITE_BODY_CLASSES = ''
 
 # Run the site as normal or disable everything except for the signup page.
 PREVIEW_MODE=False
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Location of application log file.
+LOG_FILENAME='~/sourcerer_logs/sourcerer.log'
+
+# How often log files should be rotated
+# See Python documentation for TimedRotatingFileHandle for possible values.
+# Default is daily rotation.
+LOG_INTERVAL='D'
+
+# Maximum number of logs to save.  If this number is exceeded, the oldest
+# log will be overwritten. If set to 0, an unlimited  number of logs is saved.
+LOG_BACKUP_COUNT=30
+
+# Log level.  Can be 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'.
+LOG_LEVEL='WARNING'

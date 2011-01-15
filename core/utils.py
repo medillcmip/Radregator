@@ -81,25 +81,37 @@ def slugify(s):
 
     return new_s
 
-def get_logger():
+def get_logger(name):
     """Configure logging.
      
        Thanks http://djangosnippets.org/snippets/16/  
     
     """
+    levels = {'DEBUG': logging.DEBUG,
+              'INFO': logging.INFO,
+              'WARNING': logging.WARNING,
+              'ERROR': logging.ERROR,
+              'CRITICAL': logging.CRITICAL}
     
     # create logger
-    logger = logging.getLogger() 
+    logger = logging.getLogger(name) 
 
     # create console handler and set level to debug
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
 
+    # Create a time-based rotating file handler and set level
+    fh = logging.TimedRotatingFileHandler(filename=settings.LOG_FILENAME,
+                                          when=settings.LOG_INTERVAL,
+                                          backupCount=settings.LOG_BACKUP_COUNT)
+    fh.setLevel(levels[settings.LOG_LEVEL])
+
     # create formatter
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
-    # add formatter to ch
+    # add formatter to handlers 
     ch.setFormatter(formatter)
+    fh.setFormatter(formatter)
 
     # add ch to logger
     logger.addHandler(ch)
@@ -107,6 +119,9 @@ def get_logger():
     if settings.DEBUG:
         # If we're in DEBUG mode, set log level to DEBUG
         logger.setLevel(logging.DEBUG) 
+    else:
+        # Set it to the level in the configuration file
+        logger.setLevel(levels[settings.LOG_LEVEL])
 
     return logger
 
