@@ -2,6 +2,7 @@
 
 import re
 import logging
+import logging.handlers
 from django.conf import settings
 from django.db import models, connection
 import re
@@ -101,7 +102,7 @@ def get_logger(name):
     ch.setLevel(logging.DEBUG)
 
     # Create a time-based rotating file handler and set level
-    fh = logging.TimedRotatingFileHandler(filename=settings.LOG_FILENAME,
+    fh = logging.handlers.TimedRotatingFileHandler(filename=settings.LOG_FILENAME,
                                           when=settings.LOG_INTERVAL,
                                           backupCount=settings.LOG_BACKUP_COUNT)
     fh.setLevel(levels[settings.LOG_LEVEL])
