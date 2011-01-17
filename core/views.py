@@ -36,7 +36,7 @@ from tagger.models import Tag
 from clipper.forms import UrlSubmitForm
 
 
-logger = core.utils.get_logger()
+logger = core.utils.get_logger(__name__)
 
 def about_page(request):
     template_dict = {}

@@ -7,7 +7,7 @@ from clipper.models import Clip
 from tagger.models import Tag
 from users.models import UserProfile
 
-logger = get_logger()
+logger = get_logger(__name__)
 
 class SummaryManager(models.Manager):
     def get_by_natural_key(self, text):

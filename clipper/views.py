@@ -17,7 +17,7 @@ import core.utils
 import json
 from core.exceptions import *
 
-logger = core.utils.get_logger()
+logger = core.utils.get_logger(__name__)
 
 relative_url_exp = re.compile("(src|href|action)\s*=\s*(\'|\"|(?!\"|\'))(?!(http:|ftp:|mailto:|https:|#))")
 #a quick survey of sites indicates that many news organizations use a format

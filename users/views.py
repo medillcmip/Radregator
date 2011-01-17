@@ -17,7 +17,8 @@ from models import UserProfile
 from models import User
 from forms import LoginForm, RegisterForm, InviteForm 
 from registration.models import RegistrationProfile
-logger = core.utils.get_logger()
+
+logger = core.utils.get_logger(__name__)
 
 def ajax_login_required(view_func):
     """
