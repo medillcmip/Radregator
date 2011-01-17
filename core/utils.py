@@ -88,36 +88,46 @@ def get_logger(name, filename=settings.LOG_FILENAME):
        Thanks http://djangosnippets.org/snippets/16/  
     
     """
-    print filename
-
     levels = {'DEBUG': logging.DEBUG,
               'INFO': logging.INFO,
               'WARNING': logging.WARNING,
               'ERROR': logging.ERROR,
               'CRITICAL': logging.CRITICAL}
+
+    handlers = []
     
     # create logger
     logger = logging.getLogger(name) 
+
+    # create formatter
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     # create console handler and set level to debug
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
 
-    # Create a time-based rotating file handler and set level
-    fh = logging.handlers.TimedRotatingFileHandler(filename=filename,
-                                          when=settings.LOG_INTERVAL,
-                                          backupCount=settings.LOG_BACKUP_COUNT)
-    fh.setLevel(levels[settings.LOG_LEVEL])
-
-    # create formatter
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
-    # add formatter to handlers 
+    # Add formatter to handler
     ch.setFormatter(formatter)
-    fh.setFormatter(formatter)
 
-    # add ch to logger
+    # Add handler to logger
     logger.addHandler(ch)
+
+    try:
+        # Create a time-based rotating file handler and set level
+        fh = logging.handlers.TimedRotatingFileHandler(filename=filename,
+                                              when=settings.LOG_INTERVAL,
+                                              backupCount=settings.LOG_BACKUP_COUNT)
+        fh.setLevel(levels[settings.LOG_LEVEL])
+
+        # Add formatter to handler
+        fh.setFormatter(formatter)
+
+        # Add handler to logger
+        logger.addHandler(fh)
+
+    except IOError:
+        # Log filename isn't writeable
+        logger.exception("Error writing to log file")
 
     if settings.DEBUG:
         # If we're in DEBUG mode, set log level to DEBUG
