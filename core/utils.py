@@ -82,12 +82,14 @@ def slugify(s):
 
     return new_s
 
-def get_logger(name):
+def get_logger(name, filename=settings.LOG_FILENAME):
     """Configure logging.
      
        Thanks http://djangosnippets.org/snippets/16/  
     
     """
+    print filename
+
     levels = {'DEBUG': logging.DEBUG,
               'INFO': logging.INFO,
               'WARNING': logging.WARNING,
@@ -102,7 +104,7 @@ def get_logger(name):
     ch.setLevel(logging.DEBUG)
 
     # Create a time-based rotating file handler and set level
-    fh = logging.handlers.TimedRotatingFileHandler(filename=settings.LOG_FILENAME,
+    fh = logging.handlers.TimedRotatingFileHandler(filename=filename,
                                           when=settings.LOG_INTERVAL,
                                           backupCount=settings.LOG_BACKUP_COUNT)
     fh.setLevel(levels[settings.LOG_LEVEL])
