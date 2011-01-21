@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block pagecontent %}
+<form method="post" action="/accounts/register/">
+  {% csrf_token %}
+    <table border="0">
+        <tr>
+            <td>
+            {{form.username.errors}}
+            <label for="id_username">Username: <label> 
+            </td>
+            <td>
+            {{ form.username }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+            {{form.email.errors}}
+            <label for="id_email">email: <label> 
+            </td>
+            <td>
+            {{ form.email }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.password1.errors}}
+            <label for="id_password1">password: <label> 
+            </td>
+            <td>
+            {{ form.password1 }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.password2.errors}}
+            <label for="id_password2">password (again): <label> 
+            </td>
+            <td>
+            {{ form.password2 }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+            {{form.first_name.errors}}
+            <label for="id_first_name">first name (optional): <label> 
+            </td>
+            <td>
+            {{ form.first_name }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.last_name.errors}}
+            <label for="id_last_name">last name (optional): <label> 
+            </td>
+            <td>
+            {{ form.last_name }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.street_address.errors}}
+            <label for="id_street_address">street address (optional): <label> 
+            </td>
+            <td>
+            {{ form.street_address }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.city.errors}}
+            <label for="id_city">city (optional): <label> 
+            </td>
+            <td>
+            {{ form.city }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.state.errors}}
+            <label for="id_state">state (optional): <label> 
+            </td>
+            <td>
+            {{ form.state }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.zip_code.errors}}
+            <label for="id_zip_code">zip code (optional): <label> 
+            </td>
+            <td>
+            {{ form.zip_code }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.phone.errors}}
+            <label for="id_phone">phone (optional): <label> 
+            </td>
+            <td>
+            {{ form.phone }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+            {{form.dob.errors}}
+            <label for="id_dob">birthdate (optional): <label> 
+            </td>
+            <td>
+            {{ form.dob }}
+            </td>
+        </tr>
+
+    </table>
+  <input type="submit" value="{% trans 'Submit' %}" />
+</form>
+{% endblock %}

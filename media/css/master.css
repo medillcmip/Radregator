@@ -111,6 +111,11 @@ div#header form#usersignin {
 	height: 26px;
 	width: auto;
 }
+div#header form#usersignin div#pass_reset_link {
+    font-size: 0.8em;
+    bottom: 7px;
+    position: relative;
+}
 
 div#header form#usersignin label {
 	font-size: 0.9em;
@@ -270,6 +275,10 @@ span.uparrow, a.uparrow {
     width: 100%;
     z-index: 1000;
 	background-color: #620505;
+}
+
+#messageswrap.info {
+    background-color: #0F9D2E;
 }
 
 #messages {
@@ -587,7 +596,7 @@ div#leftcontent h1 {
 	margin: 0;
 }
 
-div#leftcontent div#context {
+div#leftcontent div.context {
 	position: relative;
 	border-bottom: 1px solid #ccc;
 	margin-bottom: 40px;
@@ -596,12 +605,12 @@ div#leftcontent div#context {
 	height: auto;
 }
 
-div#leftcontent div#context p {
+div#leftcontent div.context p {
 	margin: 0 0 5px 0;
 	line-height: 1.4em;
 }
 
-div#leftcontent div#context div.contextbot, div#leftcontent div#timeline div.contextbot {
+div#leftcontent div.context div.contextbot, div#leftcontent div#timeline div.contextbot {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -629,7 +638,11 @@ a.expanderbut {
 	height: 20px;
 	cursor: pointer;
 }
-
+a.topicsmany{
+    position: static;
+    
+    
+}
 a.expanderbut:hover {
 	text-decoration: none;
 	background-color: #dcdcdc;
@@ -1086,6 +1099,32 @@ ul.masterlist li div.answer a.flagasopinion {
 	font-weight: bold;
 }
 
+/* HANDLE Browse Topics WITH INDENTS */
+ul.topicslist {
+	margin-left: 29px;
+	margin-bottom: 12px;
+	padding-top: 17px;
+}
+
+div.topiclist_link{
+	font-size: 1.5em;
+	color: #e3e3e3;
+	font-weight: bolder;
+}
+
+div.topiclist_summary p.topiclist_summary{
+	font-size: 1.em;
+    margin-left: 35px;
+    margin-right: 45px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+
+	overflow: auto;
+	background-color: #e5e5e5;
+	padding: 10px;
+}
 /* HANDLE NESTED ANSWERS WITH INDENTS */
 ul.masterlist li ul.answers {
 	margin-left: 29px;
@@ -1566,7 +1605,7 @@ div#signup p {
 }
 
 div#signup form#signupform {
-    margin-top: 50px;
+    margin-top: 25px;
 }
 
 div#signup form.signupinput {
@@ -1574,7 +1613,6 @@ div#signup form.signupinput {
 	overflow: auto;
 	margin-bottom: 50px;
 }
-
 
 div#signup form.signupinput input.signupinput {
 	width: 300px;
@@ -1584,9 +1622,24 @@ div#signup form.signupinput input.signupinput {
 	font-weight: bold;
 	border: 2px #323232 solid;
 	padding: 0 10px;
-	float: left;
+	/* float: left; */
 	margin-right: 10px;
 	color: #888;
+}
+
+div#signup .signupselect {
+	width: 324px;
+	height: 36px;
+	line-height: 32px;
+	font-size: 14px;
+	font-weight: bold;
+	border: 2px #323232 solid;
+	padding: 0 0 0 10px;
+	/* float: left; */
+	margin-right: 10px;
+    margin-top: 10px;
+	color: #888;
+    background-color: #ffffff;
 }
 
 div#signup .signupbutton {
@@ -1599,10 +1652,11 @@ div#signup .signupbutton {
 	font-weight: bold;
 	text-align: center;
 	display: block;
+    margin-top: 10px;
 }
 
 div#signup form.signupinput .signupsubmit {
-	float: left;
+	/* float: left; */
 	width: 100px;
 }
 

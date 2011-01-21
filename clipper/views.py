@@ -214,6 +214,8 @@ def clipper_paste_url(request, comment_id, topic_id):
     and fuck that baby up, and spit it out on a new page so the 
     user can start selecting text inside our site
     """
+    error_str = "We currently can't process the page the URL you entered "
+    error_str += "points to, please try again later."
     template_dict = {}
     form = None
     return_page = 'clipper.html'
@@ -236,13 +238,13 @@ def clipper_paste_url(request, comment_id, topic_id):
                     'topic_id_field': topic_id})
                 return_page = 'clipper_select_text.html'
             except FileTypeNotSupported as fns:
-                logger.debug('clipper_paste_url(request, comment_id): TYPE=' + str(type(fns)) +\
-                    ', REASON=' + str(fns) + ', URL=' + url)
+                logger.error('clipper_paste_url(request, comment_id): TYPE=' \
+                    + str(type(fns)) + ', REASON=' + str(fns) + ', URL=' + url)
                 template_dict['errors'] = str(fns) + "  Please try another url."
             except Exception as ex:
-                logger.debug('clipper_paste_url(request, comment_id): type=' + str(type(ex)) +\
-                             ' ,REASON='+ str(ex) +',URL=' + url)
-                template_dict['errors'] = str(ex)
+                logger.error('clipper_paste_url(request, comment_id): type=' \
+                    + str(type(ex)) + ' ,REASON='+ str(ex) +',URL=' + url)
+                template_dict['errors'] = error_str
     else: #first time we hit the page
         form = clipper.forms.UrlSubmitForm()
     template_dict['form'] = form

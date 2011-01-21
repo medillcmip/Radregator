@@ -14,7 +14,7 @@
 		initiateTimelineClock(countdown);		
 		
 		// Set up "Browse" link
-		$("a#browsetopics").colorbox({width:"800px", height:"500px",inline:true, href:"#browseoverlay"});
+		//$("a#browsetopics").colorbox({width:"800px", height:"500px",inline:true, href:"/topics/browse/"});
 
 
 
@@ -23,12 +23,6 @@
 {% endblock %}
 
 {% block pagecontent %}
-	<ul class="topicinfo">
-		<li class="topictitle nodestamp">Topic: <span>Rahm Emanuel</span></li>
-		<li class="answercount"><span>0</span> answers</li>
-		<li class="askercount"><span>0</span> askers</li>	
-	</ul>
-	
 	<div id="hometimeline">
 		<p id="timelineflag">Featured questions</p>
 		<div id="timelinecontainer"></div>
@@ -52,32 +46,11 @@
 		<a class="button big answerthis" href="#">Answer this</a>
 		<ul class="interactionslist">
 			<li>Jump to this <a href="#" class="topicpage">topic page</a></li>
-			<li><a href="#" id="browsetopics">Browse</a> all topics</li>
-			<li><a href="#">Learn more about Sourcerer</a></li>
+			<li><a href="/topic/browse/" id="browsetopics">Browse</a> all topics</li>
+			<li><a href="/about/">Learn more about Sourcerer</a></li>
 		</ul>
 	</div>
 
 
-
-	<div style="display:none;">
-		<div id="browseoverlay">
-			<h3>Topics map</h3>
-			<!-- ADD FILTER CONTROLS AND A SORT FEATURE! -->
-			<ul>
-				<li><a href="#topic">Topic Example #1</a></li>
-				<li><a href="#topic">Topic Example #2</a></li>
-				<li><a href="#topic">Topic Example #3</a></li>
-				<li><a href="#topic">Topic Example #4</a></li>
-				<li><a href="#topic">Topic Example #5</a></li>
-				<li><a href="#topic">Topic Example #6</a></li>
-				<li><a href="#topic">Topic Example #7</a></li>
-				<li><a href="#topic">Topic Example #8</a></li>
-				<li><a href="#topic">Topic Example #9</a></li>
-				<li><a href="#topic">Topic Example #10</a></li>
-				<li><a href="#topic">Topic Example #11</a></li>
-				<li><a href="#topic">Topic Example #12</a></li>
-			</ul>
-		</div>
-	</div>
 
 {% endblock %}

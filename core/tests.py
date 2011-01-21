@@ -9,9 +9,28 @@ import core.utils
 from users.models import UserProfile
 from clipper.models import Article
 import clipper.views
+from core.forms import CommentSubmitForm
+from clipper.forms import ClipTextForm
 
 class BaseTestCase(TestCase):
     """Base class for test cases that provides some utility methods."""
+
+    def _ask_question_forms(self, cmt_type_str, txt, topic, reply_to):
+        form = CommentSubmitForm(data={'comment_type_str': cmt_type_str,
+                                              'text': txt,
+                                              'topic': topic,
+                                              'in_reply_to': reply_to})
+        return form
+
+    def _answer_question_form(self, selected_text, user_comments):
+
+        form = ClipTextForm(data={'selected_text': selected_text,
+                                    'user_comments': user_comments,
+                                    'url_field': 'http://google.com',
+                                    'comment_id_field': '1',
+                                    'topic_id_field': '1'})
+        return form
+
     def _ask_question(self, topic, text, user_profile):
         comment_type = CommentType.objects.get(name="Question")
         question = Comment(text=text, user=user_profile, \
@@ -107,6 +126,27 @@ class BasicQuestionTestCase(QuestionTestCase):
             comment_text="I don't know, but this article says the 25th ward contains parts of Chinatown.")
 
         self.assertEqual(question.num_answers(), 2);
+
+
+        #test invalid inputs
+        q_txt = "<iframe title=\"YouTube video player\" \
+        class=\"youtube-player\" type=\"text/html\" width=\"640\" \
+        height=\"390\" src=\"http://www.youtube.com/embed/54R2p0Vb87M?rel=0\"\
+         frameborder=\"0\"></iframe> test<b> test</b> <img> src </img>"
+        question_form = self._ask_question_forms('1', q_txt, '3', '3')
+        self.assertTrue(question_form.is_valid())
+        self.assertEquals(question_form.cleaned_data['text'], 
+            u' test test  src ')
+
+        answer_form = self._answer_question_form(q_txt,q_txt)
+        self.assertTrue(answer_form.is_valid())
+
+        self.assertEquals(answer_form.cleaned_data['selected_text'], 
+            u' test test  src ')
+
+
+        self.assertEquals(answer_form.cleaned_data['user_comments'], 
+            u' test test  src ')
 
 class BurningQuestionsTestCase(QuestionTestCase):
     def test_get_questions(self):

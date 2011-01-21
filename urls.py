@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.views.generic.simple import direct_to_template
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -10,31 +11,40 @@ if not settings.PREVIEW_MODE:
         # Example:
         # (r'^newsqa/', include('newsqa.foo.urls')),
         (r'^$', 'core.views.frontpage'),
+    
+        (r'^about/', 'core.views.about_page'),
         
         (r'^signup', 'core.views.signup'),
+
+        (r'^topic/browse/', 'core.views.browse_topics'),
 
         (r'^topic/(?P<whichtopic>\d+)/', 'core.views.topic'),
 
         (r'^reporterview', 'core.views.reporterview'),
 
         (r'^loginstatus', 'core.views.login_status'),
+        
         (r'^login', 'users.views.api_login'),
 
-        (r'^static_login', 'users.views.weblogin'),
-        (r'^static_register', 'users.views.register'),
         (r'^logout', 'users.views.weblogout'),
 
-        (r'^register', 'users.views.register'),
+        #django-registration
+        (r'^accounts/register/complete/$',direct_to_template,\
+            {'template': 'registration/registration_complete.html'}),
+        
+        (r'^accounts/register/', 'users.views.register'),
+        
+        (r'^accounts/', include('registration.urls')),
 
         (r'^authenticate', 'users.views.auth'),
-        
-        (r'^accounts/login/$', 'users.views.weblogin'),
-
-        (r'^accounts/login/register/$', 'users.views.register'),
         
         (r'^clipper_select', 'clipper.views.clipper_submit_select'),
 
         (r'^clipper/(?P<comment_id>\d+)/(?P<topic_id>\d+/)', 'clipper.views.clipper_paste_url'),
+
+
+        (r'^clipper_ifrm',direct_to_template,\
+            {'template': 'clipper_ifrm.html'}),
 
         (r'^bootstrapper/(?P<question_id>\d+)/', 'core.views.generate_bootstrapper'),
         
@@ -66,7 +76,7 @@ if not settings.PREVIEW_MODE:
         (r'^api/(?P<output_format>json)/users/facebooklogin/$',
          'users.views.api_facebook_auth'),
 
-        (r'^api/(?P<output_format>json)/users/(?P<uri_username>\w*)/login/$',
+        (r'^api/(?P<output_format>json)/users/login/$',
          'users.views.api_auth'),
 
         (r'^api/(?P<output_format>json)/users/$',

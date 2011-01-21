@@ -1,11 +1,13 @@
 from django import forms
+from core import utils
 
 class UrlSubmitForm(forms.Form):
-    url_field = forms.URLField(label='Site you want to clip', required=True,\
-                widget=forms.TextInput(attrs={'size':'70', 'class':'clipper_url_field'}))
+    url_field = forms.URLField(label='Enter the URL of the site you want to clip'\
+        , required=True,\
+        widget=forms.TextInput(attrs={'size':'70', 'class':'clipper_url_field'}))
     user_comments = forms.CharField(widget=forms.Textarea(\
-        attrs={'class':'clipper_text_field'}), required=False, \
-        label="Add some of your own commentary here.")
+        attrs={'class':'clipper_text_field', 'col': 52}), required=False, \
+        label="Your comments go here: ")
 
 class ClipTextForm(forms.Form):
     """
@@ -13,10 +15,10 @@ class ClipTextForm(forms.Form):
     published story
     """
     selected_text = forms.CharField(widget=forms.Textarea(\
-        attrs={'class':'clipper_text_field'}), required=True, \
+        attrs={'cols':32,'class':'clipper_text_field'}), required=True, \
         label="Any text you highlight in the article will appear here!")
     user_comments = forms.CharField(widget=forms.Textarea(\
-        attrs={'class':'clipper_text_field'}), required=False, \
+        attrs={'col':32,'class':'clipper_text_field'}), required=False, \
         label="Add some of your own commentary here.")
     title = forms.CharField(required=False, \
         label="Not the right title for this article?  Mind filling it in for us?"\
@@ -32,3 +34,15 @@ class ClipTextForm(forms.Form):
     url_field = forms.URLField(required=True, widget=forms.HiddenInput)
     comment_id_field = forms.CharField(widget=forms.HiddenInput, required=True)
     topic_id_field = forms.CharField(widget=forms.HiddenInput, required=True)
+
+    def clean(self):
+        """
+        sanitize user input so there isn't any HTML... issue117
+        """
+        f_comments = self.cleaned_data.get('user_comments')      
+        self.cleaned_data['user_comments'] = utils.sanitize_html(f_comments)
+        f_selection = self.cleaned_data.get('selected_text')
+        self.cleaned_data['selected_text'] = utils.sanitize_html(f_selection)
+        return self.cleaned_data
+
+

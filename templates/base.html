@@ -47,6 +47,11 @@
 
             $('#fbloginbut').unbind('click', handleFacebookLoginButton).bind('click', handleFacebookLoginButton);
 
+
+            $('#asksubmit').unbind('click', paintQuestionTopics).bind('click', paintQuestionTopics);
+
+            $('#askfooter').unbind('submit', handleFooterQSubmit).bind('submit', handleFooterQSubmit);
+
             // Handler for collapsing the messages bar
             $('#messages #hidemessages a').click(function() {
                 $('#messageswrap').hide();
@@ -65,6 +70,7 @@
 			$("#usercontrols a.askquestion").click(function() {
 				$("div#footer").css("height","800px");
 				$.scrollTo( 'div#footer', 300, {offset: {top:-35, left:0} } );
+                paintQuestionTopics();
 				return false;
 			});
 
@@ -74,15 +80,28 @@
             // Populate "Top Questions" list in footer.
             getTopQuestions();
 	   
-	        // Implement error on "ask" in footer
-			if (!userIsAuthenticated()) {
-				$("a#asksubmit").click(function() {
-					displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
-				});
-			}
 	
 	});
     
+    </script>
+
+    <!-- Get Satisfaction Feedback tab widget -->
+    <script type="text/javascript" charset="utf-8">
+      var is_ssl = ("https:" == document.location.protocol);
+      var asset_host = is_ssl ? "https://s3.amazonaws.com/getsatisfaction.com/" : "http://s3.amazonaws.com/getsatisfaction.com/";
+      document.write(unescape("%3Cscript src='" + asset_host + "javascripts/feedback-v2.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+      var feedback_widget_options = {};
+
+      feedback_widget_options.display = "overlay";  
+      feedback_widget_options.company = "sourcerer";
+      feedback_widget_options.placement = "right";
+      feedback_widget_options.color = "#50B332";
+      feedback_widget_options.style = "problem";
+
+      var feedback_widget = new GSFN.feedback_widget(feedback_widget_options);
     </script>
 
     {% block addscripts %}
@@ -112,8 +131,10 @@
 				
 				<ul id="usercontrols" class="grid_5">
 					<li class="button darkback"><a href="#askquestion" class="askquestion"><span class="downarrow"></span>Ask a Question</a></li>
+                    <!--
 					<li class="lightback"><a href="#"><span class="downarrow"></span>Favorites</a></li>
 					<li class="lightback"><a href="#"><span class="downarrow"></span>Recent Q&As</a></li>
+                    -->
                     {% if is_reporter %}
                     {% include "core-topic-usercontrols-reporter.html" %}
                     {% endif %}
@@ -141,14 +162,15 @@
 					
 					<input type="password" value="password" name="password" class="textinput" id="usersignin-password" onblur="if (this.value=='') { this.value=this.defaultValue; } else {}" onfocus="if (this.value==this.defaultValue) { this.value=''; }" />
 					<input type="submit" value="submit" name="submit" class="submit" id="usersignin-submit" />
+                    <br>
+	                <div id="pass_reset_link">Forgot your password? <a href="/accounts/password/reset/">Reset it!</a></div>
 				</form>
-				
 				
 				
 
 				<!--<h1 class="logo">Querity</h1>-->
 				<h1 class="templogo"><span>Source</span>rer</h1>
-				<a href="/register" id="greetsignup">Signup</a>
+				<a href="/accounts/register/" id="greetsignup">Signup</a>
 								
 		</div>
 		<!--CLOSE HEADER "LOGGED OUT"-->
@@ -186,30 +208,20 @@
 			</ul>
 			<div class="footerpanes" id="askdiv">
 				<form id="askfooter" class="footerinput">
-					<input type="text" id="askinput" class="footerinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';topicsDropShow();">
-					
-					
+					<input type="text" id="askinput" class="footerinput" name="askstring" value="Enter your question" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';topicsDropShow();if(!$('#asktopicsdrop').is(':visible'))paintQuestionTopics();">
 					<a href="javascript:;" id="asksubmit" class="footersubmit blackback">Ask</a>
-					
-					
 					<div id="asktopicsdrop">
-						<h3>Choose a topic:</h3>
-						<ul>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example">Topic Example</li>
-							<li><input type="radio" name="topic" value="Topic Example"><input name="newtopic" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';"></li>
-						</ul>
-					</div>
+						<h3>Choose a topic your question should appear under:</h3>
+                        <div id="ask_topics_form_content">
+<!-- for now we don't want to allow users to create topics.... keep them constrained to what sourcerer admins provide 
+<input type="radio" name="topic" value="Topic Example"><input name="newtopic" class="newtopic" id="newtopic" value="Enter a topic title" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';"></br> -->
+                        </div>
+
+                        
+                        <input type="submit" value="Submit" />
 				</form>
+					</div>
+
 			</div>
 			<!--<div class="footerpanes" id="searchdiv">
 				<form id="searchfooter" class="footerinput">

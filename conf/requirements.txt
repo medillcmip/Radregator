@@ -6,3 +6,4 @@ egenix-mx-base==3.1.2
 jsonpickle==0.3.1
 psycopg2==2.2.2
 wsgiref==0.1.2
+django-registration==0.7

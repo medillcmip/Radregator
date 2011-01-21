@@ -16,7 +16,7 @@ import core.utils
 from models import UserProfile
 from models import User
 from forms import LoginForm, RegisterForm, InviteForm 
-
+from registration.models import RegistrationProfile
 logger = core.utils.get_logger()
 
 def ajax_login_required(view_func):
@@ -228,51 +228,64 @@ def register(request):
     """
     template_dict = {}
     form = None
-
+    logger.info("users.register(request):")
     return_page = ''
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            #grab input
-            logger.debug('users.views.register(request): form was valid')
+            #grab ise
+            baseuser = RegistrationProfile.objects.create_inactive_user\
+            (username=form.cleaned_data['username'],\
+            password=form.cleaned_data['password1'],\
+            email=form.cleaned_data['email'])
+
             f_username = form.cleaned_data['username']
-            f_password = form.cleaned_data['password']
-            #f_email = form.cleaned_data['email']
-            #f_first_name = form.cleaned_data['first_name']
-            #f_last_name = form.cleaned_data['last_name']
-            #f_street_address = form.cleaned_data['street_address']
-            #f_city = form.cleaned_data['city']
-            #f_state = form.cleaned_data['state']
-            #f_zip_code = form.cleaned_data['zip_code']
-            #f_phone = form.cleaned_data['phone']
-            #f_dob = form.cleaned_data['dob']
+            
+            logger.info('users.views.register(request): form was valid for user %s' \
+                , f_username)
+
+            f_first_name = form.cleaned_data['first_name']
+            f_last_name = form.cleaned_data['last_name']
+            f_street_address = form.cleaned_data['street_address']
+            f_city = form.cleaned_data['city']
+            f_state = form.cleaned_data['state']
+            f_zip_code = form.cleaned_data['zip_code']
+            f_phone = form.cleaned_data['phone']
+            f_dob = form.cleaned_data['dob']
             #we validate the username / email is unique by overriding
             #clean_field methods in RegisterForm
-            baseuser = User.objects.create_user(username=f_username,\
-                password=f_password, email='')
-            baseuser.first_name=''
-            baseuser.last_name=''
+            baseuser.first_name = f_first_name
+            baseuser.last_name = f_last_name
             baseuser.save()
             newuser = UserProfile(user=baseuser)
+            newuser.street_address = f_street_address
+            newuser.city = f_city
+            newuser.dob = f_dob
+            newuser.phone_number = f_phone
+            newuser.zip_code = f_zip_code
+            newuser.state = f_state
+            #all users are considered sources if they register
+            newuser.user_type = 'S'
             newuser.save()
-            logger.debug('user.views.register(request): user saved') 
+            logger.info('user.views.register(request): user %s saved', f_username) 
             #this call is antiquated and not how the flow is designed to work
             #any longer.  
             #return do_login(f_username,f_password,request)
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/accounts/register/complete/')
         else:
-            return_page = 'users-register.html'
+            logger.info('user.views.register(request): invalid form')
+            return_page = 'registration/registration_form.html'
     if request.method != 'POST': 
         #get a new form
         form = RegisterForm()
-        return_page = 'users-register.html'
+        return_page = 'registration/registration_form.html'
     template_dict['form'] = form
-    logger.debug('users.views.register(request: returning page='+return_page)
+    logger.info('users.views.register(request: returning page='+return_page)
     return render_to_response(return_page, template_dict,\
         context_instance=RequestContext(request))
 
 
-def api_auth(request, uri_username, output_format='json'):
+def api_auth(request, output_format='json'):
     """Like auth() but through AJAX"""
 
     data = {} # Response data 
@@ -339,6 +352,12 @@ def api_auth(request, uri_username, output_format='json'):
     except BadUsernameOrPassword, error:
         status = 401 # unauthorized
         data['error'] = "%s" % error
+
+    except UserAccountDisabled, error:
+        status = 401 #unauthorized
+        data['error'] = "Your account is disabled or it has not been \
+             activated yet. Please reset your password or email the site\
+             administrator"
 
     return HttpResponse(content=json.dumps(data), mimetype='application/json',
                         status=status)
@@ -504,6 +523,9 @@ def api_invite(request, output_format='json'):
     Parameters:
 
     * email: E-mail address for the new user. 
+    * interest: User's interest in signing up.  Value can be either "publisher",
+                "consumer", or an empty string.  Default is an empty string.
+
     """
 
     status = 201 # HTTP return status.  We'll be optimistic.
@@ -511,24 +533,39 @@ def api_invite(request, output_format='json'):
 
     try:
         if request.method == 'POST':
+            #print "DEBUG: POST"
             form = InviteForm(request.POST)
+            #print "DEBUG: form object created"
             if form.is_valid():
+                #print "DEBUG: form validated"
                 email = form.cleaned_data['email']
+                interest = form.cleaned_data['interest']
 
                 try:
                     user = User.objects.get(email=email)
                     raise UserEmailExists("It looks like you've already requested an invitation.") 
                 except User.DoesNotExist:
-                    user = User.objects.create_user(username=email,
+                    username = email # Username defaults to e-mail address
+                    if len(email) > 30:
+                        #print email
+                        # Django usernames can't be longer than 30 characters
+                        # Just take the first 30 characters of the part of
+                        # the email address before the '@'
+                        email_parts = email.partition('@')
+                        username = email_parts[0][:30]
+
+                    user = User.objects.create_user(username=username,
                                                     email=email)
                     user.is_active = False
                     user.set_unusable_password()
                     user.save()
-                    user_profile = UserProfile(user=user)
+                    #print "DEBUG: saved user"
+                    user_profile = UserProfile(user=user, interest=interest)
                     user_profile.save()
+                    #print "DEBUG: saved user profile"
 
             else:
-                print form.errors
+                #print "DEBUG: %s" % (form.errors)
                 status = 400 # Caught in a bad request
                 data['error'] = "Invalid e-mail address."
 
@@ -547,6 +584,7 @@ def api_invite(request, output_format='json'):
     except Exception as detail:
         status = 500 # What the what?
         data['error'] = "Something went wrong.  We're looking into it.  Please try again." 
+        #print detail
 
     content=json.dumps(data)
 

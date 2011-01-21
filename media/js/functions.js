@@ -1,16 +1,100 @@
-var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/register/">register</a> to do this!'; 
+var LOGIN_REQUIRED_MESSAGE = 'You need to login or <a href="/accounts/register/">register</a> to do this!'; 
+var FAILED_TO_QUESTION_MESSAGE = 'Sorry! We\'re experiencing technical difficulties and we couldn\'t accept your question right now.';
+var EMPTY_COMMENT_FIELD = "Whoops!  It doesn't look like there was anything to ask.  Feel free to fill the form with your questions.";
 
+
+function handleCommentSubmitErrors(requestError, status, errorResponse) {
+    var response_text = requestError.responseText;
+    var response_data = $.parseJSON(response_text);
+    var errorNum = requestError.status;
+    if(errorNum == 400) {
+        //a field wasn't filled out, comments only have
+        //one field at time of writing
+        displayMessage(EMPTY_COMMENT_FIELD, 'error');
+    }
+    else if (errorNum == 401) {
+         // User isn't logged in
+         displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+         questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
+         $('a.login').bind('click', launchLogin);
+    } 
+    else if (errorNum == 403) {
+         // Another error
+         var errorMsg = response_data.error;
+         displayMessage(errorMsg, 'error');
+    }
+    else{
+        displayMessage(FAILED_TO_QUESTION_MESSAGE, 'error');
+    }
+
+}
+
+
+function handleFooterQSubmit() {
+    var thistext = $("#askinput").val()
+    var thistopic = $('input:radio[name=q_topic]:checked').val();
+    var topic_id = $('input:radio[name=q_topic]:checked').attr('id');
+    $.ajax({
+        type: "post",
+        url : "/api/json/comments/",
+		  data: { 
+		  'topic': thistopic,
+		  'text': thistext,
+          'in_reply_to': "",
+          'comment_type_str': '1',
+        } ,
+        success : function(data){
+            location.href="/topic/"+topic_id+"#comment-"+data;
+        },
+        error: function(requestError, status, errorResponse){
+            handleCommentSubmitErrors(requestError, status, errorResponse);
+            return false;
+        }
+    });
+    return false;
+}
+
+function paintQuestionTopics() {
+    if(!userIsAuthenticated()){
+        displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
+        return false;
+    }
+    if(!$('#asktopicsdrop').is(':visible'))
+    {
+        $.ajax({
+            type: "get",
+            url : "/api/json/topics/",
+            data : {'result_type': 'all'},
+            success : function(data){
+                $('#ask_topics_form_content').append("<ul>");
+                $.each(data,function(index, topic)
+                {
+                    var pk = topic.pk;
+                    var title = topic.fields.title;
+                    $('#ask_topics_form_content').append("<input type=\"radio\" id="+pk+" name=\"q_topic\" value=\""+title+"\"/>"+title+"</br>");
+                });
+                $('#ask_topics_form_content').append("</ul>");
+                $("#asktopicsdrop").css("display","block");
+            },
+            error: function(data){
+            // Show to user?
+            }
+        });
+    }
+}
 
 // TOPIC DROP ON "ASK" FORM IN FOOTER
 // Implement "ask" in footer (and header?)
 function topicsDropShow() {
-	$("#asktopicsdrop").css("display","block");
+
 	//Character counter
+    /*for now we don't do character counts on questions
 	$("#askinput").charCount({
 		allowed: 140,		
 		warning: 20,
 		counterText: 'Characters remaining: '	
 	});
+    */
 }
 
 function handleFeedbackJSGen(){
@@ -88,7 +172,8 @@ function setUserAuthenticated() {
 function userIsAuthenticated() {
     // Read the flag set by setUserAuthenticated() to see if the user is
     // logged in
-    return jQuery.data(document.body, "is_authenticated");
+    var val = jQuery.data(document.body, "is_authenticated");
+    if(val == null){return false;}else{return true;}
 }
 
 //
@@ -259,28 +344,7 @@ function handleCommentSubmit(){
 				
 		  },
 		  error: function (requestError, status, errorResponse) {
-				var response_text = requestError.responseText;
-				var response_data = $.parseJSON(response_text);
-				var errorNum = requestError.status;
-
-				if (errorNum == "401") {
-					 // User isn't logged in
-					 var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-					 questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-					 $('a.login').bind('click', launchLogin);
-				} 
-				else if (errorNum == "403") {
-					 // Another error
-					 var errorMsg = response_data.error; 
-					 questionform.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-				}
-
-				error_message = questionform.children('.error-message');
-				error_message.css('display','block');
-
-				$('.error-message').click(function() {
-					 $(this).remove();
-				});
+                handleCommentSubmitErrors(requestError, status, errorResponse);
 
 		  }
 	 });
@@ -301,53 +365,30 @@ function handleReplySubmit(){
 	 var this_sources = $('#id_sources-'+thiscomment_id).val();
 	 var this_url = $('#' + thisform + ' .clipper_url_field').val();
 
-	 $('.replydiv form').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
-
-		  if(this_url != '' &&  this_url != null){
-				
-				return true;
-		  }
-		  $.ajax({
-				type: "post",
-				url: "/api/json/comments/",
-				data: { in_reply_to : thisin_reply_to,
-				topic: thistopic,
-				comment_type_str : thiscomment_type,
-				text : thistext,
-				in_reply_to: thisin_reply_to,
-				sources : this_sources,
+      if(this_url != '' &&  this_url != null){
+            
+            return true;
+      }
+      $.ajax({
+            type: "post",
+            url: "/api/json/comments/",
+            data: { in_reply_to : thisin_reply_to,
+            topic: thistopic,
+            comment_type_str : thiscomment_type,
+            text : thistext,
+            in_reply_to: thisin_reply_to,
+            sources : this_sources,
 
 
-				},
-				success: function(data){
-					 $('.replyform').hide();
-					 location.reload();
-				},
-				error: function (requestError, status, errorResponse) {
-					 var response_text = requestError.responseText;
-					 var response_data = $.parseJSON(response_text);
-					 var errorNum = requestError.status;
-
-					 if (errorNum == "401") {
-						  // User isn't logged in
-						  var errorMsg = 'You need to <a class="login">login or register</a> to do this!' 
-						  thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-						  $('a.login').bind('click', launchLogin);
-					 } 
-					 else if (errorNum == "403") {
-						  // Another error
-						  var errorMsg = response_data.error; 
-						  thiscomment.append('<div class="error-message"><p>' + errorMsg + '</p><p class="instruction">(Click this box to close.)</p></div>');
-					 }
-
-					 error_message = thiscomment.children('.error-message');
-					 error_message.css('display','block');
-
-					 $('.error-message').click(function() {
-						  $(this).remove();
-					 });
-				}
-		  });
+            },
+            success: function(data){
+                 $('.replyform').hide();
+                 location.reload();
+            },
+            error: function (requestError, status, errorResponse) {
+                handleCommentSubmitErrors(requestError, status, errorResponse);
+            }
+     });
 	 return false;
 
 
@@ -518,7 +559,7 @@ function handleUserSignInForm() {
         $(this).html('');
     });
 
-    var posturl = "/api/json/users/"+thisuser+"/login/";
+    var posturl = "/api/json/users/login/";
         // alert(posturl);
 
     $.ajax({
@@ -551,14 +592,13 @@ function handleUserSignInForm() {
 
 // MORE / LESS ON CONTEXT
 
-function contextexpander() {
+function contextexpander(obj) {
 	
 	// GET TOTAL HEIGHT
-	var fullheight = $("#context").height();
-	//alert(fullheight);
+	var fullheight = $(obj).height();
 	
 	if (fullheight < 150) {
-		$(".contextbot").css("display","none");
+	    $($(obj).find('.contextbot')).css("display","none");
 		return false;
 	}
 	
@@ -567,27 +607,29 @@ function contextexpander() {
       'height' : '10em',
       'overflow' : 'hidden'
     }
-	$("#context").css(csschunk);
-	
+	$(obj).css(csschunk);
 	// ADD CLICK-TO-TOGGLE
-	$(".contextbot .expanderbut").toggle(
+    var expander = $(obj).find('.contextbot .expanderbut');
+	$(expander).toggle(
 	function()
 	{
-		$('#context').animate({
+		$(obj).animate({
 		height: fullheight+10, 
 		overflow: "auto",
 		}, 500);
-		$(".contextbot .more").css("display","none");
-		$(".contextbot .less").css("display","block");
+
+		$($(this).find('.more')).css("display","none");
+		$($(this).find('.less')).css("display","block");
 	},
 	function()
 		{
-			$('#context').animate({
+			$(obj).animate({
 			height: "10em", 
 			overflow: "hidden"
 		}, 500);
-		$(".contextbot .more").css("display","block");
-		$(".contextbot .less").css("display","none");
+
+		$($(this).find('.less')).css("display","none");
+		$($(this).find('.more')).css("display","block");
 	});
 }
 
@@ -597,7 +639,7 @@ function displayMessage(message, level) {
     level = typeof(level) != 'undefined' ? level : 'info';
 
     $('#messages p').html(message);
-    $('#messageswrap').addClass(level);
+    $('#messageswrap').attr('class', level);
     $('#messageswrap').show();
 
 }
@@ -792,13 +834,15 @@ $.fn.fontfit = function(max) {
 //
 //
 
+var feat_slider_container_width = 961;
 function initiateHomeTimeline() {
-	var timeline = Raphael("timelinecontainer", 561, 36);
-	var backdrop = timeline.rect(1, 1, 560, 26).attr("stroke-width","0");
+    var container_height = 36;
+	var timeline = Raphael("timelinecontainer", feat_slider_container_width , container_height);
+	var backdrop = timeline.rect(1, 1, feat_slider_container_width , 26).attr("stroke-width","0");
 	
 	var slicecount = $("ul.featspotul li").length;
 	var slices = new Array(slicecount);
-	var segmentlength = (560 / slicecount);
+	var segmentlength = (feat_slider_container_width  / slicecount);
 	
 	for(var i = 0; i < slicecount+1; i+=1) {  
 		var multiplier = i * segmentlength;
@@ -820,7 +864,7 @@ function initiateHomeTimeline() {
 		slices[i].click(function () {
 			// "SLIDE" THE MAIN SPOT
 			var xfactor = this.attr("x");
-			var slidevalue = -((xfactor/560)*(slicecount*961));
+			var slidevalue = -((xfactor/feat_slider_container_width )*(slicecount*961));
 			$("ul.featspotul").animate({ left: slidevalue }, 600);
 		
 			// GET THE DATA FROM THE NEW LI CLASS AND UPDATE THE DIGITS
@@ -847,7 +891,7 @@ function timedSlide() {
 	// Set up the timer for rotation through the timeline
 	// Get the current location
 	var slicecount = $("ul.featspotul li").length;
-	var segmentlength = (560 / slicecount);
+	var segmentlength = (feat_slider_container_width  / slicecount);
 	var timelineloc = $("#timelinemarker").css("left");
 	timelineloc = parseInt(timelineloc.replace("px",""));
 	var timelinestep = ((timelineloc + 6) + (segmentlength / 2)) / segmentlength;
@@ -856,7 +900,7 @@ function timedSlide() {
 	// Set up the new anchors values -- if the values exceed the width of the timeline, set back to first item
 	var newtimelineloc = timelineloc + segmentlength;
 	var newslidevalue = 0;
-	if (newtimelineloc > 560) { newtimelineloc = (segmentlength / 2) - 6; } else { newslidevalue = -((timelinestep) * 961); }
+	if (newtimelineloc > feat_slider_container_width ) { newtimelineloc = (segmentlength / 2) - 6; } else { newslidevalue = -((timelinestep) * 961); }
 	
 	// Slide 'em and update digits
 	$("#timelinemarker").animate({ left: newtimelineloc }, 600);
@@ -895,12 +939,12 @@ function updateDigits (timelinestep) {
 	
 	if (classvals['topicname'].length > 14) {
 		var topictext = classvals['topicname'].slice(0, 17).replace(/^\s+|\s+$/g,"");
-		topictext = topictext + "...";
+		//topictext = topictext + "...";
 	} else {
 		var topictext = classvals['topicname'];
 	}
 	
-	$("ul.topicinfo li.topictitle span").html(topictext);
+	$("ul.topicinfo li.topictitle span").html('hello');
 	$("ul.topicinfo li.topictitle").attr("title",classvals['topicname']).tooltip({extraClass: "pretty", fixPNG: true, opacity: 0.95 });
 	
 	// Last, update "Answer this" link and "Jump to topic"
@@ -954,6 +998,13 @@ function initiateTopicTimeline() {
 	answerdata = sortThisArray(answerdata);
 */
 // END TESTING BLOCK //
+
+//TESTING ISSUE 126 
+
+
+//answerdata["20101217-1"] = {author: null,bgcolor: "rgb(31, 153, 31)",clip: null,date: "Dec. 17",link: undefined,month: "Dec.",pageanchor: undefined,popularity: "0",source: null,title: null,year: "2010"};
+//END TESTING ISSUE 126
+
 	answerdata = sortThisArray(answerdata);
 
 
@@ -989,84 +1040,88 @@ function initiateTopicTimeline() {
 		
 		
 		// FIX HTML ISSUES
-		var thistitle = answerdata[slicestamp]["title"].replace("&quot;","\"");
-		var thistitle = thistitle.replace("&#8212;","-");
-		var thistitle = thistitle.replace("&amp;","&");
+        try{
+            var thistitle = answerdata[slicestamp]["title"].replace("&quot;","\"");
+            var thistitle = thistitle.replace("&#8212;","-");
+            var thistitle = thistitle.replace("&amp;","&");
 		
-		$('#prototype').clone().attr("id","slice"+slicestamp).appendTo('#tlhovercontainers');
-		$('#slice'+slicestamp+' p.dateline').html(answerdata[slicestamp]["date"]+', '+answerdata[slicestamp]["year"]+'<a href="'+answerdata[slicestamp]["link"]+'" target="_blank">'+answerdata[slicestamp]["source"]+'</a>');
-		$('#slice'+slicestamp+' h4.artheadline').html(thistitle);
-		$('#slice'+slicestamp+' p.storyblurb a.articlelink').attr("href",answerdata[slicestamp]["link"]);
-		if (answerdata[slicestamp]["clip"].length > 140) {
-			var cliptext = answerdata[slicestamp]["clip"].slice(0, 140).replace(/^\s+|\s+$/g,"");
-		} else {
-			var cliptext = answerdata[slicestamp]["clip"];
-		}
-		$('#slice'+slicestamp+' p.storyblurb span').html(cliptext);
-		
+            $('#prototype').clone().attr("id","slice"+slicestamp).appendTo('#tlhovercontainers');
+            $('#slice'+slicestamp+' p.dateline').html(answerdata[slicestamp]["date"]+', '+answerdata[slicestamp]["year"]+'<a href="'+answerdata[slicestamp]["link"]+'" target="_blank">'+answerdata[slicestamp]["source"]+'</a>');
+            $('#slice'+slicestamp+' h4.artheadline').html(thistitle);
+            $('#slice'+slicestamp+' p.storyblurb a.articlelink').attr("href",answerdata[slicestamp]["link"]);
+            if (answerdata[slicestamp]["clip"].length > 140) {
+                var cliptext = answerdata[slicestamp]["clip"].slice(0, 140).replace(/^\s+|\s+$/g,"");
+            } else {
+                var cliptext = answerdata[slicestamp]["clip"];
+            }
+            $('#slice'+slicestamp+' p.storyblurb span').html(cliptext);
+            
 
-		var thisleftoffset = leftoffset;
-		
-		
-		
-		// NOW DRAW THE WHOLE DAMNED THING, INCLUDING DATES ALONG BOTTOM
-		slices[slicestamp] = timeline.rect(leftoffset, 0, 2, 1).attr({fill: answerdata[slicestamp]["bgcolor"]}).attr("stroke-width",0).attr("opacity",0).attr("slicestamp",slicestamp);
-		
-		//DEAL WITH TEXT
-		var thisyear = slicestamp.substring(0,4);
-		var thismonth = slicestamp.substring(4,6); 
-		var thisday = slicestamp.substring(6,8);
-		
-		if (thisyear != lastyear) {
-			window["year" + thisyear] = timeline.text(leftoffset+2, 176, thisyear).attr({'text-anchor': 'start'}).attr({ "font-size": 15, "font-family": "Arial, Helvetica, sans-serif","font-weight": "bold", "color": "#323232" });
-		}
-		
-		if (thismonth != lastmonth) {
-			window["month" + thismonth] = timeline.text(leftoffset+2, 160, answerdata[slicestamp]["month"]).attr({'text-anchor': 'start'}).attr({ "font-size": 12, "font-family": "Arial, Helvetica, sans-serif", "color": "#323232" });			
-		}
-		
-		//SAVE VALUES FOR NEXT ROUND
-		lastyear = thisyear;
-		lastmonth = thismonth;
-		lastday = thisday;
+            var thisleftoffset = leftoffset;
+            
+            
+            
+            // NOW DRAW THE WHOLE DAMNED THING, INCLUDING DATES ALONG BOTTOM
+            slices[slicestamp] = timeline.rect(leftoffset, 0, 2, 1).attr({fill: answerdata[slicestamp]["bgcolor"]}).attr("stroke-width",0).attr("opacity",0).attr("slicestamp",slicestamp);
+            
+            //DEAL WITH TEXT
+            var thisyear = slicestamp.substring(0,4);
+            var thismonth = slicestamp.substring(4,6); 
+            var thisday = slicestamp.substring(6,8);
+            
+            if (thisyear != lastyear) {
+                window["year" + thisyear] = timeline.text(leftoffset+2, 176, thisyear).attr({'text-anchor': 'start'}).attr({ "font-size": 15, "font-family": "Arial, Helvetica, sans-serif","font-weight": "bold", "color": "#323232" });
+            }
+            
+            if (thismonth != lastmonth) {
+                window["month" + thismonth] = timeline.text(leftoffset+2, 160, answerdata[slicestamp]["month"]).attr({'text-anchor': 'start'}).attr({ "font-size": 12, "font-family": "Arial, Helvetica, sans-serif", "color": "#323232" });			
+            }
+            
+            //SAVE VALUES FOR NEXT ROUND
+            lastyear = thisyear;
+            lastmonth = thismonth;
+            lastday = thisday;
 
-		// var thisbarheight = (answerdata[slicestamp]["popularity"]+3)*10;
-		// var thisbary = 150 - thisbarheight;
-		var thisbarpop = answerdata[slicestamp]["popularity"];
-		var thisbarheight = ((thisbarpop)*((150/toppop)))+24;
-		var thisbary = 150 - thisbarheight;
-				
-		//ANIMATE IN
-		slices[slicestamp].animate({
-			"20%": {y: thisbary},
-			"40%": {opacity: 0.6},
-			"50%": {height: thisbarheight},
-			"80%": {opacity: 0.9},
-			"100%": {width:segmentlength-1}
-		}, 1500);
-		
-		
-		// CONNECT HOVER TO HIDE/SHOW THE ARTICLES
-		slices[slicestamp].hover(function () {
-			this.attr("opacity",1);
-			this.node.style.cursor = 'pointer';
-			// $('#slice'+slicestamp).css("display","block").css("position","absolute").css("top",thisbary+(thisbarheight/2)+25).css("left",(thisleftoffset+(segmentlength/2))-150+"px");
-			$('#slice'+slicestamp).css("display","block").css("position","absolute").css("top","160px").css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+            // var thisbarheight = (answerdata[slicestamp]["popularity"]+3)*10;
+            // var thisbary = 150 - thisbarheight;
+            var thisbarpop = answerdata[slicestamp]["popularity"];
+            var thisbarheight = ((thisbarpop)*((150/toppop)))+24;
+            var thisbary = 150 - thisbarheight;
+                    
+            //ANIMATE IN
+            slices[slicestamp].animate({
+                "20%": {y: thisbary},
+                "40%": {opacity: 0.6},
+                "50%": {height: thisbarheight},
+                "80%": {opacity: 0.9},
+                "100%": {width:segmentlength-1}
+            }, 1500);
+            
+            
+            // CONNECT HOVER TO HIDE/SHOW THE ARTICLES
+            slices[slicestamp].hover(function () {
+                this.attr("opacity",1);
+                this.node.style.cursor = 'pointer';
+                // $('#slice'+slicestamp).css("display","block").css("position","absolute").css("top",thisbary+(thisbarheight/2)+25).css("left",(thisleftoffset+(segmentlength/2))-150+"px");
+                $('#slice'+slicestamp).css("display","block").css("position","absolute").css("top","160px").css("left",(thisleftoffset+(segmentlength/2))-150+"px");
 
-		}, 
-		function () {
-			$('#slice'+slicestamp).css("display","none");
-			this.attr("opacity",0.9);
-		});
-		
-		$('#slice'+slicestamp).hover(function () { $(this).css("display","block"); }, function() { $(this).css("display","none"); });
-		
-		// CONNECT TIMELINE CLICKING LAUNCH NEW WINDOW WITH ARTICLE
-		slices[slicestamp].click(function () {
-			window.open(answerdata[slicestamp]["link"]);
-		});
-			
-		iterator++;	
+            }, 
+            function () {
+                $('#slice'+slicestamp).css("display","none");
+                this.attr("opacity",0.9);
+            });
+            
+            $('#slice'+slicestamp).hover(function () { $(this).css("display","block"); }, function() { $(this).css("display","none"); });
+            
+            // CONNECT TIMELINE CLICKING LAUNCH NEW WINDOW WITH ARTICLE
+            slices[slicestamp].click(function () {
+                window.open(answerdata[slicestamp]["link"]);
+            });
+                
+
+        }catch(e){}//not all articles have data populated 
+
+        iterator++;	
 	});
 }
 

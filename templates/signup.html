@@ -41,12 +41,14 @@
             });
 
             $('#signupsubmit').click(function(){
-                displayMessage("The magic is happening ...")
                 var email = $('#signupinput').val();
+                var interest = $('#signupselect').val();
+                var message = "Please wait while we work our magic <img src=\"/static/img/icns/ajax-loader.gif\" />";
+                displayMessage(message, 'info');
                 $.ajax({
                     type: "post", 
                     url: "/api/json/invite/",
-                    data: { email : email },
+                    data: { email : email, interest : interest },
                     success: function(data){
                         displayMessage("Thanks.  We'll be in touch.", 'info');
                         return false;
@@ -95,7 +97,13 @@
                 <h2>Go to the source!</h2>
                 <p>Sourcerer is preparing for a beta launch.  If you'd like to be part of the beta, enter your e-mail address and we'll send you an invitation.</p>
                 <form id="signupform" class="signupinput">
-                    <input type="text" id="signupinput" class="signupinput" name="email" value="Enter your e-mail address" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';">
+                    <input type="text" id="signupinput" class="signupinput" name="email" value="Enter your e-mail address" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';" /><br />
+                    <select id="signupselect" class="signupselect" name="interest">
+                        <option value="" selected="selected">I am ...</option>
+                        <option value="publisher">A publisher, reporter or other media maker interested in running Sourcerer on my site</option>
+                        <option value="consumer">A media consumer interested in using Sourcerer</option>
+                        <option value="">None of these.  I'm just interested.</option>
+                    </select>
                     
                     <a href="javascript:;" id="signupsubmit" class="signupbutton signupsubmit blackback">Invite Me</a>
                     

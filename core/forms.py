@@ -4,6 +4,9 @@ from core.models import Comment,CommentType,Topic
 from tagger.models import Tag
 from users.models import UserProfile
 from django.forms.widgets import CheckboxSelectMultiple
+from core import utils
+
+logger = utils.get_logger()
 
 class CommentDeleteForm(forms.Form):
     allcomments = Comment.objects.filter(is_deleted=False).filter(is_parent=True)
@@ -98,6 +101,20 @@ class CommentSubmitForm(forms.Form):
         widget = forms.HiddenInput, required=False)
     sources = forms.ModelChoiceField(UserProfile.objects.all(), \
         required = False)
+    
+    def clean(self):
+        """
+        make sure we aren't accepting HTML input
+        """
+        f_value = self.cleaned_data.get('text')
+        logger.info("core.forms.CommentSubmitForm(): checking input f_value=%s,"\
+            , f_value)
+        if f_value == None or f_value.strip() == '':
+            logger.error("core.forms.CommentSubmitForm(): comment was empty")
+            raise forms.ValidationError('Empty form')
+        self.cleaned_data['text'] = utils.sanitize_html(f_value)
+        return self.cleaned_data
+
 
     class Meta:
         fields = ['comment_type_str', 'text', 'topic', 'in_reply_to', 'sources']

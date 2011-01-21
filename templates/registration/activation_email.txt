@@ -1,0 +1,8 @@
+{% load i18n %}
+{% trans "We wanted to take the chance to thank you for signing up to use Sourcerer.  To get started, please following the link below." %} 
+
+http://{{ site.domain }}{% url registration_activate activation_key %} 
+
+{% blocktrans %}After {{ expiration_days }} days this link will expire.{% endblocktrans %}
+
+

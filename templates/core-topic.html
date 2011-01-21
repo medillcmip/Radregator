@@ -34,12 +34,13 @@
             //$('a.disassociatecommentlink').unbind('click', handleReplyform); // Don't have this trigger the reply form
             //$('.copytotopic').unbind('change', handleCopyComment).bind('change', handleCopyComment);
             $('.questionform').unbind('submit', handleCommentSubmit).bind('submit', handleCommentSubmit);
+            $('.replyform').unbind('submit', handleReplySubmit).bind('submit', handleReplySubmit);
             
             // SET UP ANSWER/REPLY DROPDOWN DRAWERS
             answerdrawers();
 
 			// HANDLE CONTEXT MORE/LESS
-			contextexpander();
+			contextexpander($("#context"));
 			
 			// HANDLE EARMARK HEIGHTS, LABELS and COLORS
 			earmarksetup();
@@ -82,17 +83,19 @@
         {% include "core-topic-addsource.html" %}
     {% endif %}
     <div class="topicid" id="{{topic.id}}"></div>
-			<div id="context">
+			<div class="context" id="context">
 				<h1>{{topic.title}}</h1>
-					<div id="contextintro" class="topic-summary">
+			    <div id="contextintro" class="topiclist_summary" >
                     {{topic.summary.text|safe}}
-                    </div>
+                </div>
         
-		<div class="contextbot"><a class="expanderbut lightback" href="javascript:;">
-			<span class="more"><span class="downarrow"></span>more </span>
-			<span class="less"><span class="uparrow"></span>less </span>
-		</a></div>
-			</div>
+                <div class="contextbot">
+                    <a class="expanderbut lightback" href="javascript:;">
+                    <span class="more"><span class="downarrow"></span>more </span>
+                    <span class="less"><span class="uparrow"></span>less </span>
+                    </a>
+                </div>
+	        </div>
 		
 		
         {% if is_reporter %}

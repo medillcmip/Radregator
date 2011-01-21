@@ -1,0 +1,175 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>radregator</title>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/demo.css">
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui-1.8.6.custom.css">
+    <script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/jquery.colorbox-min.js"></script>
+    <script src="{{ MEDIA_URL }}js/jquery-ui-1.8.6.custom.min.js"></script>
+
+<script type="text/javascript">
+
+
+    function toggleItem(id){
+      var item = document.getElementById(id);
+      if(item){
+        if ( item.style.display == "none"){
+          item.style.display = "";
+        }
+        else{
+          item.style.display = "none";
+        } 
+      }
+    }
+
+
+    
+
+    //keep too much text from playing with our styles
+    function stubString(strVal){
+      if(strVal.length > 30){
+        return strVal.substring(0,30) + "...";
+      }
+      else{
+        return strVal;
+      }
+
+
+    }
+
+    function prep_form(m_call){
+        //  var $body = $("#requested_page_frm").contents().find('HTML');
+            /* ...bind your events here to $body.. */
+        //    $body.mouseup(radregator.select.mouseup);
+
+
+        $( "#id_date_published" ).datepicker();
+
+        //hide elements
+        $("#id_author").hide();
+        $("#id_date_published").hide()
+        $("#id_title").hide()
+        //$("#id_user_comments").hide()
+        $("#clipper_help").hide()
+        var author_name = $("#id_author").val();
+        var title_name = $("#id_title").val();
+        var dater = $("id_date_published").val();
+        dater = ''; //for now, no default val for date is specified
+        $("#id_author_lbl").html(stubString(author_name) + " <a href=\"javascript:exposeField('id_author')\">Not right?</a>");
+        $("#id_date_published_lbl").html(dater + " <a href=\"javascript:exposeField('id_date_published')\">Not right?</a>");
+        $("#id_title_lbl").html(stubString(title_name) + " <a href=\"javascript:exposeField('id_title')\">Not Right?</a>");
+
+
+        // GRAB THE FORM INPUT AND KILL BEHAVIOR
+        $('#form1').submit(function() {
+
+            var s_text = $("#id_selected_text").val();
+            if(s_text == ''){
+              alert('Please highlight some text that relates to the comment you are responding to before submitting.');
+              return false;
+            }
+            var author_name_f = $("#id_author").val();
+            var title_name_f = $("#id_title").val();
+            var date_f = $("#id_date_published").val();
+            var url_field_f = $("#id_url_field").val();
+            var comment_id_field_f = $("#id_comment_id_field").val();
+            var selected_text_f = $("#id_selected_text").val();
+            var user_comments_f = $("#id_user_comments").val();
+            var topic_id_f = $("#id_topic_id_field").val();
+
+            // Clear prior error messages
+            $('.errormsg').each(function(index) {
+                $(this).html('');
+            });
+            
+            var posturl = "/api/json/clipper_select/";
+            
+            $.ajax({
+                type: "post", context: $(this), url: posturl, data: { url_field: url_field_f,
+                  author: author_name_f, title: title_name_f, date_published: date_f, 
+                  comment_id_field: comment_id_field_f, selected_text: selected_text_f,
+                  user_comments: user_comments_f, topic_id_field: topic_id_f}, success: function(data){
+                //parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
+                //parent.$.fn.colorbox.close();
+
+                m_call();
+              },
+                error: function (requestError, status, errorResponse) {
+                  var errorNum = requestError.status;
+
+                  var responseText = jQuery.parseJSON(requestError.responseText);
+                  var errorMsg = responseText.error;
+                  
+                  if(responseText.error_html)
+                  {
+                      errorMsg += responseText.error_html;
+                  }
+                  $(this).find(".errormsg").html(errorMsg);
+                  $(this).find(".errormsg").css("display", "block");
+                }
+            });
+          return false;
+        });
+
+    }
+
+    $(document).ready(function(){
+
+    });
+    function toggleForms(){
+      if($("#clipper_i_am").is(":visible")){
+        $('#clipper_i_am').hide();
+        $('a#expand_link').text("SHOW FORMS");
+      }
+      else{
+        $("#clipper_i_am").show('drop')
+        $('a#expand_link').text("HIDE FORMS");
+      }
+    }
+
+    //toggles an input field versus a label field so the default
+    //is not to edit data, but the user can choose
+    //labels display a modified string if the value in the field
+    //it is hiding is greater than N characters (see stubString(strVal))
+    function exposeField(val){
+      if($("#"+val).is(":visible")){
+        $("#"+val).hide();
+        var field_val = stubString($("#"+val).val());
+        $("#"+val+"_lbl").html(field_val + " <a href=\"javascript:exposeField('"+val+"')\">Not right?</a>");
+      }
+      else{
+        $("#"+val).show('drop');
+        $("#"+val+"_lbl").html(" <a href=\"javascript:exposeField('"+val+"')\">Close</a>");
+    }}
+    function showHelp(){
+      if($("#clipper_help").is(":visible")){
+        $("#clipper_help").hide();
+      }
+      else{
+
+        $("#clipper_help").show('drop');
+      }
+    }
+</script>
+
+</head>
+  <body>
+  <div id="clipper_wrapper_floater" style="position:fixed;top:0;left:0;width:100%;height:275px;background:white;z-index:1001;">
+
+    <div id="clipper_i_am" class="clipper_styles" style="background:white;font-family:arial;font-size:12px;color:black;width:1000px;z-index:1000;height:275px;margin-left:auto;margin-right:auto;">
+      <a href="javascript:showHelp()">What's this?</a>
+      <div id="clipper_help" class="clipper_styles"> 
+
+    The page should appear just a little bit below all of these confusing forms.  We'd like to attribute everything to a source and a reporter, so we tried to identify that stuff but I'm not totally confident it worked.  First, highlight text in this article that you think is most pertinent and relates to a question or a comment.  Then, if you have time, check over the other fields and fix what we got wrong.
+        <BR>
+
+     </div>
+      <div id="form_div"></div>
+
+    </div>
+
+  </div>
+  </body>
+</html>
