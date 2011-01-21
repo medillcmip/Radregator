@@ -1,24 +1,66 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:fb="http://www.facebook.com/2008/fbml">
   <head>
-  {% autoescape off %}{{requested_page_head}}{% endautoescape %}
+  
   <script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
   <script type="text/javascript">
 
-    $(document).ready(function(){
-      var ifrm_form = $("#requested_page_frm").contents().find("#form_div");
-      var this_form = $("#form1");
-      $(this_form).remove();
-      $(ifrm_form).append($(this_form).html())
-      //find a way to call functions in the iframe document
-      //call prep_form() and things should get initialized
-      //i dont think i need to worry about refresh since the errors 
+    if(!window.radregator){
+        radregator = {};
+    }
+
+    radregator.select = {};
+    //Want to make sure something in the selection has been filled in
+    //because if we let django forms do it, we'll have to save the page
+    //we harvested into a temp location and load it back out 
+    //by checking here we can forefront that process and save a page load
+    radregator.select.checkSelectionForm = function(){
+    }
+
+    radregator.select.getSelected = function(){
+      var txt = '';
+      if (window.getSelection){
+        txt = window.getSelection();
+      }
+      else if (document.getSelection){
+        txt = document.getSelection();
+      }
+      else if (document.selection){
+        txt = document.selection.createRange().text;
+      }
+      else return;
+      return txt;
+    }
+
+    radregator.select.mouseup = function(){
+        var st = radregator.select.getSelected();
+        if(st!=''){
+          $("#requested_page_frm").contents().find("#id_selected_text").val(st);
+        }
+    }
+    var topic_id_f = "1"; //default the topic to return the user to
+    success_fwd_usr=function(args){
+      location.href="/topic/"+topic_id_f;
+    }
+
+    $(window).load(function(){
+        $(document).bind("mouseup", radregator.select.mouseup);
+        var ifrm_form = $("#requested_page_frm").contents().find("#form_div");
+         
+        var this_form = $("#form1");
+        topic_id_f = $("#id_topic_id_field").val();//set the actual return topic
+        //inject the form into the iframe so we avoid making multiple calls to the server
+        $(ifrm_form).append("<form id='form1' method='POST' action='/api/json/clipper_select/'>" + $(this_form).html() + "</form>");
+        $("#requested_page_frm")[0].contentWindow.prep_form(success_fwd_usr);
+        $(this_form).remove();
+
     });
 
   </script>
+  {% autoescape off %}{{requested_page_head}}{% endautoescape %}
   </head>
   <body>
-  <IFRAME SRC="/clipper_ifrm/" WIDTH="100%" HEIGHT="100%" id="requested_page_frm" style="overflow-y:auto;"></IFRAME>
+  <IFRAME SRC="/clipper_ifrm/" WIDTH="100%" HEIGHT="275px" id="requested_page_frm" style="position:fixed;top:0;left:0;width:100%;height:275px;background:white;z-index:1001;"></IFRAME>
         <form id="form1" name="form1"  method='POST' action='/api/json/clipper_select/' style="display:none;">
           <div id='clipper_highlights_textarea' style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=27%;">
           {{form.selected_text.errors}}
@@ -38,9 +80,11 @@
         <div id="clipper_meta_data" style="float:left;padding:10px;font-family:arial;font-size:12px;color:black;width=33%;">
           {{form.title.errors}}Title:<div id="id_title_lbl" style="display:inline;"></div>{{form.title}}
           <BR><BR>
-          {{form.author.errors}}Author:<div id="id_author_lbl" style="display:inline;"></div>{{form.author}}
-          <BR><BR>
+
           {{form.date_published.errors}}Date Published:<div id="id_date_published_lbl" style="display:inline;"></div>{{form.date_published}}
+
+          <BR><BR>
+          {{form.author.errors}}Author:<div id="id_author_lbl" style="display:inline;"></div>{{form.author}}
           <BR><BR>
           {{form.comment_id_field}}
           {{form.topic_id_field}}
