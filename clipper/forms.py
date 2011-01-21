@@ -18,7 +18,7 @@ class ClipTextForm(forms.Form):
         attrs={'cols':32,'class':'clipper_text_field'}), required=True, \
         label="Any text you highlight in the article will appear here!")
     user_comments = forms.CharField(widget=forms.Textarea(\
-        attrs={'col':32,'class':'clipper_text_field'}), required=False, \
+        attrs={'cols':32,'class':'clipper_text_field'}), required=False, \
         label="Add some of your own commentary here.")
     title = forms.CharField(required=False, \
         label="Not the right title for this article?  Mind filling it in for us?"\
