@@ -38,17 +38,14 @@
           $("#requested_page_frm").contents().find("#id_selected_text").val(st);
         }
     }
-    var topic_id_f = "1"; //default the topic to return the user to
     success_fwd_usr=function(args){
-      location.href="/topic/"+topic_id_f;
+      location.href=args;
     }
 
     $(window).load(function(){
         $(document).bind("mouseup", radregator.select.mouseup);
         var ifrm_form = $("#requested_page_frm").contents().find("#form_div");
-         
         var this_form = $("#form1");
-        topic_id_f = $("#id_topic_id_field").val();//set the actual return topic
         //inject the form into the iframe so we avoid making multiple calls to the server
         $(ifrm_form).append("<form id='form1' method='POST' action='/api/json/clipper_select/'>" + $(this_form).html() + "</form>");
         $("#requested_page_frm")[0].contentWindow.prep_form(success_fwd_usr);
