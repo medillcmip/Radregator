@@ -86,8 +86,7 @@ if DEBUG:
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Location of application log file.
-from os import environ
-LOG_FILENAME = "%s/sourcerer_logs/sourcerer.log" % environ['HOME'] 
+LOG_FILENAME = "/home/medill2010/logs/user/sourcerer-staging.log"
 
 # How often log files should be rotated
 # See Python documentation for TimedRotatingFileHandle for possible values.
