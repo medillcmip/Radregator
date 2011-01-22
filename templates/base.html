@@ -45,7 +45,6 @@
             $('#usersignin').unbind('submit', handleUserSignInForm).bind('submit', handleUserSignInForm);
             $('#messageswrap').hide(); // Hide messages bar initially
 
-            $('#fbloginbut').unbind('click', handleFacebookLoginButton).bind('click', handleFacebookLoginButton);
 
 
             $('#asksubmit').unbind('click', paintQuestionTopics).bind('click', paintQuestionTopics);
@@ -108,21 +107,6 @@
     {% endblock %}
 </head> 
 <body class="{{ body_classes }}">
-        <div id="fb-root"></div>
-        <script type="text/javascript">
-        window.fbAsyncInit = function() {
-            FB.init({appId: '{{ fb_app_id }}', status: true, cookie: true,
-                     xfbml: true});
-        };
-
-        (function() {
-          var e = document.createElement('script'); e.async = true;
-          e.src = document.location.protocol +
-             '//connect.facebook.net/en_US/all.js';
-          document.getElementById('fb-root').appendChild(e);
-        }());
-
-       </script>
 	<div id="wrapper" class="container_12">
 		<div id="headerwrap">
 		<!--THIS IS HEADER "LOGGED IN"-->
@@ -152,10 +136,6 @@
 		<!--THIS IS HEADER "LOGGED OUT"-->
 		<div id="header" class="loggedout">
 				
-				<div id="facebooklogin">
-					<p>or</p>
-					<a href="#" id="fbloginbut">Login with Facebook</a>
-				</div>
 				<form id="usersignin">
 					<label>Login:</label>
 					<input type="text" value="username" name="username" class="textinput" id="usersignin-username" onblur="if (this.value=='') this.value=this.defaultValue;" onfocus="if (this.value==this.defaultValue) this.value='';" />
