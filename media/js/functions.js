@@ -745,7 +745,6 @@ function answerdrawers() {
                         $(this).html("Answer this");
                     }
                     $('#' + formid).toggle();
-                    earmarkrefresh(this);
                 }
                 else {
                     displayMessage(LOGIN_REQUIRED_MESSAGE, 'error');
