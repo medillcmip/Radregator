@@ -1001,23 +1001,6 @@ function initiateTopicTimeline() {
 	
 	// THIS FUNCTION NEEDS TO BE REWRITTEN TO HIT THE BACKEND, NOT SCRAPE THE PAGE (SEE BELOW)
 	var answerdata = grabAnswerData();
-
-
-
-// FOR TESTING // 
-/*
-	answerdata["20060702"] = {author:"www.google.com",bgcolor:"rgb(10,110,10)",clip:"Here is what would be kind of a longer clip to show what would happen when that sort of thing occurred",date:"July 2",link:"http://www.washingtonpost.com",pageanchor:"comment-7",popularity:"1",source:"washingtonpost.com",title:"Here is the name of this article",year:"2006",month:"July"};
-	
-	answerdata = sortThisArray(answerdata);
-*/
-// END TESTING BLOCK //
-
-//TESTING ISSUE 126 
-
-
-//answerdata["20101217-1"] = {author: null,bgcolor: "rgb(31, 153, 31)",clip: null,date: "Dec. 17",link: undefined,month: "Dec.",pageanchor: undefined,popularity: "0",source: null,title: null,year: "2010"};
-//END TESTING ISSUE 126
-
 	answerdata = sortThisArray(answerdata);
 
 
@@ -1187,8 +1170,10 @@ function grabAnswerData() {
 			var breakstamp = datestamp.split("-");
 			datestamp = breakstamp[0] + "-" + iterator;
 		}
-		
-		answerdata[datestamp] = thisanswerdata;
+        //if there is no link we shouldn't display it in the timeline
+		if(thisanswerdata['source'] != null && thisanswerdata['source'] != ""){
+    		answerdata[datestamp] = thisanswerdata;
+        }
 	});
 	answerdata = sortThisArray(answerdata);
 	return answerdata;
