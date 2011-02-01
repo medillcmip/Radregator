@@ -1130,7 +1130,7 @@ function grabAnswerData() {
 	
 	$("ul.answers li").each( function(index) {
         if(index > 20){
-            break;
+            return false; //jquery breaks
         }
 		//NEED: title, clip, source, author, popularity, link, date, page anchor, bgcolor, year
 		var thisanswerdata = {};		
