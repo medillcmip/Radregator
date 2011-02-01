@@ -1001,7 +1001,6 @@ function initiateTopicTimeline() {
 	
 	// THIS FUNCTION NEEDS TO BE REWRITTEN TO HIT THE BACKEND, NOT SCRAPE THE PAGE (SEE BELOW)
 	var answerdata = grabAnswerData();
-    answerdata = answerdata.slice(0,20);//only use the first twenty or less itmes
 	answerdata = sortThisArray(answerdata);
 
 
@@ -1129,7 +1128,10 @@ function grabAnswerData() {
 	var answerdata = {};
 	var iterator = 0;
 	
-	$("ul.answers li").each( function() {
+	$("ul.answers li").each( function(index) {
+        if(index > 20){
+            break;
+        }
 		//NEED: title, clip, source, author, popularity, link, date, page anchor, bgcolor, year
 		var thisanswerdata = {};		
 		thisanswerdata["bgcolor"] = $(this).find("div.earmark").css("background-color");
