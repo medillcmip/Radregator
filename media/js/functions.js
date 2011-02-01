@@ -1022,7 +1022,7 @@ function initiateTopicTimeline() {
 	var lastday = "";
 	
 	//FIGURE OUT WHAT THE SCALE OF "THUMBS UP" IS
-	var toppop = 0;
+	var toppop = .1;
 	for(var slicestamp in answerdata) {
 		var thispop = parseInt(answerdata[slicestamp]["popularity"]);
 		//console.log(thispop);
