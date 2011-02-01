@@ -1001,6 +1001,7 @@ function initiateTopicTimeline() {
 	
 	// THIS FUNCTION NEEDS TO BE REWRITTEN TO HIT THE BACKEND, NOT SCRAPE THE PAGE (SEE BELOW)
 	var answerdata = grabAnswerData();
+    answerdata = answerdata.slice(0,20);//only use the first twenty or less itmes
 	answerdata = sortThisArray(answerdata);
 
 
