@@ -6,7 +6,9 @@ from django.views.generic.simple import direct_to_template
 from django.contrib import admin
 admin.autodiscover()
 
+handler404 = 'core.views.page_not_found'
 if not settings.PREVIEW_MODE:
+    
     urlpatterns = patterns('',
         # Example:
         # (r'^newsqa/', include('newsqa.foo.urls')),
