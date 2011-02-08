@@ -48,7 +48,9 @@ def page_not_found(request, template_name='404.html'):
     """
 
     """
-    return render_to_response(template_name,
+    template_dict = {'MEDIA_URL':settings.MEDIA_URL}
+
+    return render_to_response(template_name, template_dict,
         context_instance = RequestContext(request)
     )
 
