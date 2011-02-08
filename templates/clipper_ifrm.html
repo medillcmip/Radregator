@@ -91,10 +91,7 @@
                   author: author_name_f, title: title_name_f, date_published: date_f, 
                   comment_id_field: comment_id_field_f, selected_text: selected_text_f,
                   user_comments: user_comments_f, topic_id_field: topic_id_f}, success: function(data){
-                //parent.$("div.reglog").html("Hello, "+loggeduser+".  <a href='/logout'>Not you</a>?");
-                //parent.$.fn.colorbox.close();
-
-                m_call();
+                m_call(data['return_url']);
               },
                 error: function (requestError, status, errorResponse) {
                   var errorNum = requestError.status;

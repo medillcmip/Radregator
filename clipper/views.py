@@ -16,6 +16,8 @@ import clipper.models
 import core.utils
 import json
 from core.exceptions import *
+from django.core.exceptions import ValidationError
+from django.db.utils import DatabaseError
 
 logger = core.utils.get_logger()
 
@@ -269,7 +271,7 @@ def api_clipper_submit(request, output_format='json'):
                     title = form.cleaned_data['title']
                     author_name = form.cleaned_data['author']
                     date_published = form.cleaned_data['date_published']
-                    data['topic_id'] = form.cleaned_data['topic_id_field']
+                    topic_id= form.cleaned_data['topic_id_field']
                     user = users.models.UserProfile.objects.get(user=request.user)
                     try:
                         comment_type = core.models.CommentType.objects.get(name='Reply')
@@ -298,6 +300,9 @@ def api_clipper_submit(request, output_format='json'):
                             left_comment = new_comment, right_comment=comment,\
                             relation_type = 'reply')
                         reply_relation.save()
+                        
+                        c_id = new_comment.id
+                        data['return_url'] = '/topic/'+topic_id+'#comment-' + str(c_id)
 
                     except clipper.models.Article.DoesNotExist, e:
                         logger.debug('api_clipper_submit(request): type='+\
@@ -308,6 +313,17 @@ def api_clipper_submit(request, output_format='json'):
                         logger.debug('api_clipper_submit(request): type='+\
                                     str(type(e)) + ' ,REASON=' + str(e))
                         data['error'] = "%s" % e
+                        status = 400
+                    except ValidationError, e:
+                        logger.error('api_clipper_submit(request): type='+\
+                                    str(type(e)) + ' ,REASON=' + str(e))
+                        data['error'] = "%s" % e
+                        status = 400
+                    except DatabaseError, e:
+                        logger.error('api_clipper_submit(request): type='+\
+                                    str(type(e)) + ' ,REASON=' + str(e))
+                        #TODO: why cant i know which field and how long the max l is?
+                        data['error'] = "One of the fields you've edited has exceeded its max length."
                         status = 400
                 else:
                     # Form didn't validate
