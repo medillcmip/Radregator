@@ -44,6 +44,19 @@ def about_page(request):
     return render_to_response('core-about.html', template_dict, \
                               context_instance=RequestContext(request))
 
+def page_not_found(request, template_name='404.html'):
+    """
+
+    """
+    template_dict = {}
+    template_dict['mediaurl'] = settings.MEDIA_URL
+    print template_dict['mediaurl']
+
+
+    return render_to_response(template_name, template_dict,
+        context_instance = RequestContext(request)
+    )
+
 def browse_topics(request):
 
     logger.info('core.views.browse_topics(request)')
