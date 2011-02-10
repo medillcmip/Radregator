@@ -25,3 +25,5 @@ pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind =
 pg_catalog.pg_table_is_visible(c.oid)" > radbackups/droptables
 
 psql $DBNAME $USERNAME -f radbackups/droptables
+
+rm radbackups/*

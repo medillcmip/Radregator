@@ -26,7 +26,7 @@ USERNAME=$3
 outfile=radbackups/`date "+%Y%m%d"$1.sql`
 
 # Dump the data
-pg_dump -U$USERNAME -w $DBNAME > $outfile
+pg_dump -U$USERNAME $DBNAME > $outfile
 
 # And put it somewhere
 # This requires ~/.awssecret have "access key \n secret key"
