@@ -127,7 +127,8 @@ def git_pull(git_remote=None,git_branch=None):
         env.git_branch = git_branch
     run("cd %s/radregator; git pull %s %s" % \
         (env.base_dir, env.git_remote, env.git_branch))
-    run("cd %s/radregator; chmod 775 dbbackup.sh")
+    run("chmod 775 $s/radregator/dbbackup.sh" % \
+        (env.base_dir))
 
 def install_local_settings(db_password, fb_api_id, fb_api_key, fb_secret_key):
     require("hosts", provided_by=[staging, production, testing])
