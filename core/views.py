@@ -557,6 +557,8 @@ def api_topic(request, topic_slug_or_id=None, output_format="json"):
                 request.method)
 
     except MethodUnsupported, e:
+        logger.warning("API call to %s with unsupported method %s" % \
+                    (request.path, request.method))
         status = 405 
         data['error'] = "%s" % e
         response = HttpResponse(content=json.dumps(data), mimetype='application/json',
@@ -594,12 +596,15 @@ def api_comment_tag(request, output_format="json"):
 
 
     except MethodUnsupported, e:
+        logger.warning("API call to %s with unsupported method %s" % \
+                    (request.path, request.method))
         status = 405
         data['error'] = "%s" % e
 
     except ObjectDoesNotExist:
+        logger.exception('Comment does not exist')
         status = 404
-        data['error'] = 'Cmment does not exist'
+        data['error'] = 'Comment does not exist'
 
     response = HttpResponse(content=json.dumps(data), \
         mimetype='application/json', status=status)
@@ -636,10 +641,13 @@ def api_topic_tag(request, output_format="json"):
 
 
     except MethodUnsupported, e:
+        logger.warning("API call to %s with unsupported method %s" % \
+                    (request.path, request.method))
         status = 405
         data['error'] = "%s" % e
 
     except ObjectDoesNotExist:
+        logger.exception("Topic does not exist")
         status = 404
         data['error'] = "Topic does not exist"
             
@@ -692,6 +700,7 @@ def generate_bootstrapper(request, question_id):
                 request.method)
 
     except ObjectDoesNotExist:
+        logger.exception('Comment does not exist')
         status = 404
         template_dict['error'] = "Comment with id %s does not exist" % \
             (topic_slug_or_id)
@@ -718,11 +727,14 @@ def api_topic_summary(request, topic_slug_or_id=None, output_format="json"):
                 request.method)
 
     except ObjectDoesNotExist:
+        logger.exception('Topic does not exist')
         status = 404
         data['error'] = "Topic with slug or id %s does not exist" % \
             (topic_slug_or_id)
 
     except MethodUnsupported, e:
+        logger.warning("API call to %s with unsupported method %s" % \
+                    (request.path, request.method))
         status = 405 
         data['error'] = "%s" % e
 
@@ -802,14 +814,13 @@ def api_topics(request, output_format="json"):
                                      use_natural_keys=True)
 
     except UnknownOutputFormat, e:
-        logger.info('core.views.api_topics(request, output_format=\"json\"): \
-            error = %s', e)
+        logger.warning("API call to %s requested unknown output format %s" % \
+                    (request.path, output_format))
         pass
         # TODO: Handle this exception
         # QUESTION: What is the best way to return errors in JSON?
     except ObjectDoesNotExist, e:
-        logger.info('core.views.api_topics(request, output_format=\"json\"): \
-            error = %s', e)
+        logger.exception('Topic does not exist')
         pass
         # TODO: Handle this exception
 
@@ -858,11 +869,14 @@ def api_topic_comments(request, topic_slug_or_id, output_format="json", page=1):
                                      fields=('comment_type', 'text', 'user'),
                                      use_natural_keys=True)
 
-    except UnknownOutputFormat:
+    except UnknownOutputFormat, e:
+        logger.warning("API call to %s requested unknown output format %s" % \
+                      (request.path, output_format))
         pass
         # TODO: Handle this exception
         # QUESTION: What is the best way to return errors in JSON?
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist, e:
+        logger.exception('Comment does not exist')
         pass
         # TODO: Handle this exception
 
@@ -1095,6 +1109,8 @@ def api_questions(request, output_format='json'):
                                 (request.method))
 
     except MethodUnsupported, e:
+        logger.warning("API call to %s with unsupported method %s" % \
+                    (request.path, request.method))
         status = 405 # Method not allowed
         data = {} # response data 
         data['error'] = "%s" % e

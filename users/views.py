@@ -47,9 +47,13 @@ def ajax_login_required(view_func):
                     "This might change some day.")
 
         except NonAjaxRequest, e:
+            logger.warning("Non-AJAX API call to %s" % (request.path))
             status = 403 # Forbidden
             data['error'] = "%s" % e
+
         except BadUsernameOrPassword, error:
+            logger.warning("Authentication failure for user %s" % \
+                        (request.user.username))
             status = 401 # unauthorized
             data['error'] = "%s" % error
 
@@ -343,18 +347,25 @@ def api_auth(request, output_format='json'):
                 "This might change some day.")
 
     except NonAjaxRequest, e:
+        logger.warning("Non-AJAX API call to %s" % (request.path))
         status = 403 # Forbidden
         data['error'] = "%s" % e
 
     except MethodUnsupported, error:
+        logger.warning("API call to %s with unsupported method %s" % \
+                    (request.path, request.method))
         status = 405 # Method not allowed
         data['error'] = "%s" % error
 
     except BadUsernameOrPassword, error:
+        logger.warning("Authentication failure for user %s" % \
+                    (request.user.username))
         status = 401 # unauthorized
         data['error'] = "%s" % error
 
     except UserAccountDisabled, error:
+        logger.warning("Attempted authentication for disabled user %s" % \
+                    (request.user.username))
         status = 401 #unauthorized
         data['error'] = "Your account is disabled or it has not been \
              activated yet. Please reset your password or email the site\
@@ -446,10 +457,12 @@ def api_users(request, output_format='json'):
                 "This might change some day.")
 
     except NonAjaxRequest as detail:
+        logger.warning("Non-AJAX API call to %s" % (request.path))
         status = 403 # Forbidden
         data['error'] = "%s" % detail 
 
     except (UserUsernameExists, UserEmailExists) as detail:
+        logger.warning("Username or Email conflict when creating user")
         status = 409 # Conflict
         data['error'] = "%s" % detail 
 
@@ -575,14 +588,18 @@ def api_invite(request, output_format='json'):
                                 (request.method))
 
     except MethodUnsupported, e:
+        logger.warning("API call to %s with unsupported method %s" % \
+                    (request.path, request.method))
         status = 405 # Method not allowed
         data['error'] = "%s" % e
 
     except (UserEmailExists) as detail:
+        logger.warning("Username or Email conflict when creating user")
         status = 409 # Conflict
         data['error'] = "%s" % detail 
 
     except Exception as detail:
+        logger.exception('Unknown error')
         status = 500 # What the what?
         data['error'] = "Something went wrong.  We're looking into it.  Please try again." 
         #print detail

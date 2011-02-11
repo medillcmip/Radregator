@@ -53,7 +53,7 @@ def get_article_meta(page):
         #not certain for everything
         title = page.html.head.title.string
     except Exception as e:
-        logger.debug('get_article_meta(page, article): REASON=' + str(e))
+        logger.exception('Page title could not be extracted')
         title = ''
 
     ret_val['title'] = title
