@@ -170,3 +170,17 @@ class CountIfConcur(models.Aggregate):
     def add_to_query(self, query, alias, col, source, is_summary):
         aggregate = SQLCountIfConcur(col, source=source, is_summary=is_summary, **self.extra)
         query.aggregates[alias] = aggregate
+
+def settings_context(request):
+    """Context processor to pass settings to templates.
+
+    This was originally written to passs Google Analytics settings to the
+    template."""
+    template_dict = {}
+
+    if hasattr(settings, 'GOOGLE_ANALYTICS_ACCOUNT') and \
+       hasattr(settings, 'GOOGLE_ANALYTICS_DOMAIN'):
+       template_dict['GOOGLE_ANALYTICS_ACCOUNT'] = settings.GOOGLE_ANALYTICS_ACCOUNT
+       template_dict['GOOGLE_ANALYTICS_DOMAIN'] = settings.GOOGLE_ANALYTICS_DOMAIN
+
+    return template_dict

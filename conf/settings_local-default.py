@@ -86,3 +86,11 @@ LOG_BACKUP_COUNT = 30
 
 # Log level.  Can be 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'.
 LOG_LEVEL='WARNING'
+
+# Google Analytics Account
+# Uncomment and set to enable tracking of pages by Google Analytics
+# This will usually be in the form 'UA-########-#'
+#GOOGLE_ANALYTICS_ACCOUNT = 'UA-00000000-1'
+
+# Domain of this site, as configured in your Google Analytics account
+#GOOGLE_ANALYTICS_DOMAIN = 'somedomain.com'
