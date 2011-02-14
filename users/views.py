@@ -590,3 +590,43 @@ def api_invite(request, output_format='json'):
 
     return HttpResponse(content=content, mimetype='application/json', \
                         status=status)
+
+def activate_unactivated_users_form(request, key):
+
+    """
+    users created in the api_invite function will get an email
+    the email will contain a link with a key
+    this function looks up that user and presents them with a form
+    to create a password and change their username if they so desire
+    """
+    template_dict = {}
+
+    if request.method == 'POST':
+        #the user has submitted the form 
+        #TODO: Need new form, username, passwords
+        #form = LoginForm(request.POST)
+        if form.is_valid():
+            #things look good, log the user in
+            fUsername = form.cleaned_data['username']
+            fPass = form.cleaned_data['password']
+
+            try:
+                #need to locate the user based on some key passed to us
+                #dont want to have to store a new value in the db, right???
+                #only 130ish users to activate for a beta so Im not gonna worry
+                #a unique k,v pair
+                #user = User.objects.get(email=email)
+            except:
+                #do something if they never got an email
+        else:
+            #user done messed up, let em know
+            template_dict['form'] = form
+            return render_to_response('registration/activate_unactivated_users.html',\
+                template_dict, context_instance=RequestContext(request))
+    else:
+        #what form to create?
+        #form = LoginForm()
+        template_dict['form'] = form
+    return render_to_response('registration/activate_unactivated_users.html',\
+        template_dict, context_instance=RequestContext(request))
+
