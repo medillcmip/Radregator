@@ -30,11 +30,14 @@ if not settings.PREVIEW_MODE:
 
         (r'^logout', 'users.views.weblogout'),
 
+        (r'^activate_unactivated/(?P<key>\w+)/$', \
+            'users.views.activate_unactivated_users'),
         #django-registration
         (r'^accounts/register/complete/$',direct_to_template,\
             {'template': 'registration/registration_complete.html'}),
         
         (r'^accounts/register/', 'users.views.register'),
+        
         
         (r'^accounts/', include('registration.urls')),
 

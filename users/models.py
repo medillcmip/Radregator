@@ -1,6 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class ActivationKeyValue(models.Model):
+    """
+    Key Value pair to lookup a user after we have sent out their 
+    activation email
+    """
+    user = models.ForeignKey(User)
+    activation_key = models.TextField(unique=True)
+
 class UserProfile(models.Model):
     """Extra user data.
     
