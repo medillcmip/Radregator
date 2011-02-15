@@ -1,13 +1,28 @@
-Copyright 2010 Geoffrey Hing, Steve Melendez, Andrew Paley and Shane Shifflett 
+Copyright 2010-2011 Geoffrey Hing, Steve Melendez, Andrew Paley and Shane Shifflett 
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-http://www.apache.org/licenses/LICENSE-2.0
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Sourcerer includes works under other copyright notices and distributed
+according to the terms of the GNU General Public License or a compatible
+license, including:
+
+  jQuery - Copyright (c) 2008 - 2009 John Resig
+  Python client library for the Facebook Platform - Copyright (c) 2010 Facebook
+  jQuery ColorBox - Copyright (c) 2010 Jack Moore - jack@colorpowered.com
+  jQuery Editable - Copyright (c) 2009 Arash Karimzadeh (arashkarimzadeh.com)
+  jQuery tools
+  jQuery Tooltip - Copyright (c) 2007 Paul Bakaus (paul.bakaus@googlemail.com) and Brandon Aaron (brandon.aaron@gmail.com || http://brandonaaron.net)
+  jQuery UI - Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+  Raphael - Copyright (c) 2010 Dmitry Baranovskiy (http://raphaeljs.com)
+  TinyMCE - Copyright (c) Copyright 2009, Moxiecode Systems AB
