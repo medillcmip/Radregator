@@ -6,7 +6,7 @@ from users.models import UserProfile
 from django.forms.widgets import CheckboxSelectMultiple
 from core import utils
 
-logger = utils.get_logger()
+logger = utils.get_logger(__name__)
 
 class CommentDeleteForm(forms.Form):
     allcomments = Comment.objects.filter(is_deleted=False).filter(is_parent=True)

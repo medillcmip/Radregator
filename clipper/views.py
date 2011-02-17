@@ -19,7 +19,7 @@ from core.exceptions import *
 from django.core.exceptions import ValidationError
 from django.db.utils import DatabaseError
 
-logger = core.utils.get_logger()
+logger = core.utils.get_logger(__name__)
 
 relative_url_exp = re.compile("(src|href|action)\s*=\s*(\'|\"|(?!\"|\'))(?!(http:|ftp:|mailto:|https:|#))")
 #a quick survey of sites indicates that many news organizations use a format
@@ -53,7 +53,7 @@ def get_article_meta(page):
         #not certain for everything
         title = page.html.head.title.string
     except Exception as e:
-        logger.debug('get_article_meta(page, article): REASON=' + str(e))
+        logger.exception('Page title could not be extracted')
         title = ''
 
     ret_val['title'] = title

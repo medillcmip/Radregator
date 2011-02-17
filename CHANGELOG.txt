@@ -1,0 +1,25 @@
+dd47bf7ecda3e8854fd09bd1821fd770b3adfe00 2011-01-21
+----------------------
+
+- Added logging to a file.  
+
+You will need to assign the following configuration variables in 
+settings_local.py:
+
+    * LOG_FILENAME: The log file name to be created.  The log will 
+      be rotated automatically.
+    * LOG_INTERVAL: How often the logs should be rotated.
+    * LOG_BACKUP_COUNT: How many logs should be saved.
+    * LOG_LEVEL: The log level to be recorded in  the log file.
+
+Usable default values can be found in conf/settings_local-default.py
+and suitable values for the production instances have been set in the
+settings_local.py file for each instance.
+
+A logger instance that will log to the file can be instantiated like this:
+
+    import core.utils
+    logger = core.utils.get_logger(__name__)
+
+A logger created in this way will log all levels, even those below LOG_LEVEL
+to the console.

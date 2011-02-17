@@ -914,3 +914,70 @@ class TopicsApiTestCase(QuestionTestCase):
                          topics[1].title)
         self.assertEqual(json_content[1]['fields']['summary'],
                          str(topics[1].summary))
+
+class LoggingTestCase(TestCase):
+    def _get_random_directory_name(self):
+        import random
+        import math
+        import tempfile
+ 
+        random_number = math.trunc(random.random() * 1000)
+        random_dir = "%s/sourcerer-%d" % (tempfile.gettempdir(),
+                                               random_number)
+        
+        return random_dir
+
+    def _get_nonexistant_directory_name(self):
+        from os.path import isdir
+
+        nonexistant_dir = self._get_random_directory_name() 
+
+        while isdir(nonexistant_dir): 
+            nonexistant_dir = self._get_random_directory_name() 
+
+        return nonexistant_dir
+
+    def setUp(self):
+        pass
+
+    def test_log_filename_not_writeable(self):
+        from core.utils import get_logger
+
+        filename = "%s/sourcerer.log" % self._get_nonexistant_directory_name()
+
+        try:
+            logger = get_logger('test', filename)
+        except IOError:
+            # We should catch the IO error in get_logger()
+            self.fail("IOError exception not raised for nonexistant logfile directory.")
+           
+    def test_logfile_created(self):
+        from tempfile import mkdtemp
+        from core.utils import get_logger
+        from os.path import isfile
+
+        filename = "%s/sourcerer.log" % mkdtemp() 
+        logger = get_logger('test', filename)
+
+        if not isfile(filename):
+            self.fail("Log file %s not created by get_logger()" % filename)
+        
+
+    def test_log_error(self):
+        from core.utils import get_logger
+        from os.path import isfile
+        from tempfile import mkdtemp
+
+        filename = "%s/sourcerer.log" % mkdtemp() 
+
+        logger = get_logger('test', filename)
+
+        error_msg = "This is an error."
+
+        logger.error(error_msg)
+
+        f = open(filename)
+        line = f.readline()
+
+        # The most recent log entry in the file should contain our error message
+        self.assertNotEqual(line.find(error_msg), -1)

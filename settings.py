@@ -67,6 +67,17 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    # Default Django context processors
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.contrib.messages.context_processors.messages",
+    # Context processors added for this project
+    "core.utils.settings_context",
+)
+ 
 # Set the static document root.  This method is inefficient and insecure
 # but we're using it for expediency during development.
 # See http://docs.djangoproject.com/en/dev/howto/static-files/  

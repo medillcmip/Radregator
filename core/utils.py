@@ -2,6 +2,7 @@
 
 import re
 import logging
+import logging.handlers
 from django.conf import settings
 from django.db import models, connection
 import re
@@ -81,32 +82,59 @@ def slugify(s):
 
     return new_s
 
-def get_logger():
+def get_logger(name, filename=settings.LOG_FILENAME):
     """Configure logging.
      
        Thanks http://djangosnippets.org/snippets/16/  
     
     """
+    levels = {'DEBUG': logging.DEBUG,
+              'INFO': logging.INFO,
+              'WARNING': logging.WARNING,
+              'ERROR': logging.ERROR,
+              'CRITICAL': logging.CRITICAL}
+
+    handlers = []
     
     # create logger
-    logger = logging.getLogger() 
+    logger = logging.getLogger(name) 
+
+    # create formatter
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     # create console handler and set level to debug
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
 
-    # create formatter
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
-    # add formatter to ch
+    # Add formatter to handler
     ch.setFormatter(formatter)
 
-    # add ch to logger
+    # Add handler to logger
     logger.addHandler(ch)
+
+    try:
+        # Create a time-based rotating file handler and set level
+        fh = logging.handlers.TimedRotatingFileHandler(filename=filename,
+                                              when=settings.LOG_INTERVAL,
+                                              backupCount=settings.LOG_BACKUP_COUNT)
+        fh.setLevel(levels[settings.LOG_LEVEL])
+
+        # Add formatter to handler
+        fh.setFormatter(formatter)
+
+        # Add handler to logger
+        logger.addHandler(fh)
+
+    except IOError:
+        # Log filename isn't writeable
+        logger.exception("Error writing to log file")
 
     if settings.DEBUG:
         # If we're in DEBUG mode, set log level to DEBUG
         logger.setLevel(logging.DEBUG) 
+    else:
+        # Set it to the level in the configuration file
+        logger.setLevel(levels[settings.LOG_LEVEL])
 
     return logger
 
@@ -142,3 +170,17 @@ class CountIfConcur(models.Aggregate):
     def add_to_query(self, query, alias, col, source, is_summary):
         aggregate = SQLCountIfConcur(col, source=source, is_summary=is_summary, **self.extra)
         query.aggregates[alias] = aggregate
+
+def settings_context(request):
+    """Context processor to pass settings to templates.
+
+    This was originally written to passs Google Analytics settings to the
+    template."""
+    template_dict = {}
+
+    if hasattr(settings, 'GOOGLE_ANALYTICS_ACCOUNT') and \
+       hasattr(settings, 'GOOGLE_ANALYTICS_DOMAIN'):
+       template_dict['GOOGLE_ANALYTICS_ACCOUNT'] = settings.GOOGLE_ANALYTICS_ACCOUNT
+       template_dict['GOOGLE_ANALYTICS_DOMAIN'] = settings.GOOGLE_ANALYTICS_DOMAIN
+
+    return template_dict

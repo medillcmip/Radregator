@@ -65,6 +65,10 @@
         });
     </script>
     {% endblock %}
+    
+    {% if GOOGLE_ANALYTICS_ACCOUNT %}
+    {% include "google_analytics_tracker.html" %}
+    {% endif %}
 </head> 
 
 <body class="{{ body_classes }}">

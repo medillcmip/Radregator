@@ -85,3 +85,28 @@ if DEBUG:
 
 # Run the site as normal or disable everything except for the signup page.
 PREVIEW_MODE=False
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Location of application log file.
+LOG_FILENAME = "/home/medill2010/logs/user/sourcerer-production.log"
+
+# How often log files should be rotated
+# See Python documentation for TimedRotatingFileHandle for possible values.
+# Default is daily rotation.
+LOG_INTERVAL = 'D'
+
+# Maximum number of logs to save.  If this number is exceeded, the oldest
+# log will be overwritten. If set to 0, an unlimited  number of logs is saved.
+LOG_BACKUP_COUNT = 30
+
+# Log level.  Can be 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'.
+LOG_LEVEL='WARNING'
+
+# Google Analytics Account
+# Uncomment and set to enable tracking of pages by Google Analytics
+# This will usually be in the form 'UA-########-#'
+GOOGLE_ANALYTICS_ACCOUNT = 'UA-21380586-1'
+
+# Domain of this site, as configured in your Google Analytics account
+GOOGLE_ANALYTICS_DOMAIN = '.sourcerer.us'

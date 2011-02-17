@@ -82,3 +82,20 @@ if DEBUG and ENABLE_FIREPYTHON:
 # See http://stackoverflow.com/questions/690723/log-all-errors-to-console-or-file-on-django-site/691252#691252
 if DEBUG:
     DEBUG_PROPAGATE_EXCEPTIONS = False 
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Location of application log file.
+LOG_FILENAME = "/home/medill2010/logs/user/sourcerer-staging.log"
+
+# How often log files should be rotated
+# See Python documentation for TimedRotatingFileHandle for possible values.
+# Default is daily rotation.
+LOG_INTERVAL = 'D'
+
+# Maximum number of logs to save.  If this number is exceeded, the oldest
+# log will be overwritten. If set to 0, an unlimited  number of logs is saved.
+LOG_BACKUP_COUNT = 30
+
+# Log level.  Can be 'DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL'.
+LOG_LEVEL='WARNING'

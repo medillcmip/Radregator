@@ -9,7 +9,8 @@ from django.contrib.localflavor.us.forms import USZipCodeField,\
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
 
 from registration.forms import RegistrationForm
-logger = core.utils.get_logger() 
+
+logger = core.utils.get_logger(__name__) 
 
 
 
