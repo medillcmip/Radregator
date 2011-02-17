@@ -10,7 +10,7 @@ handler404 = 'core.views.page_not_found'
 urlpatterns = patterns('',
     # Example:
     # (r'^newsqa/', include('newsqa.foo.urls')),
-    (r'^$', 'core.views.frontpage'),
+    (r'^frontpage/', 'core.views.frontpage'),
 
     (r'^about/', 'core.views.about_page'),
     
