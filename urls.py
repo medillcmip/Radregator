@@ -10,11 +10,11 @@ handler404 = 'core.views.page_not_found'
 urlpatterns = patterns('',
     # Example:
     # (r'^newsqa/', include('newsqa.foo.urls')),
-    (r'^frontpage/', 'core.views.frontpage'),
+    (r'^$', 'core.views.frontpage', name="frontpage"),
 
-    (r'^about/', 'core.views.about_page'),
+    (r'^about/', 'core.views.about_page', name="about"),
     
-    (r'^signup', 'core.views.signup'),
+    (r'^signup', 'core.views.signup', name="signup"),
 
     (r'^topic/browse/', 'core.views.browse_topics'),
 
@@ -106,7 +106,6 @@ urlpatterns = patterns('',
     # Some testing forms for new features
     (r'^simpletest/(?P<whichtest>\w+)', 'core.views.simpletest'),
 
-    (r'^$', 'core.views.signup'),
     (r'^api/(?P<output_format>json)/invite/$', \
      'users.views.api_invite')
 )
