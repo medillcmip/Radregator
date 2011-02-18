@@ -60,7 +60,7 @@ div#header h1.logo {
 div#header h1.templogo {
 	display: block;
 	float: left;
-	width: 130px;
+	width: 180px;
 	height: 2em;
 	font-size: 2em;
 	font-weight: bold;
@@ -68,11 +68,18 @@ div#header h1.templogo {
 	top: -3px;
 }
 
+
 div#header h1.templogo a { color: #323232; }
 div#header h1.templogo a:hover { text-decoration: none; }
 
 div#header h1.templogo span {
 	color: #0f9d2e;
+}
+
+div#header h1.templogo span.small {
+    color: #777777;
+    font-size: 0.5em;
+    font-weight: bold;
 }
 
 /* IF LOGGED OUT */

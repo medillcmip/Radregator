@@ -126,7 +126,7 @@
 				
 				
 				<!--<h1 class="logo">{{ site_name }}</h1>-->
-				<h1 class="templogo"><a href="/"><span>Source</span>rer</a></h1>
+				<h1 class="templogo"><a href="{% url frontpage %}"><span>Source</span>rer</a> <span class="small">beta</span></h1>
 				<p id="greetuser">Hello, {{user.username}}. <a href="/logout" id="logoutlink">Log out</a>?</p>
 								
 			</div> 
@@ -149,7 +149,7 @@
 				
 
 				<!--<h1 class="logo">Querity</h1>-->
-				<h1 class="templogo"><span>Source</span>rer</h1>
+				<h1 class="templogo"><a href="{% url frontpage %}"><span>Source</span>rer</a> <span class="small">beta</span></h1>
 				<a href="/accounts/register/" id="greetsignup">Signup</a>
 								
 		</div>
