@@ -173,8 +173,20 @@
         </div>
 		
 	    {% block pagecontent %}
+        {% comment %}
+        Content placed here will fit in a centered column. 
+        {% endcomment %}
         {% endblock %}
 	</div>
+
+    {% block pagecontentwide %}
+    {% comment %}
+    Content placed here will span the width of the browser window.
+
+    You should not populate pagecontent if you choose to put content in
+    pagecontentwide.
+    {% endcomment %}
+    {% endblock %}
 		
 	
 	
