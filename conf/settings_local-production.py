@@ -83,7 +83,8 @@ if DEBUG and ENABLE_FIREPYTHON:
 if DEBUG:
     DEBUG_PROPAGATE_EXCEPTIONS = False 
 
-# Run the site as normal or disable everything except for the signup page.
+# When set to True, unauthenticated users will be forwarded to the about page.
+# This is useful for implementing an invitation-based beta.
 PREVIEW_MODE=False
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
