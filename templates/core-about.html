@@ -1,21 +1,50 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+
 {% block addscripts %}
 {% endblock %}
-{% block pagecontent %}
 
-<BR>
-this is a context management system designed to construct a concise and accurate dialog around issues.
+{% block pagecontentwide %}
+    {% comment %}
+    HACK ALERT!  This page just reuses ids and classes from the signup page
+    template.  These should probably be renamed to be more general at some
+    point. -Geoff <geoffhing@gmail.com> 2011-02-21
+    {% endcomment %}
+    <div id="signupwrap">	
+        <div id="signup" class="container_12">
+            <div id="signup-left" class="grid_6">
+                <h2>What is Sourcerer?</h2>
 
-<BR><BR>
-<a href="http://localfourth.com">A group of students at Northwestern's Medill School of Journalism</a> built the tool to seperate information into <a href="/topic/browse">topics</a> and allow readers to curate verifiable information.
-<BR><BR>
+                <p>Sourcerer is a context management system designed to help users discover and navigate local news and information.</p>
 
-You can <a href="http://www.pbs.org/idealab/2010/12/introducing-sourcerer-a-context-management-system349.html">read more about it at PBS</a> or you can watch our screencast below to see some of the features available.
-<BR>
-<BR><BR>
-<P align=center>
-<iframe title="YouTube video player" class="youtube-player" type="text/html" width="640" height="390" src="http://www.youtube.com/embed/hXuTmmBB2-E?rel=0" frameborder="0" ></iframe>
-</P>
-<BR>
+                <p>It was develeoped as part of a community media innovation project graduate course at the Northwestern University's <a href="http://www.medill.northwestern.edu" alt="Medill">Medill School of Journalism</a>.</p>
+
+                <p>Students built the tool to help users separate local information into topics and curate verifiable information.  Users ask questions and find answers in local online media to have a concise and accurate dialog around community issues.</p> 
+
+            </div>
+            <div id="signup-right" class="grid_6">
+                <iframe title="YouTube video player" class="youtube-player" type="text/html" width="450" height="274" src="http://www.youtube.com/embed/hXuTmmBB2-E?rel=0" frameborder="0" ></iframe>
+                    
+                <a href="http://www.flickr.com/photos/localfourth/sets/72157625560753666/" class="signupbutton blackback">Check out the screenshots</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="infowrapper" class="container_12">
+        <div class="grid_7">
+            <h2>More information</h2>
+            <ul>
+              <li><a href="http://www.pbs.org/idealab/2010/12/introducing-sourcerer-a-context-management-system349.html">Read more about Sourcerer on PBS MediaShift Idea Lab</a></li>
+              <li><a href="http://www.localfourth.com/" title="Local Fourth blog">Visit the project blog</a></li>
+              <li><a href="http://bit.ly/Local-Fourth-Final-Report
+" title="Reimagining Hyperlocal News: Searching for a Sustainable
+Future">Read the project team's final report</a></li>
+              <li><a href="http://bit.ly/CMIP2010" title="Final presentation">Watch a presentation about Sourcerer</a></li>
+            </ul>
+        </div>
+        <div class="grid_5">
+        </div>
+    </div>
+    <!-- /#signupwrap -->
 {% endblock %}

@@ -39,7 +39,8 @@ from clipper.forms import UrlSubmitForm
 logger = core.utils.get_logger(__name__)
 
 def about_page(request):
-    template_dict = {}
+    template_dict = { 'site_name': settings.SITE_NAME, \
+        'body_classes': settings.SITE_BODY_CLASSES + " about" }
     
     return render_to_response('core-about.html', template_dict, \
                               context_instance=RequestContext(request))
@@ -382,16 +383,23 @@ def frontpage_questions(count=10):
 def frontpage(request):
     """Front page view."""
 
-    questions = frontpage_questions()
+    if settings.PREVIEW_MODE and request.user.is_anonymous():
+        # In preview mode and user not logged in.  Redirect to about page.
+        response = HttpResponseRedirect(reverse('about')) 
+    else:
+        # Otherwise, show the default front page view
+        questions = frontpage_questions()
 
-    logger.debug(questions)
-    template_dict = { 'site_name': settings.SITE_NAME, \
-        'body_classes': settings.SITE_BODY_CLASSES, \
-        'questions': questions,
-        'qa_form': CommentSubmitForm()}
-    
-    return render_to_response('frontpage.html', template_dict, \
-        context_instance=RequestContext(request))
+        logger.debug(questions)
+        template_dict = { 'site_name': settings.SITE_NAME, \
+            'body_classes': settings.SITE_BODY_CLASSES, \
+            'questions': questions,
+            'qa_form': CommentSubmitForm()}
+        
+        response = render_to_response('frontpage.html', template_dict, \
+            context_instance=RequestContext(request))
+
+    return response
         
 def signup(request):
     template_dict = { 'site_name': settings.SITE_NAME, \
@@ -405,103 +413,109 @@ def topic(request, whichtopic=1):
 
     clipper_url_form = UrlSubmitForm()
 
-    # Determine if there is an authenticated user and get a little information
-    # about that user.
-    if not request.user.is_anonymous():
-        # Logged in user
-        # Assumes consistency between users, UserProfiles
-        userprofile = UserProfile.objects.get(user = request.user) 
-
-        is_reporter = userprofile.is_reporter()
-    else:
-        is_reporter = False
-    
-    if request.method == 'POST':
-        if request.user.is_anonymous():
-            # This scenario should be handled more gracefully in JavaScript
-            return HttpResponseRedirect("/authenticate")
-        
-        # If someone just submitted a comment, load the form
-        form = CommentSubmitForm(request.POST)
-        
-        if form.is_valid():
-            # Validate the form
-
-            # look up comment by name
-            comment_type = form.cleaned_data['comment_type_str'] 
-
-
-            comment = Comment(text = form.cleaned_data['text'], \
-                              user = userprofile)
-            comment.comment_type = comment_type
-            # We have to save the comment object so it has a primary key, 
-            # before we can link tags to it.
-            comment.save() 
-
-            topic = form.cleaned_data['topic']
-            in_reply_to = form.cleaned_data['in_reply_to']
-            
-            # See forms for simplification possibilities
-            comment.topics = [Topic.objects.get(title=topic)] 
-            if form.cleaned_data['sources']:
-                comment.sources = [form.cleaned_data['sources']]
-            comment.save()
-            # successfully submitted, give them a new form
-            form = CommentSubmitForm() 
-
-            if in_reply_to: # Comment is in reply to another comment
-                reply_relation = CommentRelation(left_comment = comment, \
-                                                 right_comment = in_reply_to, \
-                                                 relation_type = 'reply')
-                reply_relation.save()
+    if settings.PREVIEW_MODE and request.user.is_anonymous():
+        # In preview mode and user not logged in.  Redirect to about page.
+        response =  HttpResponseRedirect(reverse('about')) 
 
     else: 
-        # Give them a new form if have either a valid submission, or no 
-        # submission
-        form = CommentSubmitForm() 
+        # Determine if there is an authenticated user and get a little information
+        # about that user.
+        if not request.user.is_anonymous():
+            # Logged in user
+            # Assumes consistency between users, UserProfiles
+            userprofile = UserProfile.objects.get(user = request.user) 
 
-    
-    if Comment.objects.count() > 0:
-        reply_form = CommentSubmitForm(initial = { \
-            'in_reply_to' : Comment.objects.all()[0]})
-    else:
-        reply_form = None
-
-    template_dict = { 'site_name':settings.SITE_NAME, \
-        'body_classes':settings.SITE_BODY_CLASSES }
-
-    # Will want to filter, order in later versions
-    topics = Topic.objects.filter(is_deleted=False)[:5] 
-
-    template_dict['topics'] = topics
-    try: 
-        topic =  Topic.objects.get(id=whichtopic)
-        template_dict['topic'] = topic 
-        template_dict['comments_to_show'] = topic.comments_to_show()
-       
-        # - Geoff Hing <geoffhing@gmail.com> 2010-12-02
-        # Get a list of comment ids of comments that a user has voted on. 
-        if request.user.is_anonymous():
-            template_dict['user_voted_comment_ids'] = None
+            is_reporter = userprofile.is_reporter()
         else:
-            template_dict['user_voted_comment_ids'] = \
-                topic.user_voted_comment_ids(user_profile)
-
-    except: 
-        # No topic loaded
-        pass
-
-    template_dict['comment_form'] = form
-    template_dict['reply_form'] = reply_form
-    template_dict['comments'] = {}
-    template_dict['clipper_url_form'] = clipper_url_form
-    template_dict['fb_app_id']=settings.FB_API_ID
-    template_dict['is_reporter'] = is_reporter
+            is_reporter = False
         
-    template_dict.update(csrf(request)) # Required for csrf system
+        if request.method == 'POST':
+            if request.user.is_anonymous():
+                # This scenario should be handled more gracefully in JavaScript
+                return HttpResponseRedirect("/authenticate")
+            
+            # If someone just submitted a comment, load the form
+            form = CommentSubmitForm(request.POST)
+            
+            if form.is_valid():
+                # Validate the form
 
-    return render_to_response('core-topic.html', template_dict, \
-                              context_instance=RequestContext(request))
+                # look up comment by name
+                comment_type = form.cleaned_data['comment_type_str'] 
+
+
+                comment = Comment(text = form.cleaned_data['text'], \
+                                  user = userprofile)
+                comment.comment_type = comment_type
+                # We have to save the comment object so it has a primary key, 
+                # before we can link tags to it.
+                comment.save() 
+
+                topic = form.cleaned_data['topic']
+                in_reply_to = form.cleaned_data['in_reply_to']
+                
+                # See forms for simplification possibilities
+                comment.topics = [Topic.objects.get(title=topic)] 
+                if form.cleaned_data['sources']:
+                    comment.sources = [form.cleaned_data['sources']]
+                comment.save()
+                # successfully submitted, give them a new form
+                form = CommentSubmitForm() 
+
+                if in_reply_to: # Comment is in reply to another comment
+                    reply_relation = CommentRelation(left_comment = comment, \
+                                                     right_comment = in_reply_to, \
+                                                     relation_type = 'reply')
+                    reply_relation.save()
+
+        else: 
+            # Give them a new form if have either a valid submission, or no 
+            # submission
+            form = CommentSubmitForm() 
+
+        
+        if Comment.objects.count() > 0:
+            reply_form = CommentSubmitForm(initial = { \
+                'in_reply_to' : Comment.objects.all()[0]})
+        else:
+            reply_form = None
+
+        template_dict = { 'site_name':settings.SITE_NAME, \
+            'body_classes':settings.SITE_BODY_CLASSES }
+
+        # Will want to filter, order in later versions
+        topics = Topic.objects.filter(is_deleted=False)[:5] 
+
+        template_dict['topics'] = topics
+        try: 
+            topic =  Topic.objects.get(id=whichtopic)
+            template_dict['topic'] = topic 
+            template_dict['comments_to_show'] = topic.comments_to_show()
+           
+            # Get a list of comment ids of comments that a user has voted on. 
+            if request.user.is_anonymous():
+                template_dict['user_voted_comment_ids'] = None
+            else:
+                template_dict['user_voted_comment_ids'] = \
+                    topic.user_voted_comment_ids(user_profile)
+
+        except: 
+            # No topic loaded
+            pass
+
+        template_dict['comment_form'] = form
+        template_dict['reply_form'] = reply_form
+        template_dict['comments'] = {}
+        template_dict['clipper_url_form'] = clipper_url_form
+        template_dict['fb_app_id']=settings.FB_API_ID
+        template_dict['is_reporter'] = is_reporter
+            
+        template_dict.update(csrf(request)) # Required for csrf system
+
+        response = render_to_response('core-topic.html', template_dict, \
+                                  context_instance=RequestContext(request))
+
+    return response
    
 def index(request):
     """Really basic default view."""
