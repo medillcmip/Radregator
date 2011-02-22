@@ -1578,8 +1578,10 @@ div#footer p.footerline {
 	font-size: 0.9em;
 }
 
-/* SIGNUP */
-.signup div#wrapper {
+/* The signup and about pages should have their content pulled up all the way */
+/* to the header bar. */
+.signup div#wrapper,
+.about div#wrapper {
     padding-top: 40px;
 }
 

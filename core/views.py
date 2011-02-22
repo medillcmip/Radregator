@@ -39,7 +39,8 @@ from clipper.forms import UrlSubmitForm
 logger = core.utils.get_logger(__name__)
 
 def about_page(request):
-    template_dict = {}
+    template_dict = { 'site_name': settings.SITE_NAME, \
+        'body_classes': settings.SITE_BODY_CLASSES + " about" }
     
     return render_to_response('core-about.html', template_dict, \
                               context_instance=RequestContext(request))
