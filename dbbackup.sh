@@ -23,7 +23,7 @@ fi
 
 DBNAME=$2
 USERNAME=$3
-outfile=radbackups/`date "+%Y%m%d"$1.sql`
+outfile=lfradbackups/`date "+%Y%m%d"$1.sql`
 
 # Dump the data
 pg_dump -U$USERNAME $DBNAME > $outfile
@@ -33,4 +33,4 @@ pg_dump -U$USERNAME $DBNAME > $outfile
 ./aws put $outfile $outfile
 
 # remove all traces of files
-rm radbackups/*
+rm lfradbackups/*

@@ -23,8 +23,8 @@ if [ -z "$3" ]; then
 fi
 DBNAME=$2
 USERNAME=$3
-filename=radbackups/$1
+filename=lfradbackups/$1
 ./aws get $filename $filename
 psql $DBNAME $USERNAME < $filename
-rm radbackups/*
+rm lfradbackups/*
 echo "DONE"

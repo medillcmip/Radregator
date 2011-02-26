@@ -1,4 +1,4 @@
-#!/bin/bash
+#/bin/bash
 
 #requires the .pgpass file to be set in the user's home directory
 #http://developer.postgresql.org/pgdocs/postgres/libpq-pgpass.html
@@ -22,8 +22,8 @@ psql -t $DBNAME $USERNAME -c "SELECT 'DROP TABLE ' || n.nspname || '.' ||
 c.relname || ' CASCADE;' FROM pg_catalog.pg_class AS c LEFT JOIN
 pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind =
 'r' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND
-pg_catalog.pg_table_is_visible(c.oid)" > radbackups/droptables
+pg_catalog.pg_table_is_visible(c.oid)" > lfradbackups/droptables
 
-psql $DBNAME $USERNAME -f radbackups/droptables
+psql $DBNAME $USERNAME -f lfradbackups/droptables
 
-rm radbackups/*
+rm lfradbackups/*
