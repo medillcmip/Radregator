@@ -22,7 +22,7 @@ def production():
     env.instance = 'production'
     env.git_repo = 'git@github.com:medillcmip/Radregator.git' 
     env.git_remote = 'origin'
-    env.git_branch = 'master'
+    env.git_branch = 'production'
 
 
 def testing(instance_num):
