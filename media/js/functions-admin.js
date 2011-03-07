@@ -266,14 +266,17 @@ function handleDeleteTopicLink() {
 
 // Show update summary form with default value
 function handleUpdateTopicSummaryLink() {
-    $('.update-topic-summary textarea').html($('.topic-summary').html());
+    console.debug("Entering handleUpdateTopicSummaryLink()");
+    $('.update-topic-summary textarea').html($('.topiclist_summary').html());
+    console.debug("Got here!");
     $('.update-topic-summary').show();
+    console.debug("Exiting handleUpdateTopicSummaryLink()");
     return false;
 }
 
 // Hide the update summary form
 function handleUpdateTopicSummaryCancel() {
-    $('.topic-summary').show();
+    $('.topiclist_summary').show();
     $('.update-topic-summary').hide();
     return false;
 }
@@ -291,7 +294,7 @@ function handleUpdateTopicSummarySubmit() {
         url: "/api/json/topics/" + topicId + "/summary/",
         data: { summary: newSummary },
         success: function(data) {
-            $('.topic-summary').html(newSummary);
+            $('.topiclist_summary').html(newSummary);
             $('.update-topic-summary').hide();
         },
         error: function (requestError, status, errorResponse) {
