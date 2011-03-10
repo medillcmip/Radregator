@@ -15,7 +15,8 @@ import core.utils
 
 from models import UserProfile
 from models import User
-from forms import LoginForm, RegisterForm, InviteForm 
+from models import ActivationKeyValue
+from forms import LoginForm, RegisterForm, InviteForm, ActivateUnactivatedForm
 from registration.models import RegistrationProfile
 
 logger = core.utils.get_logger(__name__)
@@ -608,3 +609,73 @@ def api_invite(request, output_format='json'):
 
     return HttpResponse(content=content, mimetype='application/json', \
                         status=status)
+
+def activate_unactivated_users(request, key):
+    """
+    users created in the api_invite function will get an email
+    the email will contain a link with a key
+    this function looks up that user and presents them with a form
+    to create a password and change their username if they so desire
+    """
+    logger.info("activate_unactivated_users(request, key)")
+    template_dict = {}
+    return_page = 'registration/activate_unactivated_users.html'
+
+    if request.method == 'POST':
+        #the user has submitted the form 
+        form = ActivateUnactivatedForm(request.POST)
+        if form.is_valid():
+            #get the password so we can activate the user
+            #get the username bc they have the option to change it
+            fUsername = form.cleaned_data['username']
+            fPass = form.cleaned_data['password']
+            key = form.cleaned_data['lookup_key']
+            try:
+                akv = ActivationKeyValue.objects.get(activation_key = key)
+                user = akv.user
+                #usernames may not be the same
+                user.username = fUsername
+                user.set_password(fPass)
+                user.is_active = True
+                user.save()
+                template_dict['account'] = True
+                return_page = 'registration/activate.html'
+                return render_to_response(return_page,\
+                    template_dict, context_instance=RequestContext(request))
+            except ActivationKeyValue.DoesNotExist:
+                logger.error("activate_unactivated_users(request, key): Could not\
+                    find ActivationKeyValue with key = %s" % key)
+                template_dict['errors'] = "We're sorry, but it looks like you don't have an account with us.  If you feel you've recieved this message in error, please email admin@sourcerer.us"
+            except Exception as e:
+                logger.error("activate_unactivated_users(request, key): Unidentified\
+                     error %s" % e)
+                template_dict['errors'] = "We're sorry, but something went wrong \
+                    and we couldn't process your request.  We're looking into the \
+                    issue."
+        else:
+            #user done messed up, let em know
+            template_dict['form'] = form
+            return render_to_response(return_page,\
+                template_dict, context_instance=RequestContext(request))
+    else:
+        try:
+            akv = ActivationKeyValue.objects.get(activation_key = key)
+            username = akv.user.username
+            form = ActivateUnactivatedForm(initial={'username': username,\
+                 'lookup_key':akv.activation_key})
+            template_dict['form'] = form
+        except ActivationKeyValue.DoesNotExist:
+            logger.error("activate_unactivated_users(request, key): Could not\
+                find ActivationKeyValue with key = %s" % key)
+            template_dict['errors'] = "We're sorry, but it looks like you\
+                 you don't have an account with us.  If you feel you've \
+                recieved this message in error, please email admin@sourcerer.us"
+        except Exception as e:
+            logger.error("activate_unactivated_users(request, key): Unidentified\
+                 error %s" % e)
+            template_dict['errors'] = "We're sorry, but something went wrong \
+                and we couldn't process your request.  We're looking into the \
+                issue."
+    return render_to_response(return_page,\
+        template_dict, context_instance=RequestContext(request))
+
