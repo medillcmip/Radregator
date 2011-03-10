@@ -61,7 +61,7 @@ def page_not_found(request, template_name='404.html'):
 def browse_topics(request):
 
     logger.info('core.views.browse_topics(request)')
-    topics = Topic.objects.all()
+    topics = Topic.objects.filter(is_deleted=False)
     template_dict = {'topics': topics}
 
     return render_to_response('core-topic-browse.html', template_dict, \
