@@ -42,6 +42,46 @@ class LoginForm(forms.Form):
         else:
             return self.cleaned_data
 
+class ActivateUnactivatedForm(forms.Form):
+    """
+    form to activate an unactivated user from the dec signup period
+    """
+
+    USERNAME_EXISTS_MSG = 'The username is taken, please try another'
+    EMAIL_EXISTS_MSG = 'This email already exists, please try another'
+    USERNAME_MUST_BE_ALNUM_MSG = 'Usernames must be alphanumeric (i.e., A-Z,0-9)'
+    username = forms.CharField(max_length=30,label="Username (optional: you can enter a new username)" )
+    password = forms.CharField(max_length=30, widget=forms.PasswordInput)
+    confirm_password = forms.CharField(max_length=30, widget=forms.PasswordInput)
+    lookup_key = forms.CharField(widget=forms.HiddenInput)
+
+
+
+    def clean_username(self):
+        """
+        ensure no other users exist with the same username
+        """
+        data = self.cleaned_data['username']
+        logger.info('ActivateUnactivatedForm.clean_username(self): checking username %s'
+            , data)
+        usrs = User.objects.filter(username=data)
+        if len(usrs) > 0:
+            raise forms.ValidationError(self.USERNAME_EXISTS_MSG)
+        else:
+            return data
+
+    def clean(self):
+        """ Ensure that password and confirm_password fields match. """
+        cleaned_data = self.cleaned_data
+        logger.info('ActivateUnactivatedForm.clean(self): ensuring match between password \
+            fields for user %s', cleaned_data.get('username'))
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+        if password != confirm_password:
+            raise forms.ValidationError("Passwords do not match")
+
+        return cleaned_data
+
 
 class RegisterForm(RegistrationForm):
     """
