@@ -266,11 +266,8 @@ function handleDeleteTopicLink() {
 
 // Show update summary form with default value
 function handleUpdateTopicSummaryLink() {
-    console.debug("Entering handleUpdateTopicSummaryLink()");
     $('.update-topic-summary textarea').html($('.topiclist_summary').html());
-    console.debug("Got here!");
     $('.update-topic-summary').show();
-    console.debug("Exiting handleUpdateTopicSummaryLink()");
     return false;
 }
 
