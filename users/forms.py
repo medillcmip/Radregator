@@ -66,7 +66,8 @@ class ActivateUnactivatedForm(forms.Form):
             , data)
         usrs = User.objects.filter(username=data)
         if len(usrs) > 0:
-            raise forms.ValidationError(self.USERNAME_EXISTS_MSG)
+            if len(usrs) > 1 and usrs[0].username != data:
+                raise forms.ValidationError(self.USERNAME_EXISTS_MSG)
         else:
             return data
 

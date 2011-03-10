@@ -3,6 +3,7 @@ from users.exceptions import BadUsernameOrPassword, UserAccountDisabled, \
                              NoFacebookUser
 import core.utils
 from django.core.mail import send_mail
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
@@ -23,17 +24,18 @@ def send_activation_email():
     """
     email_subject = 'Welcome to the Sourcerer beta test!'
     email_from = 'admin@sourcerer.us'
-    activation_url = settings.SITE_URL+'/activate_unactivated/'
-    #emails = User.objects.raw('SELECT id, email from auth_user')
+
+    current_site = Site.objects.get_current()
+    activation_url = current_site.domain +'/activate_unactivated/'
     users = User.objects.filter(is_active=False)
-	plaintext = get_template('activate_users_email.txt')
+    plaintext = get_template('activate_users_email.txt')
     for usr in users:
         activation_key = os.urandom(10).encode('hex')
         akv = ActivationKeyValue(user=usr, activation_key=activation_key)
         akv.save()
         email_message_link = activation_url + activation_key + "/"
 
-		d = Context({ 'activation_link': email_message_link })
-		text_content = plaintext.render(d)
-		msg = EmailMultiAlternatives(email_subject, text_content, email_from, [str(usr.email)])
-		msg.send()
+        d = Context({ 'activation_link': email_message_link })
+        text_content = plaintext.render(d)
+        msg = EmailMultiAlternatives(email_subject, text_content, email_from, [str(usr.email)])
+        msg.send()
