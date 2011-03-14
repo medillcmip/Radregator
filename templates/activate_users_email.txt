@@ -4,7 +4,7 @@ Some months ago, you indicated an interest in being a beta user of the Sourcerer
 
 We are pleased to announce that the Sourcerer beta is ready for you to try out, and we have already registered you as a user of the site.
 
-What’s Sourcerer?
+-----
 
 Sourcerer is an open-source Web platform organized around topics.  It enables users to ask and answer questions about those topics.  It has a couple of novel features. First, when answering a question, users are required to include a link to the source material that supports the answer.  And second, the links provided by users are assembled into a timeline of stories that serves as an entry point for understanding the topic.  As with other Q&A sites, users can "vote up" questions or answers they think are particularly good.
 
@@ -16,13 +16,11 @@ We've also set up a third topic, called "Sourcerer Beta," where you can ask ques
 
 If you’d like a run-through of Sourcerer’s features, and an introduction to using the system, we’ve made a short video, which you can watch at http://www.youtube.com/watch?v=hXuTmmBB2-E
 
-We want your feedback! 
-
 We hope you will try out the site and provide us with feedback on how to improve Sourcerer.  We also are seeking your ideas for particular kinds of stories, issues or publications that would be good applications for this kind of site.
 
 To provide us with feedback, just click on the green "Feedback" tab on the right side of every page. You can use this channel -- provided through the "Get Satisfaction" customer-service tools -- to report bugs, tell us what you like or don't like, or suggest ways you'd like Sourcerer to be used.
 
-Using Sourcerer
+-----
 
 To use Sourcerer, follow the link below to enter a password and, optionally, change your user name.  You will be identified on the site by the user name you select.  
 
